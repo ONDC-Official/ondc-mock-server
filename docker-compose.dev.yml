@@ -1,0 +1,98 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    env_file:
+      - ./.env
+    networks:
+      - ondc
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-q",
+          "-d",
+          "mock",
+          "-h",
+          "localhost",
+          "-U",
+          "postgres",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  base:
+    build: 
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.dbsetup
+    
+    # build: 
+    #   context: .
+    #   dockerfile: ./apps/backend/Dockerfile.backend
+    env_file:
+      - ./.env
+    image: ondc-mock-setup
+    restart: always
+
+  initDb:
+    extends: base
+    command: npx prisma migrate deploy --preview-feature
+    restart: "on-failure"
+    env_file:
+      - ./.env
+    # environment:
+    #   - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  redis:
+    env_file:
+      - ./.env
+    image: redis:7
+    ports:
+      - "6379:6379"
+    command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    # environment:
+    #   - REDIS_PASSWORD=${REDIS_PASS}
+    networks:
+      - ondc
+
+  api:
+    build: 
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.backend
+    # extends: base
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    restart: always
+    depends_on:
+      - db
+      - initDb
+      - redis
+    networks:
+      - ondc
+
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile.frontend
+    env_file:
+      - ./.env
+    # environment:
+    #   - VITE_SERVER_URL=${VITE_SERVER_URL}
+    #   - MOCKSERVER_ID=${MOCKSERVER_ID}
+    #   - NODE_OPTIONS=${NODE_OPTIONS}
+    ports:
+      - "8080:80"
+    restart: always
+    networks:
+      - ondc
+
+networks:
+  ondc:
