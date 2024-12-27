@@ -20,15 +20,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
           script: |
             # Remove existing directory
-            [ -d "/home/ubuntu/ondc-mock-server" ] && rm -rf /home/ubuntu/ondc-mock-server
-            
+            if [[ -d "/home/ubuntu/ondc-mock-server" ]];
+              docker-compose -f /home/ubuntu/ondc-mock-server/docker-compose.yml down
+              rm -rf /home/ubuntu/ondc-mock-server
+            fi
             # Fresh clone
             git clone https://github.com/ONDC-Official/ondc-mock-server.git /home/ubuntu/ondc-mock-server
             cd /home/ubuntu/ondc-mock-server
@@ -36,7 +39,6 @@ jobs:
             # Rename docker compose file
             mv docker-compose.server.yml docker-compose.yml
             
-
             # Create backend .env file
             cat > .env << EOL
             PORT=${{ secrets.PORT }}
@@ -62,12 +64,8 @@ jobs:
             MOCKSERVER_ID=${{ secrets.MOCKSERVER_ID }}
             EOL
             
-            
             # Build and deploy
-            docker-compose down
-            docker-compose build
-            docker-compose up -d
+            docker-compose up -d --build
             
             # Cleanup
-            docker system prune -af
-            docker volume prune -f
+            docker builder prune -af
