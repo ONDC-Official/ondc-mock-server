@@ -5,6 +5,15 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'Deploy 2 EC2'
+        type: choice
+        options:
+          - Deploy 2 EC2
 
 jobs:
   deploy:
