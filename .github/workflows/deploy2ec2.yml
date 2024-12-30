@@ -38,7 +38,7 @@ jobs:
             cd /home/devloper/ondc-mock-server
             
             # Rename docker compose file
-            mv docker-compose.server.yml docker-compose.yml
+            mv docker-compose.dev.yml docker-compose.yml
             
             # Create backend .env file
             cat > .env << EOL
