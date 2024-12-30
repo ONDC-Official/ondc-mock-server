@@ -29,13 +29,13 @@ jobs:
           script: |
             # Remove existing directory
             if [[ -d "/home/ubuntu/ondc-mock-server" ]]; then
-              docker-compose -f /home/ubuntu/ondc-mock-server/docker-compose.yml down
-              rm -rf /home/ubuntu/ondc-mock-server
+              docker-compose -f /home/devloper/ondc-mock-server/docker-compose.yml down
+              rm -rf /home/devloper/ondc-mock-server
             fi
 
             # Fresh clone
-            git clone https://github.com/ONDC-Official/ondc-mock-server.git /home/ubuntu/ondc-mock-server
-            cd /home/ubuntu/ondc-mock-server
+            git clone https://github.com/ONDC-Official/ondc-mock-server.git /home/devloper/ondc-mock-server
+            cd /home/devloper/ondc-mock-server
             
             # Rename docker compose file
             mv docker-compose.server.yml docker-compose.yml
