@@ -38,10 +38,10 @@ jobs:
             fi
 
             # Fresh clone
-            git clone https://github.com/ONDC-Official/ondc-mock-server.git /home/devloper/ondc-mock-server
+            git clone https://github.com/abhik-wil/ondc-mock-server-backend /home/devloper/ondc-mock-server
             cd /home/devloper/ondc-mock-server
             ls
-            
+
             # Rename docker compose file
             mv docker-compose.dev.yml docker-compose.yml
             
