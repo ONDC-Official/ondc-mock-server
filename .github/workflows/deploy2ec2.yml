@@ -15,6 +15,9 @@ on:
         options:
           - Deploy 2 EC2
 
+env:
+  ENVIRONMENT: 'Deploy 2 EC2'
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
           port: 22
           script: |
             # Remove existing directory
-            if [[ -d "/home/ubuntu/ondc-mock-server" ]]; then
+            if [[ -d "/home/devloper/ondc-mock-server" ]]; then
               docker-compose -f /home/devloper/ondc-mock-server/docker-compose.yml down
               rm -rf /home/devloper/ondc-mock-server
             fi
