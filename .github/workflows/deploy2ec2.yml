@@ -60,10 +60,7 @@ jobs:
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             NODE_OPTIONS=${{ secrets.NODE_OPTIONS }}
-            EOL
-
-            # Create frontend .env file
-            cat > .env << EOL
+            
             VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
             MOCKSERVER_ID=${{ secrets.MOCKSERVER_ID }}
             EOL
