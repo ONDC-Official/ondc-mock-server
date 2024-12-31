@@ -1,71 +1,75 @@
 import axios from "axios";
 import { SubscriberDetail } from "../../interfaces";
-import { prisma } from "./prisma";
-import { REGISTRY_URL } from "./constants";
-import { Prisma } from "@prisma/client";
+import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL } from "./constants";
+import { redis } from "./redis";
 
 export async function getSubscriberDetails(
-	subscriber_id: string,
-	unique_key_id: string
+  subscriber_id: string,
+  unique_key_id: string,
+  env: string
 ) {
-	var subscribers = await prisma.user.findMany({
-		where: {
-			subscriber_id,
-			unique_key_id,
-		},
-		select: {
-			subscriber_id: true,
-			unique_key_id: true,
-			signing_public_key: true,
-			valid_until: true,
-			type: true,
-		},
-	});
+  const cachedData = await redis.get(
+    `subscriber_data-${subscriber_id}-${unique_key_id}`
+  );
+  let subscribers = cachedData ? JSON.parse(cachedData) : [];
 
-	// console.log(
-	// 	"Registry Lookup Paramters",
-	// 	JSON.stringify({
-	// 		subscriber_id,
-	// 		unique_key_id,
-	// 	})
-	// );
-	if (subscribers.length === 0) {
-		const response = await axios.post(REGISTRY_URL, {
-			subscriber_id,
-			ukId: unique_key_id,
-		});
-		// console.log(
-		// 	"RESPONSE RECEIVED FROM",
-		// 	REGISTRY_URL,
-		// 	response,
-		// 	subscriber_id,
-		// 	unique_key_id
-		// );
-		response.data
-			.map((data: object) => {
-				const { subscriber_url, ...subscriberData } = data as SubscriberDetail;
-				return {
-					...subscriberData,
-					unique_key_id: subscriber_url,
-				};
-			})
-			.forEach((data: any) => {
-				try {
-					subscribers.push({
-						subscriber_id: data.subscriber_id,
-						unique_key_id: data.ukId,
-						type: data.type,
-						signing_public_key: data.signing_public_key,
-						valid_until: data.valid_until
-					} as Prisma.UserCreateInput);
-				} catch (error) {
-					console.log(error);
-				}
-			});
-		await prisma.user.createMany({
-			data: subscribers,
-		});
-	}
+  // Determine the appropriate URL based on the environment
+  // const url = env === "prepod" ? PREPOD_REGISTRY_URL : STAGING_REGISTRY_URL;
 
-	return subscribers;
+  if (subscribers.length === 0) {
+    try {
+      // Fetch data from both endpoints
+      const [stagingResponse, prepodResponse] = await Promise.all([
+        axios.post(STAGING_REGISTRY_URL, {
+          subscriber_id,
+          ukId: unique_key_id,
+        }),
+        axios.post(PREPOD_REGISTRY_URL, {
+          subscriber_id,
+          ukId: unique_key_id,
+        }),
+      ]);
+
+      // Process and concatenate data from both responses
+      [stagingResponse.data, prepodResponse.data].forEach((responseData) => {
+        responseData
+          .map((data: object) => {
+            const { subscriber_url, ...subscriberData } = data as SubscriberDetail;
+            return {
+              ...subscriberData,
+              unique_key_id: subscriber_url,
+            };
+          })
+          .forEach((data: any) => {
+            try {
+              subscribers.push({
+                subscriber_id: data.subscriber_id,
+                unique_key_id: data.ukId,
+                type: data.type,
+                signing_public_key: data.signing_public_key,
+                valid_until: data.valid_until,
+              });
+            } catch (error) {
+              console.log("Error processing data:", error);
+            }
+          });
+      });
+
+      // Cache the combined data in Redis
+      try {
+        await redis.set(
+          `subscriber_data-${subscribers[0].subscriber_id}-${subscribers[0].unique_key_id}`,
+          JSON.stringify(subscribers),
+          "EX",
+          432000 // Set TTL for 5 days
+        );
+      } catch (err) {
+        console.error("Error setting subscriber_data in Redis:", err);
+      }
+    } catch (error) {
+      console.error("Error fetching subscriber data:", error);
+    }
+  }
+
+  return subscribers;
 }

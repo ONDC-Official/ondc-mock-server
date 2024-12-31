@@ -12,7 +12,7 @@ import { Input, Option, Select, Button } from "@mui/joy";
 import axios, { AxiosError } from "axios";
 import Divider from "@mui/material/Divider";
 import Grow from "@mui/material/Grow";
-import { useDomain, useMessage } from "../../utils/hooks";
+import { useDomain, useEnvironment, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -62,6 +62,7 @@ export const InitiateRequestSection = () => {
 	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
+	const { environment } = useEnvironment();
 	const [domainOptions, setDomainOptions] = useState<string[]>([]);
 	const [, setScenarioOptions] = useState<string[]>([]);
 	const [cityOptions, setCityOptions] = useState<string[]>([]);
@@ -244,6 +245,7 @@ export const InitiateRequestSection = () => {
 				{
 					headers: {
 						"Content-Type": "application/json",
+						"Environment":environment
 					},
 				}
 			);

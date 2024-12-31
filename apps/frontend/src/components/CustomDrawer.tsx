@@ -16,9 +16,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { ALL_DOMAINS } from "../utils";
+import { ALL_DOMAINS, ALL_Environment } from "../utils";
 import { FormControl, InputLabel, MenuItem, Tooltip } from "@mui/material";
-import { useDomain } from "../utils/hooks";
+import { useDomain, useEnvironment } from "../utils/hooks";
 
 const drawerWidth = 200;
 const NAV_LINKS = [
@@ -120,6 +120,7 @@ type CustomDrawerProps = {
 
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	const { domain, setDomain } = useDomain();
+	const {environment,setEnvironment} = useEnvironment();
 	const theme = useTheme();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -129,6 +130,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	};
 	const handleDomain = (event: SelectChangeEvent) => {
 		setDomain(event.target.value.toLowerCase());
+	};
+	const handleEnvironment = (event: SelectChangeEvent) => {
+		setEnvironment(event.target.value.toLowerCase());
 	};
 	const drawer = (
 		<div>
@@ -158,6 +162,20 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					))}
 				</Select>
 			</FormControl>
+			<FormControl fullWidth >
+			<InputLabel id="select-environment-label">{environment ?  "" : "Select-Environment"}</InputLabel>
+				<Select
+					labelId="select-environment-label"
+					label="Environment"
+					onChange={handleEnvironment}
+				>
+					{Object.keys(ALL_Environment).map((Environment: string, key: number) => (
+						<MenuItem key={Environment + key} value={Environment}>
+							{Environment}
+						</MenuItem>
+					))}
+				</Select> 
+				</FormControl>
 			<Divider />
 			<List>
 				{NAV_LINKS.map((link, index) => (

@@ -19,6 +19,7 @@ async function send_response(
   scenario: any = "",
   version: any = "",
   bpp_uri: string = "", // for search
+  env:string="",
   id: number = 0
 ) {
   let time_now = new Date().toISOString()
@@ -51,7 +52,6 @@ async function send_response(
       );
     }
 
-
     const headers: headers = {
       authorization: header,
     };
@@ -69,12 +69,10 @@ async function send_response(
       uri = `${bpp_uri}/${action}${version ? `?version=${version}` : ""}`;
     } else {
       uri = `${bpp_uri}/${action}${scenario ? `?scenario=${scenario}` : ""}`;
-
     }
-
     try {
       const response = await axios.post(uri, res_obj, {
-        headers: { ...headers },
+        headers: { ...headers ,"environment":env},
       });
       await redis.set(
         `${transaction_id}-${action}-from-server-${id}-${time_now}`,

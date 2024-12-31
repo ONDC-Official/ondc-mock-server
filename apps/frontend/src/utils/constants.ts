@@ -109,6 +109,11 @@ export const ALL_DOMAINS = {
 	Agri: AGRI_DOMAINS,
 };
 
+export const ALL_Environment={
+	PREPOD:"Prepod",
+	STAGING:"Staging"
+}
+
 export const CITY_CODE = ["std:080", "std:011", "std:999"];
 export const AGRI_SCENARIOS = {
   search: [

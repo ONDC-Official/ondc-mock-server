@@ -19,6 +19,7 @@ export const initiateSearchController = async (
 ) => {
 	try {
 		let { bpp_uri, city, domain, version } = req.body;
+		const env=req.headers["environment"] ||""
 		let file: any = "";
 		switch (version) {
 			case "b2c":
@@ -57,7 +58,7 @@ export const initiateSearchController = async (
 			},
 		};
 		search.bpp_uri = bpp_uri;
-		await send_response(res, next, search, transaction_id, "search", "", version);
+		await send_response(res, next, search, transaction_id, "search", "", version,"",	env as string);
 	} catch (error) {
 		return next(error);
 	}

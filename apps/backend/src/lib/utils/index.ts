@@ -1,4 +1,3 @@
-export * from "./prisma"
 export * from "./constants"
 export * from "./crypto"
 export * from "./auth"

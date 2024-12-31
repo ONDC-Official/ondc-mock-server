@@ -3,8 +3,9 @@ const MOCK_API_BASE_URL = process.env?.MOCK_API_BASE_URL
 	? process.env.MOCK_API_BASE_URL
 	: "http://localhost:3000/";
 
-export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
-// export const REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
+export const STAGING_REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
+
+export const PREPOD_REGISTRY_URL = "https://preprod.registry.ondc.org/ondc/lookup";
 
 export const SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml";

@@ -28,20 +28,21 @@ export const split_auth_header = (auth_header: string) => {
 
 export async function verifyHeader(
 	header: string,
-	rawBody: string
+	rawBody: string,
+	env:string
 ): Promise<boolean> {
 	try {
 		const parts = split_auth_header(header);
 		if (!parts || Object.keys(parts).length === 0) {
 			return false;
 		}
-
 		const subscriber_id = parts["keyId"].split("|")[0];
 		const unique_key_id = parts["keyId"].split("|")[1];
 		
 		const subscribers_details = await getSubscriberDetails(
 			subscriber_id,
-			unique_key_id
+			unique_key_id,
+			env
 		);
 		
 		for (const each of subscribers_details) {

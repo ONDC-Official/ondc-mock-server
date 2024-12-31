@@ -9,6 +9,7 @@ export const authValidatorMiddleware = async (
 	next: NextFunction
 ) => {
 	try {
+		// console.log("====>",req.headers)
 		const mode = req.query.mode as string;
 		res.setHeader("mode", mode ? mode : "sandbox");
 		if (
@@ -21,7 +22,16 @@ export const authValidatorMiddleware = async (
 			return;
 		} else {
 			const auth_header = req.headers["authorization"] || "";
-			let verified = await verifyHeader(auth_header, (req as any).rawBody.toString());
+			 let env;
+			// const valid=(req as any).rawBody.toString()
+			
+		const part=req.body.context.domain.split(":")
+		const includesLOGorRET = part.some((part:any) => part.includes("LOG") || part.includes("RET"));
+			if(includesLOGorRET){
+				env=req.headers["environment"] ||""
+				// console.log("============>",req.headers)
+			}
+			let verified = await verifyHeader(auth_header, (req as any).rawBody.toString(),env as string);
 
 			if (!verified) {
 				return res.status(401).json({

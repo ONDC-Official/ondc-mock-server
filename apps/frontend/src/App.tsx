@@ -9,6 +9,7 @@ import {
 import {
 	AnalyseProvider,
 	DomainProvider,
+	EnvironmentProvider,
 	MessageProvider,
 	MockProvider,
 	SandboxProvider,
@@ -135,7 +136,9 @@ export default function App() {
 	return (
 		<MessageProvider>
 			<DomainProvider>
+				<EnvironmentProvider>
 				<RouterProvider router={router} />
+				</EnvironmentProvider>
 			</DomainProvider>
 		</MessageProvider>
 	);

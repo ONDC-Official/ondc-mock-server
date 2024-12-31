@@ -35,6 +35,8 @@ export const initiateSearchController = async (
 ) => {
 	try {
 		const { bpp_uri, city, domain, deliveryType } = req.body;
+		const env=req.headers["environment"] ||""
+		console.log("envv",req.headers)
 		var search;
 		switch (domain) {
 			case "ONDC:LOG10":
@@ -163,7 +165,8 @@ export const initiateSearchController = async (
 			"search",
 			"",
 			"",
-			bpp_uri
+			bpp_uri,
+			env as string
 		);
 	} catch (error) {
 		return next(error);
