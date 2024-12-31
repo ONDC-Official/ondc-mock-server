@@ -424,7 +424,7 @@ export const onStatusSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",
@@ -462,7 +462,7 @@ export const onStatusSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: ["list"],
                         },
                       },
                     },
@@ -495,8 +495,25 @@ export const onStatusSchema = {
                       currency: {
                         type: "string",
                       },
-                      transaction_id: {
-                        type: "string",
+                      if:{
+                        properties:{
+                          domain:{
+                            enum:["SRV16"]
+                          }
+                        }
+                      },
+                      then:{
+                        properties:{
+
+                        }
+                      },
+                      else:{
+                        properties:{
+                          transaction_id: {
+                            type: "string",
+                          },
+                        },
+                        required:["transaction_id"]
                       },
                       bank_account_number: {
                         type: "string",
@@ -508,7 +525,7 @@ export const onStatusSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
+                      // "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],
@@ -569,22 +586,38 @@ export const onStatusSchema = {
                 ],
               },
             },
-            documents: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  url: {
-                    type: "string",
-                  },
-                  label: {
-                    type: "string",
+            if:{
+              properties:{
+                domain:{
+                  enum:["SRV16"]
+                }
+              }
+            },
+            then:{
+              properties:{
+
+              }
+            },
+            else:{
+              properties:{
+                documents: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      url: {
+                        type: "string",
+                      },
+                      label: {
+                        type: "string",
+                      },
+                    },
+                    required: ["url", "label"],
                   },
                 },
-                required: ["url", "label"],
               },
+              required:["documents"]
             },
-
             created_at: {
               type: "string",
               format: "date-time",
@@ -604,7 +637,7 @@ export const onStatusSchema = {
             "fulfillments",
             "quote",
             "payments",
-            "documents",
+            // "documents",
             "created_at",
             "updated_at",
           ],

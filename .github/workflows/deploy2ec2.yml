@@ -31,17 +31,15 @@ jobs:
           port: 22
           script: |
             # Remove existing directory
-            ls
             if [[ -d "/home/devloper/ondc-mock-server" ]]; then
               docker-compose -f /home/devloper/ondc-mock-server/docker-compose.yml down
               rm -rf /home/devloper/ondc-mock-server
             fi
 
             # Fresh clone
-            git clone https://github.com/abhik-wil/ondc-mock-server-backend /home/devloper/ondc-mock-server
+            git clone https://github.com/abhik-wil/ondc-mock-server-backend.git /home/devloper/ondc-mock-server
             cd /home/devloper/ondc-mock-server
-            ls
-
+            
             # Rename docker compose file
             mv docker-compose.dev.yml docker-compose.yml
             
@@ -65,13 +63,18 @@ jobs:
             EOL
 
             # Create frontend .env file
-            cat > apps/frontend/.env << EOL
+            cat > .env << EOL
             VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
             MOCKSERVER_ID=${{ secrets.MOCKSERVER_ID }}
             EOL
+
+            cat .env
+            
+            echo "HERE"
             
             # Build and deploy
-            docker-compose up -d --build
-            
+            sudo docker-compose up -d --build
+
+            echo "BUILT"
             # Cleanup
-            docker builder prune -af
+            sudo docker builder prune -af

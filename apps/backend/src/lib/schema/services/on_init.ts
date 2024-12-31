@@ -235,63 +235,127 @@ export const onInitSchema = {
                         type: {
                           type: "string",
                         },
-                        location: {
-                          type: "object",
-                          properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: [
-                            "gps",
-                            "address",
-                            "city",
-                            "country",
-                            "area_code",
-                            "state",
-                          ],
+                        if:{
+                          properties:{
+                            domain:{
+                              enum:["SRV16"]
+                            }
+                          }
                         },
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
+                        then:{
+                          properties:{
+                            location: {
+                              type: "object",
+                              properties: {
+                                gps: {
+                                  type: "string",
+                                },
+                                address: {
+                                  type: "string",
+                                },
+                                city: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                                country: {
+                                  type: "object",
+                                  properties: {
+                                    code: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["code"],
+                                },
+                                area_code: {
+                                  type: "string",
+                                },
+                                state: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                              },
+                              required: [
+                                "gps",
+                                // "address",
+                                // "city",
+                                // "country",
+                                "area_code",
+                                // "state",
+                              ],
                             },
-                          },
-                          required: ["phone"],
+                          }
+                        },
+                        else:{
+                          properties:{
+                            location: {
+                              type: "object",
+                              properties: {
+                                gps: {
+                                  type: "string",
+                                },
+                                address: {
+                                  type: "string",
+                                },
+                                city: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                                country: {
+                                  type: "object",
+                                  properties: {
+                                    code: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["code"],
+                                },
+                                area_code: {
+                                  type: "string",
+                                },
+                                state: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                              },
+                              required: [
+                                "gps",
+                                "address",
+                                "city",
+                                "country",
+                                "area_code",
+                                "state",
+                              ],
+                            },
+                            contact: {
+                              type: "object",
+                              properties: {
+                                phone: {
+                                  type: "string",
+                                },
+                              },
+                              required: ["phone"],
+                            },
+                          }
                         },
                         time: {
                           type: "object",
@@ -355,7 +419,8 @@ export const onInitSchema = {
                       // required: ["type", "location", "contact", "time", "tags"],
                       if: { properties: { type: { const: "end" } } },
                       then: {
-                        required: ["type", "location", "contact", "time"]
+                        // required: ["type", "location", "contact", "time"]
+                         required: ["type", "location", "time"]
                       },
                       else: {
                         required: ["type"],
@@ -434,7 +499,8 @@ export const onInitSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "price"],
+                        // required: ["id", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -472,7 +538,8 @@ export const onInitSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          // required: ["descriptor", "list"],
+                          required:["list"]
                         },
                       },
                     },
@@ -590,7 +657,7 @@ export const onInitSchema = {
           },
           required: [
             "provider",
-            "locations",
+            // "locations",
             "items",
             "billing",
             "fulfillments",

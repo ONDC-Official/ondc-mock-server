@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:16-alpine
     ports:
-      - "5434:5432"
+      - "5435:5432"
     env_file:
       - ./.env
     networks:
@@ -54,7 +54,7 @@ services:
       - ./.env
     image: redis:7
     ports:
-      - "6379:6379"
+      - "6380:6379"
     command: /bin/sh -c "redis-server --requirepass $${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     # environment:
     #   - REDIS_PASSWORD=${REDIS_PASS}
@@ -67,7 +67,7 @@ services:
       dockerfile: ./apps/backend/Dockerfile.backend
     # extends: base
     ports:
-      - "3000:3000"
+      - "3001:3000"
     env_file:
       - ./.env
     restart: always
@@ -89,7 +89,7 @@ services:
     #   - MOCKSERVER_ID=${MOCKSERVER_ID}
     #   - NODE_OPTIONS=${NODE_OPTIONS}
     ports:
-      - "8080:80"
+      - "8081:80"
     restart: always
     networks:
       - ondc

@@ -14,6 +14,8 @@ import {
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
 	AGRI_SERVICES_EXAMPLES_PATH,
 	BID_AUCTION_SERVICES_EXAMPLES_PATH,
+	quoteCreatorAstroService,
+	ASTRO_SERVICES_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -21,6 +23,7 @@ import {
 	PAYMENT_TYPE,
 	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
+import { count } from "console";
 
 export const initController = async (
 	req: Request,
@@ -88,19 +91,31 @@ const initConsultationController = (
 				order: { provider, items, billing, fulfillments, payments },
 			},
 		} = req.body;
+	
+		const Astroitems=items
 
-		// console.log("ITEMS before :::::::", items)
+		console.log("ITEMS before :::::::", JSON.stringify(items))
 
 		let file: any = fs.readFileSync(
 			path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
 		);
 		const domain = context?.domain;
+		const { locations, ...remainingProvider } = provider;
 
-		const updatedFulfillments = updateFulfillments(
+		let updatedFulfillments = updateFulfillments(
 			fulfillments,
 			ON_ACTION_KEY?.ON_INIT,
 			domain
 		);
+
+		if(domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+			updatedFulfillments = updateFulfillments(
+				fulfillments,
+				ON_ACTION_KEY?.ON_INIT,
+				" ",
+				"astroService"
+			);
+		}
 
 		switch (domain) {
 			case SERVICES_DOMAINS.SERVICES:
@@ -126,6 +141,11 @@ const initConsultationController = (
 			case SERVICES_DOMAINS.BID_ACTION_SERVICES:
 				file = fs.readFileSync(
 					path.join(BID_AUCTION_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
+				);
+				break;
+			case SERVICES_DOMAINS.ASTRO_SERVICE:
+				file=	fs.readFileSync(
+					path.join(ASTRO_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 				);
 				break;
 			default:
@@ -156,17 +176,26 @@ const initConsultationController = (
 						fulfillments[0]?.type,
 						"bid_auction_service"
 				  )
-				: quoteCreatorHealthCareService(
+				: domain===SERVICES_DOMAINS.ASTRO_SERVICE?
+					quoteCreatorAstroService(
+					items,
+					providersItems,
+					"",
+					fulfillments[0]?.type,
+					"astro-service"
+				)
+				:quoteCreatorHealthCareService(
 						items,
 						providersItems,
 						"",
 						fulfillments[0]?.type
 				  );
-		console.log("ITEMS :::::::::::::::", items);
+		console.log("quoteeeeeee", JSON.stringify(quoteData.price.value))
 		const responseMessage = {
 			order: {
-				provider,
-				items,
+				provider: {...remainingProvider,
+					locations:[{id:"L1"}]
+				},
 				billing,
 				fulfillments: updatedFulfillments,
 				quote: quoteData,
@@ -211,7 +240,53 @@ const initConsultationController = (
 				],
 			},
 		};
+
+		if(domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+			(responseMessage.order as any).items=[{
+				id:items[0].id,
+				quantity:items[0].quantity,
+				location_ids:[
+					"L1"
+				],
+				// price:items[0].price,
+				fulfillment_ids:items[0].fulfillment_ids,
+				"add-ons":[{
+					id:"ADDON01"
+				}],
+				"tags": [
+                        {
+                            "descriptor": {
+                                "code": "SELECTION"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "PUJARIS"
+                                    },
+                                    "value": "PU1"
+                                }
+                            ]
+                        }
+                    ]
+			}],
+			(responseMessage.order as any).provider={
+				...provider,
+				locations:[
+					{
+						id:"L1"
+					}
+				]
+			}
+			responseMessage.order.payments.splice(0,1)
+			responseMessage.order.payments[0].type="PRE-FULFILLMENT"
+		}else{
+			(responseMessage.order as any).items=items,
+			(responseMessage.order as any).locations=locations
+		}
+
 		delete req.body?.providersItems;
+
+		console.log("on_init",JSON.stringify(responseMessage))
 		return responseBuilder(
 			res,
 			next,
@@ -243,6 +318,7 @@ const initItemNotAvaliableController = (
 				order: { provider, items, billing, fulfillments, payments },
 			},
 		} = req.body;
+		const { locations, ...remainingProvider } = provider;
 
 		items.forEach((item: any) => {
 			// Find the corresponding item in the second array
@@ -276,7 +352,8 @@ const initItemNotAvaliableController = (
 
 		const responseMessage = {
 			order: {
-				provider,
+				provider: remainingProvider,
+				locations,
 				items: items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
@@ -343,6 +420,7 @@ const initBidPlacementController = (
 				order: { provider, items, billing, fulfillments, payments },
 			},
 		} = req.body;
+		const { locations, ...remainingProvider } = provider;
 
 		items.forEach((item: any) => {
 			// Find the corresponding item in the second array
@@ -382,7 +460,8 @@ const initBidPlacementController = (
 
 		const responseMessage = {
 			order: {
-				provider,
+				provider: remainingProvider,
+				locations,
 				items: items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,
@@ -444,6 +523,7 @@ const initParticipationFeeController = (
 				order: { provider, items, billing, fulfillments, payments },
 			},
 		} = req.body;
+		const { locations, ...remainingProvider } = provider;
 
 		items.forEach((item: any) => {
 			// Find the corresponding item in the second array
@@ -482,7 +562,8 @@ const initParticipationFeeController = (
 		);
 		const responseMessage = {
 			order: {
-				provider,
+				provider: remainingProvider,
+				locations,
 				items: items.map(
 					({ ...remaining }: { location_ids: any; remaining: any }) => ({
 						...remaining,

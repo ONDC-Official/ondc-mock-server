@@ -304,7 +304,8 @@ export const onSelectSchema = {
                     },
                   },
                 },
-                required: ["id", "state", "stops"],
+                // required: ["id", "state", "stops"],
+                required: ["id", "stops"],
               },
             },
             quote: {
@@ -413,7 +414,7 @@ export const onSelectSchema = {
                               },
                             },
                           },
-                          required: ["descriptor", "list"],
+                          required: [ "list"],
                         },
                       },
                     },

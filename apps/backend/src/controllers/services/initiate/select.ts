@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
+import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -213,6 +214,7 @@ const intializeRequest = async (
 			];
 			console.log("🚀 ~ items:", JSON.stringify(items));
 		} else {
+			console.log("providers[0].items",providers[0].items)
 			items = providers[0].items = [
 				providers?.[0]?.items.map(
 					({
@@ -228,7 +230,7 @@ const intializeRequest = async (
 			];
 		}
 
-		const select = {
+		let select = {
 			context: {
 				...context,
 				timestamp: new Date().toISOString(),
@@ -305,6 +307,48 @@ const intializeRequest = async (
 				endDate
 			);
 		}
+
+		if (context.domain === SERVICES_DOMAINS.ASTRO_SERVICE) {
+			(select.message.order.fulfillments[0] as any).tags=[
+				{
+					"descriptor": {
+					  "code": "SELECTION"
+					},
+					"list": [
+					  {
+						"descriptor": {
+						  "code": "ITEM_IDS"
+						},
+						"value": "I1"
+					  }
+					]
+				  }
+			],
+			(select.message.order.items[0] as any).tags=[
+				{
+					"descriptor": {
+					  "code": "SELECTION"
+					},
+					"list": [
+					  {
+						"descriptor": {
+						  "code": "PUJARIS"
+						},
+						"value": "PU1"
+					  }
+					]
+				  }
+			],
+			(select.message.order.items[0] as any)["add-ons"]=[
+				{
+					"id": "ADDON01"
+				  }
+			]
+		}
+
+
+
+		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");
 		// const header = await createAuthHeader(select);

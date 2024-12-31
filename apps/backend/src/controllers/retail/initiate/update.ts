@@ -41,7 +41,6 @@ export const initiateUpdateController = async (
     // const onConfirm = parsedTransaction[0].request;
 
     if (
-      onConfirm.context.ttl !== "1D" ||
       !onConfirm.message.order.payments.every(
         (p: { type: string }) => p.type === "PRE-FULFILLMENT"
       )
@@ -96,6 +95,7 @@ async function intializeRequest(
         params: { ...params, transaction_id: uuidv4() },
         tl_method: "http/get",
         status: "PAID",
+        uri:"https://ondc.transaction.com/payment"
       })
     );
 
@@ -109,7 +109,7 @@ async function intializeRequest(
         message_id: uuidv4(),
       },
       message: {
-        update_target,
+        update_target:"payments",
         order: {
           id: message.order.id,
           state: message.order.state,

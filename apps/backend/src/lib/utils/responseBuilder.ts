@@ -32,6 +32,7 @@ import {
 } from "./apiConstants";
 import { calculateQuotePrice } from "./getISODuration";
 import { values } from "lodash";
+import { title } from "process";
 
 interface TagDescriptor {
 	code: string;
@@ -186,7 +187,8 @@ export const responseBuilder = async (
 			}
 
 			try {
-				const response = await axios.post(uri, async, {
+				console.log("URI BEING SENT :::", uri);
+				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
 						authorization: header,
 					},
@@ -265,7 +267,7 @@ export const responseBuilder = async (
 				},
 			},
 			error,
-			async,
+			// async,
 		});
 	}
 };
@@ -606,7 +608,7 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 
 //AGRI DOMAIN QUOTE CREATORS
 export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
-	// console.log("itemssssssssssss", items, providersItems);
+	 console.log("itemssssssssssss", providersItems);
 	//get price from on_search
 	let breakup: any[] = [];
 	const chargesOnFulfillment = [
@@ -663,7 +665,7 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 	});
 	items.forEach((item) => {
 		// console.log("itemsbreakup",item)
-		console.log("itemmsmsss",item)
+		// console.log("itemmsmsss",item)
 		breakup = [...breakup,
 			{
 				title: item.title,
@@ -739,6 +741,477 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 	// console.log("resultttttttttt", JSON.stringify(result));
 	return result;
 };
+
+function ensureArray(item:any) {
+	return Array.isArray(item) ? item : [item];
+}
+
+export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any) => {
+	 console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+	 if(!Array.isArray(items)){
+		items=ensureArray(items)
+	 }
+	   const providersItem=[providersItems[0].items[0]]
+	//get price from on_search
+	let breakup: any[] = [];
+	// const chargesOnFulfillment = [
+	// 	{
+	// 		"@ondc/org/item_id": "5009-Delivery",
+	// 		"@ondc/org/title_type": "delivery",
+	// 		price: {
+	// 			currency: "INR",
+	// 			value: "10",
+	// 		},
+	// 		title: "Delivery charges",
+	// 	},
+	// 	{
+	// 		"@ondc/org/item_id": "5009-Delivery",
+	// 		"@ondc/org/title_type": "packing",
+	// 		price: {
+	// 			currency: "INR",
+	// 			value: "0",
+	// 		},
+	// 		title: "Packing charges",
+	// 	},
+	// 	{
+	// 		"@ondc/org/item_id": "5009-Delivery",
+	// 		"@ondc/org/title_type": "misc",
+	// 		price: {
+	// 			currency: "INR",
+	// 			value: "0",
+	// 		},
+	// 		title: "Convenience Fee",
+	// 	},
+	// ];
+
+	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItem.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			console.log("matchhing",matchingItem)
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				// item.price = matchingItem?.price;
+				item.available_quantity = {
+					available:matchingItem?.quantity?.available,
+					maximum:matchingItem?.quantity?.maximum
+				};
+				item.price = {
+					currency: matchingItem.price.currency,
+					value: matchingItem.price.value,
+				};
+			}
+		}
+	});
+	items.forEach((item) => {
+		// console.log("itemsbreakup",item)
+		// console.log("itemmsmsss",item)
+		breakup = [
+			{
+				title:item.title,
+				price:item.price,
+				item:{
+					id:item.id,
+					quantity:{
+						selected:{
+							count:100
+						}
+					}
+				},
+				tags: [
+              {
+                "descriptor": {
+                  "code": "TITLE"
+                },
+                "list": [
+                  {
+                    "descriptor": {
+                      "code": "type"
+                    },
+                    "value": "item"
+                  }
+                ]
+              }
+            ]
+			}
+		];
+	});
+	breakup.push(          {
+		"title": "earnest_money_deposit",
+		"price": {
+			"currency": "INR",
+			"value": "5000.00"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "TITLE"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "earnest_money_deposit"
+					}
+				]
+			}
+		]
+	})
+	breakup.push({
+		"title": "tax",
+		"price": {
+			"currency": "INR",
+			"value": "50"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "tax"
+					}
+				]
+			}
+		]
+	})
+	breakup.push({
+		"title": "discount",
+		"price": {
+			"currency": "INR",
+			"value": "100"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "discount"
+					}
+				]
+			}
+		]
+	})
+	breakup.push({
+		"title": "pickup_charge",
+		"price": {
+			"currency": "INR",
+			"value": "100"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "misc"
+					}
+				]
+			}
+		]
+	})
+	console.log("breakuppp",breakup)
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		console.log("entryyy",entry)
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+	// chargesOnFulfillment.forEach((entry) => {
+	// 	const priceValue = parseFloat(entry.price.value);
+	// 	if (!isNaN(priceValue)) {
+	// 		totalPrice += priceValue;
+	// 	}
+	// });
+
+	
+	const result = {
+		breakup:[
+			...breakup,
+			// ...chargesOnFulfillment
+		],
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	// console.log("resultttttttttt", JSON.stringify(result));
+	return result;
+};
+
+export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?: any) => {
+	console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+	// if(!Array.isArray(items)){
+	//  items=ensureArray(items)
+	// }
+		const providersItem=[providersItems[0].items[0]]
+ //get price from on_search
+ let breakup: any[] = [];
+ // const chargesOnFulfillment = [
+ // 	{
+ // 		"@ondc/org/item_id": "5009-Delivery",
+ // 		"@ondc/org/title_type": "delivery",
+ // 		price: {
+ // 			currency: "INR",
+ // 			value: "10",
+ // 		},
+ // 		title: "Delivery charges",
+ // 	},
+ // 	{
+ // 		"@ondc/org/item_id": "5009-Delivery",
+ // 		"@ondc/org/title_type": "packing",
+ // 		price: {
+ // 			currency: "INR",
+ // 			value: "0",
+ // 		},
+ // 		title: "Packing charges",
+ // 	},
+ // 	{
+ // 		"@ondc/org/item_id": "5009-Delivery",
+ // 		"@ondc/org/title_type": "misc",
+ // 		price: {
+ // 			currency: "INR",
+ // 			value: "0",
+ // 		},
+ // 		title: "Convenience Fee",
+ // 	},
+ // ];
+
+ // console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+ items.forEach((item) => {
+	 // Find the corresponding item in the second array
+	 if (providersItems) {
+		 const matchingItem = providersItem.find(
+			 (secondItem: { id: string }) => secondItem?.id === item?.id
+		 );
+		 // If a matching item is found, update the price in the items array
+		 console.log("matchhing",matchingItem)
+		 if (matchingItem) {
+			 item.title = matchingItem?.descriptor?.name;
+			 // item.price = matchingItem?.price;
+			 item.available_quantity = {
+				 available:matchingItem?.quantity?.available,
+				 maximum:matchingItem?.quantity?.maximum
+			 };
+			 item.price = {
+				 currency: matchingItem.price.currency,
+				 value: matchingItem.price.value,
+			 };
+		 }
+	 }
+ });
+ items.forEach((item) => {
+	 // console.log("itemsbreakup",item)
+	 // console.log("itemmsmsss",item)
+	 breakup = [
+		 {
+			 title:item.title,
+			 price: {
+				currency: "INR",
+				value: (
+					Number(item?.price?.value) * item?.quantity?.selected?.count
+				).toString(),
+			},
+			 item:{
+				 id:item.id,
+				 quantity:item?.quantity
+			 },
+			 tags: [
+						 {
+							 "descriptor": {
+								 "code": "TITLE"
+							 },
+							 "list": [
+								 {
+									 "descriptor": {
+										 "code": "type"
+									 },
+									 "value": "item"
+								 }
+							 ]
+						 }
+					 ]
+		 }
+	 ];
+ });
+//  breakup.push(          {
+// 	 "title": "earnest_money_deposit",
+// 	 "price": {
+// 		 "currency": "INR",
+// 		 "value": "5000.00"
+// 	 },
+// 	 "item": {
+// 		 "id": "I1"
+// 	 },
+// 	 "tags": [
+// 		 {
+// 			 "descriptor": {
+// 				 "code": "TITLE"
+// 			 },
+// 			 "list": [
+// 				 {
+// 					 "descriptor": {
+// 						 "code": "type"
+// 					 },
+// 					 "value": "earnest_money_deposit"
+// 				 }
+// 			 ]
+// 		 }
+// 	 ]
+//  })
+ breakup.push({
+	 "title": "tax",
+	 "price": {
+		 "currency": "INR",
+		 "value": "50"
+	 },
+	 "item": {
+		 "id": "I1"
+	 },
+	 "tags": [
+		 {
+			 "descriptor": {
+				 "code": "title"
+			 },
+			 "list": [
+				 {
+					 "descriptor": {
+						 "code": "type"
+					 },
+					 "value": "tax"
+				 }
+			 ]
+		 }
+	 ]
+ })
+ breakup.push({
+	 "title": "discount",
+	 "price": {
+		 "currency": "INR",
+		 "value": "100"
+	 },
+	 "item": {
+		 "id": "I1"
+	 },
+	 "tags": [
+		 {
+			 "descriptor": {
+				 "code": "title"
+			 },
+			 "list": [
+				 {
+					 "descriptor": {
+						 "code": "type"
+					 },
+					 "value": "discount"
+				 }
+			 ]
+		 }
+	 ]
+ })
+ breakup.push({
+	 "title": "pickup_charge",
+	 "price": {
+		 "currency": "INR",
+		 "value": "100"
+	 },
+	 "item": {
+		 "id": "I1"
+	 },
+	 "tags": [
+		 {
+			 "descriptor": {
+				 "code": "title"
+			 },
+			 "list": [
+				 {
+					 "descriptor": {
+						 "code": "type"
+					 },
+					 "value": "misc"
+				 }
+			 ]
+		 }
+	 ]
+ })
+ console.log("breakuppp",breakup)
+
+ //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+ let totalPrice = 0;
+ breakup.forEach((entry) => {
+	 console.log("entryyy",entry)
+	 if(entry.title==="discount"){
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice -= priceValue;
+		}
+	 }
+	 else{
+	 const priceValue = parseFloat(entry.price.value);
+	 if (!isNaN(priceValue)) {
+		 totalPrice += priceValue;
+	 }}
+ });
+ // chargesOnFulfillment.forEach((entry) => {
+ // 	const priceValue = parseFloat(entry.price.value);
+ // 	if (!isNaN(priceValue)) {
+ // 		totalPrice += priceValue;
+ // 	}
+ // });
+
+ 
+ const result = {
+	 breakup:[
+		 ...breakup,
+		 // ...chargesOnFulfillment
+	 ],
+	 price: {
+		 currency: "INR",
+		 value: totalPrice.toFixed(2),
+	 },
+	 ttl: "P1D",
+ };
+
+ // console.log("resultttttttttt", JSON.stringify(result));
+ return result;
+};
+
 
 export const quoteCreatorAgriService = (
 	items: Item[],
@@ -1097,6 +1570,384 @@ export const quoteCreatorHealthCareService = (
 				],
 			});
 		}
+
+		let totalPrice = 0;
+		breakup.forEach((entry) => {
+			const priceValue = parseFloat(entry?.price?.value);
+
+			if (!isNaN(priceValue)) {
+				if (entry?.title === "discount") {
+					totalPrice -= priceValue;
+				} else {
+					totalPrice += priceValue;
+				}
+			}
+		});
+
+		const result = {
+			breakup,
+			price: {
+				currency: "INR",
+				value: totalPrice.toFixed(2),
+			},
+			ttl: "P1D",
+		};
+
+		return result;
+	} catch (error: any) {
+		return error;
+	}
+};
+
+export const quoteCreatorAstroService = (
+	items: Item[],
+	providersItems?: any,
+	offers?: any,
+	fulfillment_type?: string,
+	service_name?: string,
+	scenario?: string
+) => {
+	try {
+		console.log("items",items,"proovidersITems",providersItems)
+		//GET PACKAGE ITEMS
+		//get price from on_search
+		items.forEach((item) => {
+			if (
+				item &&
+				item?.tags &&
+				item?.tags[0] &&
+				item?.tags[0]?.list[0]?.value === "PACKAGE"
+			) {
+				const getItems = item.tags[0].list[1].value.split(",");
+				getItems.forEach((pItem) => {
+					// Find the corresponding item in the second array
+					if (providersItems) {
+						const matchingItem = providersItems?.find(
+							(secondItem: { id: string }) => secondItem.id === pItem
+						);
+						// If a matching item is found, update the price in the items array
+
+						if (matchingItem) {
+							items.push({ ...matchingItem, quantity: item?.quantity });
+						}
+					}
+				});
+			}
+		});
+
+		items.forEach((item) => {
+			// Find the corresponding item in the second array
+			if (providersItems) {
+				const matchingItem = providersItems?.find(
+					(secondItem: { id: string }) => secondItem.id === item.id
+				);
+				// If a matching item is found, update the price in the items array
+				if (matchingItem) {
+					item.title = matchingItem?.descriptor?.name;
+					item.price = matchingItem?.price;
+					item.tags = matchingItem?.tags;
+				}
+			}
+		});
+
+		let breakup: any[] = [];
+
+		items.forEach((item: any) => {
+			const quantity = item?.quantity?.selected?.count
+				? item?.quantity?.selected?.count
+				: Number(item?.quantity?.unitized?.measure?.value);
+			breakup.push({
+				title: item.title,
+				price: {
+					currency: "INR",
+					value: (Number(item?.price?.value) * quantity).toString(),
+				},
+				tags:[
+					{
+						"descriptor": {
+							"code": "title"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "ITEM"
+							}
+						]
+					}
+				],
+				item:
+					item.title === "tax"
+						? {
+								id: item?.id,
+						  }
+						: {
+								id: item?.id,
+								price: item?.price,
+								quantity: item?.quantity ? item?.quantity : undefined,
+						  },
+			});
+		});
+
+		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
+		breakup?.push(
+			{
+				"title": "Pujari Name",
+				"price": {
+				  "currency": "INR",
+				  "value": "0"
+				},
+				"item": {
+				  "id": "I1",
+				  "quantity": {
+					"selected": {
+					  "count": 1
+					}
+				  },
+				  "price": {
+					"currency": "INR",
+					"value": "0"
+				  }
+				},
+				"tags": [
+				  {
+					"descriptor": {
+					  "code": "title"
+					},
+					"list": [
+					  {
+						"descriptor": {
+						  "code": "type"
+						},
+						"value": "ITEM"
+					  }
+					]
+				  }
+				]
+			  },
+			{
+				title: "TAX",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: {
+					id:"I1"
+				},
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "TAX",
+							},
+						],
+					},
+				],
+			},
+			{
+				title: "discount",
+				price: {
+					currency: "INR",
+					value: "10",
+				},
+				item: {
+					id:"I1"
+				},
+				tags: [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "discount",
+							},
+						],
+					},
+				],
+			},
+			  {
+				title: "Potli",
+				price: {
+				  currency: "INR",
+				  value: "50"
+				},
+				item: {
+				  id: "I1",
+				  "add-ons": [
+					{
+					  id: "ADDON01"
+					}
+				  ]
+				},
+				tags: [
+				  {
+					descriptor: {
+					  code: "title"
+					},
+					list: [
+					  {
+						descriptor: {
+						  code: "type"
+						},
+						value: "ADD_ON"
+					  }
+					]
+				  }
+				]
+			  },
+				{
+					"title": "Convenience Fee",
+					"price": {
+						"currency": "INR",
+						"value": "0"
+					},
+					"item": {
+						"id": "I1"
+					},
+					"tags": [
+						{
+							"descriptor": {
+								"code": "title"
+							},
+							"list": [
+								{
+									"descriptor": {
+										"code": "type"
+									},
+									"value": "MISC"
+								}
+							]
+						}
+					]
+				}
+		);
+
+		// if (
+		// 	(fulfillment_type && fulfillment_type === "Seller-Fulfilled") ||
+		// 	service_name === "agri-equipment-hiring" ||
+		// 	service_name !== "bid_auction_service"
+		// ) {
+		// 	breakup?.push({
+		// 		title: "pickup_charge",
+		// 		price: {
+		// 			currency: "INR",
+		// 			value: "149",
+		// 		},
+		// 		item: items[0],
+		// 		tags: [
+		// 			{
+		// 				descriptor: {
+		// 					code: "title",
+		// 				},
+		// 				list: [
+		// 					{
+		// 						descriptor: {
+		// 							code: "type",
+		// 						},
+		// 						value: "misc",
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	});
+		// }
+
+		// if (service_name === "agri-equipment-hiring") {
+		// 	breakup?.push({
+		// 		title: "refundable_security",
+		// 		price: {
+		// 			currency: "INR",
+		// 			value: "5000",
+		// 		},
+		// 		item: items[0],
+		// 		tags: [
+		// 			{
+		// 				descriptor: {
+		// 					code: "title",
+		// 				},
+		// 				list: [
+		// 					{
+		// 						descriptor: {
+		// 							code: "type",
+		// 						},
+		// 						value: "refundable_security",
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	});
+		// }
+
+		// if (
+		// 	service_name === "bid_auction_service" &&
+		// 	scenario === "participation_fee"
+		// ) {
+		// 	breakup = [
+		// 		{
+		// 			title: "earnest_money_deposit",
+		// 			price: {
+		// 				currency: "INR",
+		// 				value: "5000.00",
+		// 			},
+		// 			item: items[0],
+		// 			tags: [
+		// 				{
+		// 					descriptor: {
+		// 						code: "TITLE",
+		// 					},
+		// 					list: [
+		// 						{
+		// 							descriptor: {
+		// 								code: "type",
+		// 							},
+		// 							value: "earnest_money_deposit",
+		// 						},
+		// 					],
+		// 				},
+		// 			],
+		// 		},
+		// 	];
+		// } else if (
+		// 	service_name === "bid_auction_service" &&
+		// 	scenario === "bid_placement"
+		// ) {
+		// 	breakup?.push({
+		// 		title: "earnest_money_deposit",
+		// 		price: {
+		// 			currency: "INR",
+		// 			value: "5000.00",
+		// 		},
+		// 		item: items[0],
+		// 		tags: [
+		// 			{
+		// 				descriptor: {
+		// 					code: "TITLE",
+		// 				},
+		// 				list: [
+		// 					{
+		// 						descriptor: {
+		// 							code: "type",
+		// 						},
+		// 						value: "earnest_money_deposit",
+		// 					},
+		// 				],
+		// 			},
+		// 		],
+		// 	});
+		// }
 
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
@@ -1539,9 +2390,12 @@ export const checkSelectedItems = async (data: any) => {
 	try {
 		const { message, providersItems } = data;
 		const items = message?.order?.items;
-		const providersItem = providersItems?.items;
+		let providersItem = providersItems?.items;
+		if(!providersItem){
+			providersItem=providersItems[0]?.items;
+		}
 		let matchingItem: any = null;
-
+		console.log("providersItem",JSON.stringify(providersItems),JSON.stringify(providersItem),"items",JSON.stringify(items))
 		items.forEach((item: any) => {
 			if (item) {
 				const selectedItem = item?.id;
@@ -1568,46 +2422,71 @@ export const updateFulfillments = (
 ) => {
 	try {
 		// Update fulfillments according to actions
+		// const rangeStart = new Date().setHours(new Date().getHours() + 2).toString();
+		// const rangeEnd = new Date().setHours(new Date().getHours() + 3).toString();
 
+		const rangeStart = new Date();
+rangeStart.setHours(rangeStart.getHours() + 2);
 
-		const rangeStart = new Date().setHours(new Date().getHours() + 2);
-		const rangeEnd = new Date().setHours(new Date().getHours() + 3);
+const rangeEnd = new Date();
+rangeEnd.setHours(rangeEnd.getHours() + 3);
 
 		let updatedFulfillments: any = [];
-
+		// logger.info(`daomain ${JSON.stringify(fulfillments)}`)
 		if (!fulfillments || fulfillments.length === 0) {
 			return updatedFulfillments; // Return empty if fulfillments is not provided or empty
 		}
 
-		let fulfillmentObj: any = {
-			id: fulfillments[0]?.id ? fulfillments[0].id : "F1",
-			stops: fulfillments[0]?.stops.map((ele: any) => {
-				ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
-				return ele;
-			}),
-			tags:{
-                "descriptor": {
-                  "code": "schedule"
-                },
-                "list": [
-                  {
-                    "descriptor": {
-                      "code": "ttl"
-                    },
-                    "value": "PT1H"
-                  }
-                ]
-              }
-		};
+		let fulfillmentObj: any;
 
-		if (domain !== "subscription") {
+		if (domain === "agri_input") {
+			fulfillmentObj = {
+				id: fulfillments[0]?.id ? fulfillments[0].id : "5009-Delivery",
+				"@ondc/org/category": "Standard Delivery",
+				"@ondc/org/provider_name": "Agro Fertilizer Store",
+				"@ondc/org/TAT": "P2D",
+				
+			};
+		} else {
+			fulfillmentObj = {
+				id: fulfillments[0]?.id ? fulfillments[0].id : "F1",
+				stops: fulfillments[0]?.stops.map((ele: any) => {
+					ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
+					return ele;
+				}),
+				tags: {
+					descriptor: {
+						code: "schedule",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "ttl",
+							},
+							value: "PT1H",
+						},
+					],
+				},
+			};
+		}
+		if (domain !== "subscription" && domain !== "agri_input") {
 			fulfillmentObj.tracking = false;
 			fulfillmentObj.state = {
 				descriptor: {
 					code: FULFILLMENT_STATES.SERVICEABLE,
 				},
 			};
-			delete fulfillmentObj.tags
+			fulfillmentObj.type = fulfillments[0]?.type;
+			delete fulfillmentObj.tags;
+		} else if (domain === "agri_input") {
+			fulfillmentObj.state = {
+				descriptor: {
+					code: FULFILLMENT_STATES.SERVICEABLE,
+				},
+			};
+			fulfillmentObj.type = "Delivery";
+		
+			delete fulfillmentObj.tags;
 		} else {
 			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {
 				action;
@@ -1618,15 +2497,63 @@ export const updateFulfillments = (
 		}
 		if (
 			domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES &&
-			domain !== "subscription"
+			domain !== "subscription" &&
+			domain !== "agri_input"
 		) {
 			fulfillmentObj = {
 				...fulfillmentObj,
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
 			};
 		}
+		if(domain==="agri_output"){
+			fulfillmentObj={
+				id:fulfillments[0].id || "F1",
+				stops: [
+            {
+              "type": "end",
+              "location": {
+                "gps": "12.974002,77.613458",
+                "area_code": "560001"
+              },
+              "time": {
+                "label": "confirmed",
+                "range": {
+                  "start": "2024-06-09T22:00:00.000Z",
+                  "end": "2024-06-10T02:00:00.000Z"
+                }
+              }
+            }
+          ]
+			}
+		}
+		if(domain==="astroService"){
+			console.log("herrrr")
+			fulfillmentObj={
+				id:fulfillments[0].id || "FY1",
+				type:"Seller-Fulfilled",
+				stops: [
+            {
+              "type": "end",
+              "location": {
+                "gps": "12.974002,77.613458",
+                "area_code": "560001"
+              },
+              "time": {
+                "label": "confirmed",
+                "range": {
+                  "start": "2024-06-09T22:00:00.000Z",
+                  "end": "2024-06-10T02:00:00.000Z"
+                },
+								"days":"4"
+              }
+            }
+          ]
+			}
+		}
+	
 		switch (action) {
 			case ON_ACTION_KEY.ON_SELECT:
+				console.log("fulllfilmentssss",fulfillmentObj)
 				// Always push the initial fulfillmentObj
 				updatedFulfillments.push(fulfillmentObj);
 				if (scenario === SCENARIO.MULTI_COLLECTION) {
@@ -1637,6 +2564,54 @@ export const updateFulfillments = (
 				}
 				break;
 			case ON_ACTION_KEY.ON_CONFIRM:
+				if(domain==="astroService"){
+					updatedFulfillments.push(fulfillmentObj)
+					
+					updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
+						(fulfill.state = {
+							descriptor: {
+								code: FULFILLMENT_STATES.PENDING,
+							},
+						}),
+							fulfill.stops.push({
+								type: "start",
+								...FULFILLMENT_START,
+								time: {
+									// range: {
+									// 	start: new Date(rangeStart).toISOString(),
+									// 	end: new Date(rangeEnd).toISOString(),
+									// },
+									range:{
+										start: rangeStart.toISOString(),
+										end: rangeEnd.toISOString(),
+									}
+								},
+							}),
+							(fulfill.stops = fulfill?.stops?.map((ele: any) => {
+								if (ele?.type === "end") {
+									ele = {
+										...ele,
+										...FULFILLMENT_END,
+										time: {
+											...ele.time,
+											label: FULFILLMENT_LABELS.CONFIRMED,
+										},
+										instructions:{
+											 "name": "Special Instructions",
+                      "short_desc": "Customer Special Instructions"
+										},
+										person:{
+											name:"Rahul" }
+									};
+								}
+								return ele;
+							})),
+							(fulfill.rateable = true);
+						return fulfill;
+				})
+
+				}
+				else{
 				updatedFulfillments = fulfillments;
 				// Add your logic for ON_CONFIRM
 				updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
@@ -1649,10 +2624,14 @@ export const updateFulfillments = (
 							type: "start",
 							...FULFILLMENT_START,
 							time: {
-								range: {
-									start: new Date(rangeStart).toISOString(),
-									end: new Date(rangeEnd).toISOString(),
-								},
+								// range: {
+								// 	start: new Date(rangeStart).toISOString(),
+								// 	end: new Date(rangeEnd).toISOString(),
+								// },
+								range:{
+									start: rangeStart.toISOString(),
+									end: rangeEnd.toISOString(),
+								}
 							},
 						}),
 						(fulfill.stops = fulfill?.stops?.map((ele: any) => {
@@ -1675,19 +2654,149 @@ export const updateFulfillments = (
 						(fulfill.rateable = true);
 					return fulfill;
 				});
+			}
 				break;
 			case ON_ACTION_KEY.ON_CANCEL:
 				updatedFulfillments = fulfillments;
-				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => ({
-					...fulfillment,
-					state: {
-						...fulfillment.state,
-						descriptor: {
+				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => {
+					if (fulfillment.type === "Delivery") {
+					  return {
+						...fulfillment,
+						state: {
+						  ...fulfillment.state,
+						  descriptor: {
 							code: FULFILLMENT_STATES.CANCELLED,
+						  },
 						},
-					},
-					rateable: undefined,
-				}));
+						end: {
+						  ...fulfillment.end,
+						  time: {
+							range: {
+							  end: rangeEnd,
+							  start: rangeStart,
+							},
+						  },
+						},
+						start: {
+						  ...fulfillment.start,
+						  time: {
+							range: {
+							  end: rangeEnd,
+							  start: rangeStart,
+							},
+						  },
+						},
+						tags: [
+						  {
+							code: "cancel_request",
+							list: [
+							  {
+								code: "reason_id",
+								value: "010",
+							  },
+							  {
+								code: "initiated_by",
+								value: "buyer-app.com",
+							  },
+							],
+						  },
+						  {
+							code: "precancel_state",
+							list: [
+							  {
+								code: "fulfillment_state",
+								value: "Pending",
+							  },
+							  {
+								code: "updated_at",
+								value: "2024-03-15T13:00:16.744Z",
+							  },
+							],
+						  },
+						],
+						rateable: undefined,
+					  };
+					} else if (fulfillment.type === "Cancel") {
+					  return {
+						...fulfillment,
+						state: {
+						  ...fulfillment.state,
+						  descriptor: {
+							code: FULFILLMENT_STATES.CANCELLED,
+						  },
+						},
+						tags: [
+						  {
+							code: "quote_trail",
+							list: [
+							  {
+								code: "type",
+								value: "item",
+							  },
+							  {
+								code: "id",
+								value: "13959",
+							  },
+							  {
+								code: "currency",
+								value: "INR",
+							  },
+							  {
+								code: "value",
+								value: "-1798.00",
+							  },
+							],
+						  },
+						  {
+							code: "quote_trail",
+							list: [
+							  {
+								code: "type",
+								value: "item",
+							  },
+							  {
+								code: "id",
+								value: "14574",
+							  },
+							  {
+								code: "currency",
+								value: "INR",
+							  },
+							  {
+								code: "value",
+								value: "-1640.00",
+							  },
+							],
+						  },
+						  {
+							code: "quote_trail",
+							list: [
+							  {
+								code: "type",
+								value: "delivery",
+							  },
+							  {
+								code: "id",
+								value: "5009-Delivery",
+							  },
+							  {
+								code: "currency",
+								value: "INR",
+							  },
+							  {
+								code: "value",
+								value: "-10.00",
+							  },
+							],
+						  },
+						],
+						rateable: undefined,
+					  };
+					}
+				  
+					// Default return if no conditions are met
+					return fulfillment;
+				  });
 				break;
 			case ON_ACTION_KEY.ON_UPDATE:
 				updatedFulfillments = fulfillments;
@@ -1702,13 +2811,26 @@ export const updateFulfillments = (
 					rateable: true,
 				}));
 				break;
+			case ON_ACTION_KEY.ON_INIT:
+				if(domain==="astroService"){
+				updatedFulfillments.push(fulfillmentObj)
+			}
+			else{
+				updatedFulfillments = fulfillments;
+			}
+				break;
 			default:
 				// Add your default logic if any
 				updatedFulfillments = fulfillments;
 				break;
 		}
+
+		// console.log(
+		// 	"updatedFulfillmentssssssssssss",
+		// 	JSON.stringify(updatedFulfillments)
+		// );
 		return updatedFulfillments;
 	} catch (err) {
-		console.log("Error occured in fulfillments method");
+		console.log("Error occured in fulfillments method", err);
 	}
 };

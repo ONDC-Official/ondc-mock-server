@@ -104,7 +104,7 @@ export const confirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["Created"]
+              enum: ["CREATED"]
             },
             provider: {
               type: "object",

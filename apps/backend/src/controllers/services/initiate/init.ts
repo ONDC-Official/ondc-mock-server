@@ -12,7 +12,7 @@ import {
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { BILLING_DETAILS } from "../../../lib/utils/apiConstants";
+import { BILLING_DETAILS, SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateInitController = async (
 	req: Request,
@@ -109,6 +109,17 @@ const intializeRequest = async (
 				},
 			},
 		};
+
+		if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+			init.message.order.items[0].location_ids=[
+				"L1"
+			],
+			init.message.order.provider.locations=[{
+				id:"L1"
+			}]
+		}
+
+		console.log("init initiate response",JSON.stringify(init))
 
 		await send_response(
 			res,

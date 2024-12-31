@@ -103,7 +103,7 @@ export const onConfirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["Created", "Accepted", "Cancelled"],
+              enum: ["CREATED", "ACCEPTED", "CANCELLED"],
             },
             provider: {
               type: "object",
@@ -447,7 +447,8 @@ export const onConfirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -523,8 +524,25 @@ export const onConfirmSchema = {
                       currency: {
                         type: "string",
                       },
-                      transaction_id: {
-                        type: "string",
+                      if:{
+                        properties:{
+                          domain:{
+                            enum:["SRV16"]
+                          }
+                        }
+                      },
+                      then:{
+                        properties:{
+
+                        }
+                      },
+                      else:{
+                        properties:{
+                          transaction_id: {
+                            type: "string",
+                          },
+                        },
+                        required:["transaction_id"]
                       },
                       bank_account_number: {
                         type: "string",
@@ -536,7 +554,7 @@ export const onConfirmSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
+                      // "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],
