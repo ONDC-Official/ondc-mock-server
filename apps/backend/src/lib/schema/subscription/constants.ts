@@ -22,13 +22,12 @@ export const SRV_FULFILLMENT_STATE = [
 ];
 
 export const SRV_ORDER_STATE = [
-	"Created",
-	"Accepted",
-	"In-progress",
-	"Completed",
-	"Cancelled",
+	"CREATED",
+	"ACCEPTED",
+	"IN-PROGRESS",
+	"CANCELLED",
 	"COMPLETED",
-	"Pending",
+	"PENDING",
 ];
 
 export const GPS_PATTERN =

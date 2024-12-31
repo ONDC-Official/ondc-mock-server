@@ -1,3 +1,4 @@
+import { property } from "lodash";
 import { DOMAIN, SRV_FULFILLMENT_TYPE, SRV_PAYMENT_TYPE, VERSION } from "./constants";
 
 export const onSearchSchema = {
@@ -307,7 +308,7 @@ export const onSearchSchema = {
                         "city",
                         "state",
                         "country",
-                        "area_code",
+                        // "area_code",
                       ],
                     },
                   },
@@ -422,172 +423,532 @@ export const onSearchSchema = {
                                 },
                                 required: ["code"],
                               },
-                              value: {
-                                type: "string",
-                              },
+                              // value: {
+                              //   type: "string",
+                              // },
                             },
-                            required: ["descriptor", "value"],
+                            required: ["descriptor"],
                           },
                         },
                       },
                       required: ["descriptor", "list"],
                     },
                   },
-                  items: {
-                    type: "array",
+                  if:{
+                    properties:{
+                      domain:{
+                        enum:["SRV16"]
+                      }
+                    }
+                  },
+                  then:{
                     items: {
-                      type: "object",
-                      properties: {
-                        id: {
-                          type: "string",
-                        },
-                        parent_item_id: {
-                          type: "string",
-                        },
-                        descriptor: {
-                          type: "object",
-                          properties: {
-                            name: {
-                              type: "string",
-                            },
-                            code: {
-                              type: "string",
-                            },
-                            short_desc: {
-                              type: "string",
-                            },
-                            long_desc: {
-                              type: "string",
-                            },
-                            images: {
-                              type: "array",
-                              items: {
-                                type: "object",
-                                properties: {
-                                  url: {
-                                    type: "string",
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          id: {
+                            type: "string",
+                          },
+                          parent_item_id: {
+                            type: "string",
+                          },
+                          descriptor: {
+                            type: "object",
+                            properties: {
+                              name: {
+                                type: "string",
+                              },
+                              code: {
+                                type: "string",
+                              },
+                              short_desc: {
+                                type: "string",
+                              },
+                              long_desc: {
+                                type: "string",
+                              },
+                              images: {
+                                type: "array",
+                                items: {
+                                  type: "object",
+                                  properties: {
+                                    url: {
+                                      type: "string",
+                                    },
                                   },
+                                  required: ["url"],
                                 },
-                                required: ["url"],
+                              },
+                              media: {
+                                type: "array",
+                                items: {
+                                  type: "object",
+                                  properties: {
+                                    mimetype: {
+                                      type: "string",
+                                    },
+                                    url: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["mimetype", "url"],
+                                },
                               },
                             },
-                            media: {
-                              type: "array",
-                              items: {
+                            required: [
+                              "name",
+                              // "code",
+                              "short_desc",
+                              "long_desc",
+                              // "images",
+                            ],
+                          },
+                          creator: {
+                            type: "object",
+                            properties: {
+                              descriptor: {
                                 type: "object",
                                 properties: {
-                                  mimetype: {
+                                  name: {
                                     type: "string",
                                   },
-                                  url: {
-                                    type: "string",
+                                  contact: {
+                                    type: "object",
+                                    properties: {
+                                      name: {
+                                        type: "string",
+                                      },
+                                      address: {
+                                        type: "object",
+                                        properties: {
+                                          full: {
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["full"],
+                                      },
+                                      phone: {
+                                        type: "string",
+                                      },
+                                      email: {
+                                        type: "string",
+                                      },
+                                    },
+                                    required: [
+                                      "name",
+                                      "address",
+                                      "phone",
+                                      "email",
+                                    ],
                                   },
                                 },
-                                required: ["mimetype", "url"],
+                                required: ["name", "contact"],
                               },
+                            },
+                            required: ["descriptor"],
+                          },
+                          price: {
+                            type: "object",
+                            properties: {
+                              currency: {
+                                type: "string",
+                              },
+                              value: {
+                                type: "string",
+                              },
+                              offered_value: {
+                                type: "string",
+                              },
+                              maximum_value: {
+                                type: "string",
+                              },
+                              
+                            },
+                            required: ["currency"],
+                          },
+                          category_ids: {
+                            type: "array",
+                            items: {
+                              type: "string",
                             },
                           },
+                          fulfillment_ids: {
+                            type: "array",
+                            items: {
+                              type: "string",
+                            },
+                          },
+                          location_ids: {
+                            type: "array",
+                            items: {
+                              type: "string",
+                            },
+                          },
+                          payment_ids: {
+                            type: "array",
+                            items: {
+                              type: "string",
+                            },
+                          },
+                          // cancellation_terms: {
+                          //   type: "array",
+                          //   items: {
+                          //     type: "object",
+                          //     properties: {
+                          //       fulfillment_state: {
+                          //         type: "object",
+                          //         properties: {
+                          //           descriptor: {
+                          //             type: "object",
+                          //             properties: {
+                          //               code: {
+                          //                 type: "string",
+                          //               },
+                          //             },
+                          //             required: ["code"],
+                          //           },
+                          //         },
+                          //         required: ["descriptor"],
+                          //       },
+                          //       cancellation_fee: {
+                          //         type: "object",
+                          //         properties: {
+                          //           amount: {
+                          //             type: "object",
+                          //             properties: {
+                          //               value: {
+                          //                 type: "string",
+                          //               },
+                          //             },
+                          //             required: ["value"],
+                          //           },
+                          //           percentage: {
+                          //             type: "string",
+                          //           },
+                          //         },
+                          //       },
+                          //     },
+                          //     required: ["fulfillment_state", "cancellation_fee"],
+                          //   },
+                          // },
+                          tags: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                descriptor: {
+                                  type: "object",
+                                  properties: {
+                                    code: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["code"],
+                                },
+                                list: {
+                                  type: "array",
+                                  items: {
+                                    type: "object",
+                                    properties: {
+                                      descriptor: {
+                                        type: "object",
+                                        properties: {
+                                          code: {
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["code"],
+                                      },
+                                      // value: {
+                                      //   type: "string",
+                                      // },
+                                    },
+                                    required: ["descriptor"],
+                                  },
+                                },
+                              },
+                              required: [ "list"],
+                            },
+                          },
+                          time: {
+                            type: "object",
+                            properties: {
+                              label: {
+                                type: "string",
+                              },
+                              range: {
+                                type: "object",
+                                properties: {
+                                  start: {
+                                    type: "string",
+                                  },
+                                  end: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["start", "end"],
+                              },
+                              schedule: {
+                                type: "object",
+                                properties: {
+                                  frequency: {
+                                    type: "string",
+                                  },
+                                  holidays: {
+                                    type: "array",
+                                    items: {
+                                      type: "string",
+                                    },
+                                  },
+                                  times: {
+                                    type: "array",
+                                    items: {
+                                      type: "string",
+                                    },
+                                  },
+                                },
+                                // required: ["holidays"],
+                              },
+                            },
+                            required: ["label", 
+                              //"schedule"
+                              ],
+                          },
+                          // matched: {
+                          //   type: "boolean",
+                          // },
+                          // recommended: {
+                          //   type: "boolean",
+                          // },
+                        },
+                        if: { properties: { parent_item_id: { const: "" } } },
+                        then: {
                           required: [
-                            "name",
-                            // "code",
-                            "short_desc",
-                            "long_desc",
-                            "images",
+                            "id",
+                            // "parent_item_id",
+                            "descriptor",
+                            // "creator",
+                            "price",
+                            "category_ids",
+                            // "fulfillment_ids",
+                            "location_ids",
+                            "payment_ids",
+                            // "cancellation_terms",
+                            "tags",
+                            // "time",
+                            "matched",
+                            "recommended",
                           ],
                         },
-                        creator: {
+                        else: {
+                          required: [
+                            "id",
+                            "parent_item_id",
+                            "descriptor",
+                            "price",
+                            "category_ids",
+                            "tags",
+                          ],
+                        },
+                      },
+                    }
+                  },
+                  else:{
+                    properties:{
+                      items: {
+                        type: "array",
+                        items: {
                           type: "object",
                           properties: {
+                            id: {
+                              type: "string",
+                            },
+                            parent_item_id: {
+                              type: "string",
+                            },
                             descriptor: {
                               type: "object",
                               properties: {
                                 name: {
                                   type: "string",
                                 },
-                                contact: {
+                                code: {
+                                  type: "string",
+                                },
+                                short_desc: {
+                                  type: "string",
+                                },
+                                long_desc: {
+                                  type: "string",
+                                },
+                                images: {
+                                  type: "array",
+                                  items: {
+                                    type: "object",
+                                    properties: {
+                                      url: {
+                                        type: "string",
+                                      },
+                                    },
+                                    required: ["url"],
+                                  },
+                                },
+                                media: {
+                                  type: "array",
+                                  items: {
+                                    type: "object",
+                                    properties: {
+                                      mimetype: {
+                                        type: "string",
+                                      },
+                                      url: {
+                                        type: "string",
+                                      },
+                                    },
+                                    required: ["mimetype", "url"],
+                                  },
+                                },
+                              },
+                              required: [
+                                "name",
+                                // "code",
+                                "short_desc",
+                                "long_desc",
+                                // "images",
+                              ],
+                            },
+                            creator: {
+                              type: "object",
+                              properties: {
+                                descriptor: {
                                   type: "object",
                                   properties: {
                                     name: {
                                       type: "string",
                                     },
-                                    address: {
+                                    contact: {
                                       type: "object",
                                       properties: {
-                                        full: {
+                                        name: {
+                                          type: "string",
+                                        },
+                                        address: {
+                                          type: "object",
+                                          properties: {
+                                            full: {
+                                              type: "string",
+                                            },
+                                          },
+                                          required: ["full"],
+                                        },
+                                        phone: {
+                                          type: "string",
+                                        },
+                                        email: {
                                           type: "string",
                                         },
                                       },
-                                      required: ["full"],
-                                    },
-                                    phone: {
-                                      type: "string",
-                                    },
-                                    email: {
-                                      type: "string",
+                                      required: [
+                                        "name",
+                                        "address",
+                                        "phone",
+                                        "email",
+                                      ],
                                     },
                                   },
-                                  required: [
-                                    "name",
-                                    "address",
-                                    "phone",
-                                    "email",
-                                  ],
+                                  required: ["name", "contact"],
                                 },
                               },
-                              required: ["name", "contact"],
+                              required: ["descriptor"],
                             },
-                          },
-                          required: ["descriptor"],
-                        },
-                        price: {
-                          type: "object",
-                          properties: {
-                            currency: {
-                              type: "string",
+                            price: {
+                              type: "object",
+                              properties: {
+                                currency: {
+                                  type: "string",
+                                },
+                                value: {
+                                  type: "string",
+                                },
+                                offered_value: {
+                                  type: "string",
+                                },
+                                maximum_value: {
+                                  type: "string",
+                                },
+                                
+                              },
+                              required: ["currency"],
                             },
-                            value: {
-                              type: "string",
+                            category_ids: {
+                              type: "array",
+                              items: {
+                                type: "string",
+                              },
                             },
-                            offered_value: {
-                              type: "string",
+                            fulfillment_ids: {
+                              type: "array",
+                              items: {
+                                type: "string",
+                              },
                             },
-                            maximum_value: {
-                              type: "string",
+                            location_ids: {
+                              type: "array",
+                              items: {
+                                type: "string",
+                              },
                             },
-                            
-                          },
-                          required: ["currency"],
-                        },
-                        category_ids: {
-                          type: "array",
-                          items: {
-                            type: "string",
-                          },
-                        },
-                        fulfillment_ids: {
-                          type: "array",
-                          items: {
-                            type: "string",
-                          },
-                        },
-                        location_ids: {
-                          type: "array",
-                          items: {
-                            type: "string",
-                          },
-                        },
-                        payment_ids: {
-                          type: "array",
-                          items: {
-                            type: "string",
-                          },
-                        },
-                        cancellation_terms: {
-                          type: "array",
-                          items: {
-                            type: "object",
-                            properties: {
-                              fulfillment_state: {
+                            payment_ids: {
+                              type: "array",
+                              items: {
+                                type: "string",
+                              },
+                            },
+                            cancellation_terms: {
+                              type: "array",
+                              items: {
+                                type: "object",
+                                properties: {
+                                  fulfillment_state: {
+                                    type: "object",
+                                    properties: {
+                                      descriptor: {
+                                        type: "object",
+                                        properties: {
+                                          code: {
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["code"],
+                                      },
+                                    },
+                                    required: ["descriptor"],
+                                  },
+                                  cancellation_fee: {
+                                    type: "object",
+                                    properties: {
+                                      amount: {
+                                        type: "object",
+                                        properties: {
+                                          value: {
+                                            type: "string",
+                                          },
+                                        },
+                                        required: ["value"],
+                                      },
+                                      percentage: {
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                },
+                                required: ["fulfillment_state", "cancellation_fee"],
+                              },
+                            },
+                            tags: {
+                              type: "array",
+                              items: {
                                 type: "object",
                                 properties: {
                                   descriptor: {
@@ -599,151 +960,116 @@ export const onSearchSchema = {
                                     },
                                     required: ["code"],
                                   },
-                                },
-                                required: ["descriptor"],
-                              },
-                              cancellation_fee: {
-                                type: "object",
-                                properties: {
-                                  amount: {
-                                    type: "object",
-                                    properties: {
-                                      value: {
-                                        type: "string",
-                                      },
-                                    },
-                                    required: ["value"],
-                                  },
-                                  percentage: {
-                                    type: "string",
-                                  },
-                                },
-                              },
-                            },
-                            required: ["fulfillment_state", "cancellation_fee"],
-                          },
-                        },
-                        tags: {
-                          type: "array",
-                          items: {
-                            type: "object",
-                            properties: {
-                              descriptor: {
-                                type: "object",
-                                properties: {
-                                  code: {
-                                    type: "string",
-                                  },
-                                },
-                                required: ["code"],
-                              },
-                              list: {
-                                type: "array",
-                                items: {
-                                  type: "object",
-                                  properties: {
-                                    descriptor: {
+                                  list: {
+                                    type: "array",
+                                    items: {
                                       type: "object",
                                       properties: {
-                                        code: {
+                                        descriptor: {
+                                          type: "object",
+                                          properties: {
+                                            code: {
+                                              type: "string",
+                                            },
+                                          },
+                                          required: ["code"],
+                                        },
+                                        value: {
                                           type: "string",
                                         },
                                       },
-                                      required: ["code"],
+                                      required: ["descriptor"],
                                     },
-                                    value: {
+                                  },
+                                },
+                                required: ["descriptor", "list"],
+                              },
+                            },
+                            time: {
+                              type: "object",
+                              properties: {
+                                label: {
+                                  type: "string",
+                                },
+                                range: {
+                                  type: "object",
+                                  properties: {
+                                    start: {
+                                      type: "string",
+                                    },
+                                    end: {
                                       type: "string",
                                     },
                                   },
-                                  required: ["descriptor"],
+                                  required: ["start", "end"],
                                 },
-                              },
-                            },
-                            required: ["descriptor", "list"],
-                          },
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            label: {
-                              type: "string",
-                            },
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["start", "end"],
-                            },
-                            schedule: {
-                              type: "object",
-                              properties: {
-                                frequency: {
-                                  type: "string",
-                                },
-                                holidays: {
-                                  type: "array",
-                                  items: {
-                                    type: "string",
+                                schedule: {
+                                  type: "object",
+                                  properties: {
+                                    frequency: {
+                                      type: "string",
+                                    },
+                                    holidays: {
+                                      type: "array",
+                                      items: {
+                                        type: "string",
+                                      },
+                                    },
+                                    times: {
+                                      type: "array",
+                                      items: {
+                                        type: "string",
+                                      },
+                                    },
                                   },
-                                },
-                                times: {
-                                  type: "array",
-                                  items: {
-                                    type: "string",
-                                  },
+                                  // required: ["holidays"],
                                 },
                               },
-                              // required: ["holidays"],
+                              required: ["label", 
+                                //"schedule"
+                                ],
+                            },
+                            matched: {
+                              type: "boolean",
+                            },
+                            recommended: {
+                              type: "boolean",
                             },
                           },
-                          required: ["label", 
-                            //"schedule"
+                          if: { properties: { parent_item_id: { const: "" } } },
+                          then: {
+                            required: [
+                              "id",
+                              // "parent_item_id",
+                              "descriptor",
+                              // "creator",
+                              "price",
+                              "category_ids",
+                              // "fulfillment_ids",
+                              "location_ids",
+                              "payment_ids",
+                              "cancellation_terms",
+                              "tags",
+                              // "time",
+                              "matched",
+                              "recommended",
                             ],
+                          },
+                          else: {
+                            required: [
+                              "id",
+                              "parent_item_id",
+                              "descriptor",
+                              "price",
+                              "category_ids",
+                              "tags",
+                            ],
+                          },
                         },
-                        matched: {
-                          type: "boolean",
-                        },
-                        recommended: {
-                          type: "boolean",
-                        },
-                      },
-                      if: { properties: { parent_item_id: { const: "" } } },
-                      then: {
-                        required: [
-                          "id",
-                          // "parent_item_id",
-                          "descriptor",
-                          // "creator",
-                          "price",
-                          "category_ids",
-                          // "fulfillment_ids",
-                          "location_ids",
-                          "payment_ids",
-                          "cancellation_terms",
-                          "tags",
-                          // "time",
-                          "matched",
-                          "recommended",
-                        ],
-                      },
-                      else: {
-                        required: [
-                          "id",
-                          "parent_item_id",
-                          "descriptor",
-                          "price",
-                          "category_ids",
-                          "tags",
-                        ],
-                      },
-                    },
-                  },
+                      }
+                    }
+                  }
+                  ,
                   offers: {
                     type: "array",
                     items: {
@@ -876,27 +1202,8 @@ export const onSearchSchema = {
                       ],
                     },
                   },
-                  fulfillments: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
-                            },
-                            email: {
-                              type: "string",
-                            },
-                          },
-                          required: ["phone", "email"],
-                        },
-                      },
-                      required: ["contact"],
-                    },
-                  },
+                  
+                 
                 },
                 required: [
                   "id",
@@ -907,7 +1214,7 @@ export const onSearchSchema = {
                   "locations",
                   "tags",
                   "items",
-                  "fulfillments",
+                  // "fulfillments",
                 ],
               },
             },

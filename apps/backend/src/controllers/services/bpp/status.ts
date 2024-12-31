@@ -10,7 +10,13 @@ import {
 } from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
+	MOCKSERVER_ID,
+	SERVICES_BPP_MOCKSERVER_URL,
 	Stop,
+	TransactionType,
+	createAuthHeader,
+	logger,
+	redis,
 	redisExistFromServer,
 	redisFetchFromServer,
 	responseBuilder,
@@ -18,6 +24,7 @@ import {
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import axios, { AxiosError } from "axios";
 
 export const statusController = async (
 	req: Request,
@@ -144,11 +151,11 @@ const statusRequest = async (
 								id: undefined,
 								authorization: stop.authorization
 									? {
-											...stop.authorization,
-											status: FULFILLMENT_LABELS.CONFIRMED,
-									  }
+										...stop.authorization,
+										status: FULFILLMENT_LABELS.CONFIRMED,
+									}
 									: undefined,
-								person: stop.person ? stop.person : stop.customer?.person,
+								person: (domain === SERVICES_DOMAINS.ASTRO_SERVICE) ? { name: "Rahul" } : stop.person ? stop.person : stop.customer?.person,
 							};
 							if (stop.type === "start") {
 								return {
@@ -200,9 +207,9 @@ const statusRequest = async (
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization
 								? (stop.authorization = {
-										...stop.authorization,
-										status: "valid",
-								  })
+									...stop.authorization,
+									status: "valid",
+								})
 								: undefined
 						);
 					}
@@ -277,20 +284,363 @@ const statusRequest = async (
 				break;
 		}
 
-		return responseBuilder(
-			res,
-			next,
-			req.body.context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/")
+		if (domain === SERVICES_DOMAINS.ASTRO_SERVICE) {
+			responseMessage.order.fulfillments[0].stops[1].location.descriptor = {
+				name: "Temple"
+			}
+			responseMessage.order.fulfillments[0].customer = {
+				"person": {
+					"name": "Ramu"
+				}
+			}
+			responseMessage.order.fulfillments[0].agent = {
+				"person": {
+					"name": "Pujari Name"
+				},
+				"contact": {
+					"phone": "9XXXXXXXXX"
+				}
+			}
+			delete responseMessage.order.documents
+			delete responseMessage.order.fulfillments[0].stops[0]?.locations?.address
+			delete responseMessage.order.fulfillments[0].stops[0]?.locations?.city
+			delete responseMessage.order.fulfillments[0].stops[0]?.locations?.state
+			delete responseMessage.order.fulfillments[0].stops[0]?.locations?.country
+
+
+			const createdate = new Date(message.order.created_at)
+			createdate.setSeconds(createdate.getSeconds() + 10);
+
+			const updatedate = new Date(message.order.updated_at)
+			updatedate.setSeconds(updatedate.getSeconds() + 10);
+
+			const onStatusPujariAssigned = {
+				...responseMessage, // spread the entire response
+				order: {
+					...responseMessage.order, // spread message to retain its content
+					fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+						...fulfillment, // spread the fulfillment object
+						state: {
+							...fulfillment.state, // spread state to retain other state details
+							descriptor: {
+								...fulfillment.state.descriptor, // spread descriptor to modify only the code
+								code: "AGENT_ASSIGNED" // modify the code to "created"
+							}
+						}
+					})),
+					created_at: createdate.toISOString(),
+					updated_at: updatedate.toISOString()
+
+				}
+			};
+
+			responseBuilder(
+				res,
+				next,
+				req.body.context,
+				onStatusPujariAssigned,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
 					? ON_ACTION_KEY.ON_STATUS
 					: `/${ON_ACTION_KEY.ON_STATUS}`
-			}`,
-			`${ON_ACTION_KEY.ON_STATUS}`,
-			"services"
-		);
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"services"
+			);
+			astroservice(responseMessage, req, res, message)
+		}
+		else {
+			console.log("responseMessage", JSON.stringify(responseMessage))
+
+			return responseBuilder(
+				res,
+				next,
+				req.body.context,
+				responseMessage,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_STATUS
+					: `/${ON_ACTION_KEY.ON_STATUS}`
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"services"
+			);
+		}
 	} catch (error) {
 		next(error);
 	}
 };
+
+
+
+export const astroservice = (responseMessage: any, req: Request, res: Response, message: any) => {
+
+	try{
+		const createdate = new Date(message.order.created_at)
+	createdate.setSeconds(createdate.getSeconds() + 10);
+
+	const updatedate = new Date(message.order.updated_at)
+	updatedate.setSeconds(updatedate.getSeconds() + 10);
+
+	createdate.setSeconds(createdate.getSeconds() + 20);
+	updatedate.setSeconds(updatedate.getSeconds() + 20);
+
+	const onStatusInTransit = {
+		...responseMessage, // spread the entire response
+		order: {
+			...responseMessage.order, // spread message to retain its content
+			fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+				...fulfillment, // spread the fulfillment object
+				state: {
+					...fulfillment.state, // spread state to retain other state details
+					descriptor: {
+						...fulfillment.state.descriptor, // spread descriptor to modify only the code
+						code: "IN_TRANSIT" // modify the code to "created"
+					}
+				}
+			})),
+			created_at: createdate.toISOString(),
+			updated_at: updatedate.toISOString()
+		}
+	}
+
+	createdate.setSeconds(createdate.getSeconds() + 20);
+	updatedate.setSeconds(updatedate.getSeconds() + 20);
+
+	const onStatusAtlocation = {
+		...responseMessage, // spread the entire response
+		order: {
+			...responseMessage.order, // spread message to retain its content
+			fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+				...fulfillment, // spread the fulfillment object
+				state: {
+					...fulfillment.state, // spread state to retain other state details
+					descriptor: {
+						...fulfillment.state.descriptor, // spread descriptor to modify only the code
+						code: "AT_LOCATION" // modify the code to "created"
+					}
+				}
+			})),
+			created_at: createdate.toISOString(),
+			updated_at: updatedate.toISOString()
+		}
+
+	}
+
+	createdate.setSeconds(createdate.getSeconds() + 20);
+	updatedate.setSeconds(updatedate.getSeconds() + 20);
+
+	const onStatusCompleted = {
+		...responseMessage, // spread the entire response
+		order: {
+			...responseMessage.order, // spread message to retain its content
+			status:"COMPLETED",
+			fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+				...fulfillment, // spread the fulfillment object
+				state: {
+					...fulfillment.state, // spread state to retain other state details
+					descriptor: {
+						...fulfillment.state.descriptor, // spread descriptor to modify only the code
+						code: "COMPLETED" // modify the code to "created"
+					}
+				}
+			})),
+			created_at: createdate.toISOString(),
+			updated_at: updatedate.toISOString()
+		}
+	}
+
+
+	// let i = 0;
+	// const delays = [10000, 10000, 10000, 10000, 10000, 10000]; // Array of delays in milliseconds for each function
+	// const functions = [
+	// 	onStatusInTransit,
+	// 	onStatusAtlocation,
+	// 	onStatusCompleted,
+	// ];
+
+	async function callFunctionsSequentially() {
+		// for (let index = 0; index < functions.length; index++) {
+
+		
+
+		// 	console.log(`Function ${index} executed`);
+		// 	i++;
+
+		// 	if (index < functions.length - 1) {
+		// 		// Wait for the specified delay before moving to the next function
+		// 		await new Promise((resolve) => setTimeout(resolve, delays[index]));
+		// 	}
+		// }
+		await new Promise((resolve) => setTimeout(resolve, 10000));
+		await childOrderResponseBuilder(
+			0,
+			res,
+			req.body.context,
+			onStatusInTransit,
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+			}`,
+			"on_status"
+		);
+		await new Promise((resolve) => setTimeout(resolve, 10000));
+
+		await childOrderResponseBuilder(
+			0,
+			res,
+			req.body.context,
+			onStatusAtlocation,
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+			}`,
+			"on_status"
+		);
+		await new Promise((resolve) => setTimeout(resolve, 10000));
+
+		await childOrderResponseBuilder(
+			0,
+			res,
+			req.body.context,
+			onStatusCompleted,
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+			}`,
+			"on_status"
+		);
+	}
+
+	callFunctionsSequentially();
+
+}
+catch(err){
+next(err)
+}
+}
+
+export const childOrderResponseBuilder = async (
+	id: number,
+	res: Response,
+	reqContext: object,
+	message: object,
+	uri: string,
+	action: string,
+	error?: object | undefined
+) => {
+	// console.log("==>>>testing")
+	let ts = new Date();
+
+	const sandboxMode = res.getHeader("mode") === "sandbox";
+
+	let async: { message: object; context?: object; error?: object } = {
+		context: {},
+		message,
+	};
+	const bppURI = SERVICES_BPP_MOCKSERVER_URL
+	async = {
+		...async,
+		context: {
+			...reqContext,
+			bpp_id: MOCKSERVER_ID,
+			bpp_uri: bppURI,
+			timestamp: ts.toISOString(),
+			action: action,
+		},
+	};
+
+	if (error) {
+		async = { ...async, error };
+	}
+
+	const header = await createAuthHeader(async);
+	if (sandboxMode) {
+		var log: TransactionType = {
+			request: async,
+		};
+		console.log("urI sent at on_status", uri)
+		try {
+			const response = await axios.post(uri + "?mode=mock", async,
+				// 	{
+				// 	headers: {
+				// 		authorization: header,
+				// 	},
+				// }
+			);
+
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response.data,
+			};
+
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`, // saving ID with on_status child process (duplicate keys are not allowed)
+				JSON.stringify(log)
+			);
+		} catch (error) {
+			const response =
+				error instanceof AxiosError
+					? error?.response?.data
+					: {
+						message: {
+							ack: {
+								status: "NACK",
+							},
+						},
+						error: {
+							message: error,
+						},
+					};
+			log.response = {
+				timestamp: new Date().toISOString(),
+				response: response,
+			};
+			await redis.set(
+				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
+				JSON.stringify(log)
+			);
+
+			if (error instanceof AxiosError && id === 0 && action === "on_status") {
+				res.status(error.status || 500).json(error);
+			}
+
+			if (error instanceof AxiosError) {
+				console.log(error.response?.data);
+			}
+
+			throw error;
+		}
+
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+		console.log("heree")
+		console.log(`Subscription Child Process (action: ${action}) ${id} : `, {
+			message: {
+				ack: {
+					status: "ACK",
+				},
+			},
+		});
+		return;
+	} else {
+		logger.info({
+			type: "response",
+			action: action,
+			transaction_id: (reqContext as any).transaction_id,
+			message: { sync: { message: { ack: { status: "ACK" } } } },
+		});
+
+		console.log(`Subscription Child Process (action: ${action}) ${id} : `, {
+			sync: {
+				message: {
+					ack: {
+						status: "ACK",
+					},
+				},
+			},
+			async,
+		});
+		return;
+	}
+};
+
+function next(error: any) {
+	throw new Error("Function not implemented.");
+}

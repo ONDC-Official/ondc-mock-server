@@ -9,6 +9,9 @@ export const REGISTRY_URL = "https://staging.registry.ondc.org/lookup";
 export const SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml";
 
+export const ASTRO_SERVICES_EXAMPLES_PATH =
+	"./domain-repos/@services/draft-astro/api/components/Examples/Astro_services_yaml";
+
 export const AGRI_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri-services/api/components/Examples/Agriculture_services_yaml";
 

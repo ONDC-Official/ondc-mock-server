@@ -73,6 +73,7 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
 	"ONDC:SRV13",
 	"ONDC:SRV14",
+	"ONDC:SRV16",
 	"ONDC:SRV17",
 	"ONDC:SRV18",
 ];
@@ -535,6 +536,7 @@ export const INITIATE_FIELDS = {
 				b2c: ["payments", "fulfillments", "items"],
 				logistics: ["fulfillments"],
 				agri: AGRI_SCENARIOS["update"].map((each) => each.scenario),
+				retail:["payments"],
 				// agrioutput:AGRI_OUTPUT_SCENARIOS["update"].map((each)=>each.scenario)
 			},
 		},

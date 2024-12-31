@@ -12,7 +12,7 @@ import {
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ORDER_STATUS, PAYMENT_STATUS } from "../../../lib/utils/apiConstants";
+import { ORDER_STATUS, PAYMENT_STATUS, SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateConfirmController = async (
 	req: Request,
@@ -21,6 +21,11 @@ export const initiateConfirmController = async (
 ) => {
 	try {
 		const { scenario, transactionId } = req.body;
+		const on_search = await redisFetchToServer(
+			ON_ACTION_KEY.ON_SEARCH,
+			transactionId
+		);
+		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
 		const on_init = await redisFetchToServer(
 			ON_ACTION_KEY.ON_INIT,
 			transactionId
@@ -28,7 +33,7 @@ export const initiateConfirmController = async (
 		if (!on_init) {
 			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED);
 		}
-		return intializeRequest(res, next, on_init, scenario);
+		return intializeRequest(res, next, on_init, scenario, providersItems);
 	} catch (error) {
 		return next(error);
 	}
@@ -39,12 +44,13 @@ const intializeRequest = async (
 	next: NextFunction,
 	transaction: any,
 	scenario: string,
+	providersItems: any
 ) => {
 	try {
 		const {
 			context,
 			message: {
-				order: { provider, payments, fulfillments, xinput },
+				order: { provider, locations, payments, fulfillments, xinput, items },
 			},
 		} = transaction;
 		const { transaction_id } = context;
@@ -66,10 +72,16 @@ const intializeRequest = async (
 					...transaction.message.order,
 					id: uuidv4(),
 					status: ORDER_STATUS.CREATED.toUpperCase(),
-					provider,
+					provider: {
+						...provider,
+						locations:[{
+							id:"L1"
+						}],
+					},
 					fulfillments: [
 						{
 							...remainingfulfillments,
+							type:"Seller-Fulfilled",
 							stops: stops.map((stop: any) => {
 								return {
 									...stop,
@@ -120,6 +132,18 @@ const intializeRequest = async (
 				},
 			},
 		};
+
+		if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+			confirm.message.order.payments.splice(1,1)
+			delete confirm.message.order.xinput
+			confirm.message.order.fulfillments[0].customer={
+					"person": {
+							"name": "Ramu"
+					}
+			}
+		}
+
+		console.log("confirm Response",JSON.stringify(confirm))
 		await send_response(
 			res,
 			next,

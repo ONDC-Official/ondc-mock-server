@@ -5,6 +5,7 @@ import YAML from "yaml";
 import {
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	AGRI_SERVICES_EXAMPLES_PATH,
+	ASTRO_SERVICES_EXAMPLES_PATH,
 	BID_AUCTION_SERVICES_EXAMPLES_PATH,
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
 	responseBuilder,
@@ -81,6 +82,16 @@ export const searchController = (
 					)
 				);
 				break;
+			
+			case SERVICES_DOMAINS.ASTRO_SERVICE:
+				file = fs.readFileSync(
+					path.join(
+						ASTRO_SERVICES_EXAMPLES_PATH,
+						`on_search/on_search.yaml`
+					)
+				);
+				break;
+
 			default:
 				file = fs.readFileSync(
 					path.join(SERVICES_EXAMPLES_PATH, "on_search/on_search.yaml")
@@ -88,7 +99,9 @@ export const searchController = (
 				break;
 		}
 		const response = YAML.parse(file.toString());
-			// fs.writeFileSync("temp-on_search.json", JSON.stringify(response.value.message, null, 2));
+		// console.log("response of onSearch",JSON.stringify(response))
+		// console.log("ON SEARCH RESPONSE HOLIDAYS: ", response.value.message.catalog.providers[0].items[1].time.schedule.holidays);
+		// fs.writeFileSync("temp-on_search.json", JSON.stringify(response.value.message, null, 2));
 		return responseBuilder(
 			res,
 			next,

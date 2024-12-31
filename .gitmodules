@@ -102,3 +102,7 @@
 	path = apps/backend/domain-repos/@services/draft-healthcare-service
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-healthcare
+[submodule "apps/backend/domain-repos/@services/draft-astro"]
+	path = apps/backend/domain-repos/@services/draft-astro
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-astro

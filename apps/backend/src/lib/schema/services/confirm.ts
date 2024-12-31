@@ -104,7 +104,7 @@ export const confirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["Created"]
+              enum: ["CREATED"]
             },
             provider: {
               type: "object",
@@ -242,66 +242,127 @@ export const confirmSchema = {
                         type: {
                           type: "string",
                         },
-                        location: {
-                          type: "object",
+                        if: {
                           properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: [
-                            "gps",
-                            "address",
-                            "city",
-                            "country",
-                            "area_code",
-                            "state",
-                          ],
+                            doamin: {
+                              enum: ["SRV16"]
+                            }
+                          }
                         },
-                        contact: {
-                          type: "object",
+                        then: {
                           properties: {
-                            phone: {
-                              type: "string",
+                            location: {
+                              type: "object",
+                              properties: {
+                                gps: {
+                                  type: "string",
+                                },
+                                address: {
+                                  type: "string",
+                                },
+                                city: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                                country: {
+                                  type: "object",
+                                  properties: {
+                                    code: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["code"],
+                                },
+                                area_code: {
+                                  type: "string",
+                                },
+                                state: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                              },
+                              required: [
+                                "gps",
+                                // "address",
+                                // "city",
+                                // "country",
+                                "area_code",
+                                // "state",
+                              ],
                             },
-                            email: {
-                              type: "string",
+                          }
+                        },
+                        else: {
+                          properties: {
+                            location: {
+                              type: "object",
+                              properties: {
+                                gps: {
+                                  type: "string",
+                                },
+                                address: {
+                                  type: "string",
+                                },
+                                city: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                                country: {
+                                  type: "object",
+                                  properties: {
+                                    code: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["code"],
+                                },
+                                area_code: {
+                                  type: "string",
+                                },
+                                state: {
+                                  type: "object",
+                                  properties: {
+                                    name: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["name"],
+                                },
+                              },
+                              required: [
+                                "gps",
+                                "address",
+                                "city",
+                                "country",
+                                "area_code",
+                                "state",
+                              ],
                             },
-                          },
-                          // required: ["phone", "email"],
+                            contact: {
+                              type: "object",
+                              properties: {
+                                phone: {
+                                  type: "string",
+                                },
+                              },
+                              required: ["phone"],
+                            },
+                          }
                         },
                         time: {
                           type: "object",
@@ -425,7 +486,8 @@ export const confirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required: ["id"]
                       },
                     },
                     required: ["title", "price", "item"],
@@ -471,10 +533,35 @@ export const confirmSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
+                      // "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],
+                    allOf: [
+                      {
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV18"]
+                            }
+                          }
+                        },
+                        then: {
+                          required: ["amount",
+                            "currency",
+                            // "transaction_id",
+                            "bank_account_number",
+                            "virtual_payment_address"]
+                        },
+                        else: {
+                          required: ["amount",
+                            "currency",
+                            "transaction_id",
+                            "bank_account_number",
+                            "virtual_payment_address"]
+                        }
+                      }
+                    ]
                   },
                   status: {
                     type: "string",
@@ -538,30 +625,46 @@ export const confirmSchema = {
             updated_at: {
               type: "string",
             },
-            xinput: {
-              type: "object",
+            if: {
               properties: {
-                form: {
+                domain: {
+                  enum: ["SRV16"]
+                }
+              }
+            },
+            then: {
+              properties: {
+
+              }
+            },
+            else: {
+              properties: {
+                xinput: {
                   type: "object",
                   properties: {
-                    url: {
-                      type: "string",
-                    },
-                    mimetype: {
-                      type: "string",
-                    },
-                    submission_id: {
-                      type: "string",
-                    },
-                    status: {
-                      type: "string",
+                    form: {
+                      type: "object",
+                      properties: {
+                        url: {
+                          type: "string",
+                        },
+                        mimetype: {
+                          type: "string",
+                        },
+                        submission_id: {
+                          type: "string",
+                        },
+                        status: {
+                          type: "string",
+                        },
+                      },
+                      required: ["submission_id", "status"],
                     },
                   },
-                  required: ["submission_id", "status"],
+                  required: ["form"],
                 },
-              },
-              required: ["form"],
-            },
+              }
+            }
           },
           required: [
             "id",
@@ -574,7 +677,7 @@ export const confirmSchema = {
             "payments",
             "created_at",
             "updated_at",
-            "xinput",
+
           ],
         },
       },

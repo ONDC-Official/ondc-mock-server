@@ -259,7 +259,7 @@ export const confirmSchema = {
 										},
 									},
 									tags: {
-										type: "object",
+										type: "array",
 										properties: {
 											descriptor: {
 												type: "object",

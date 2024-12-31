@@ -11,6 +11,7 @@ import {
 	Time,
 	redis,
 	quoteCreatorService,
+	quoteCreatorAstroService,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -71,63 +72,52 @@ const selectConsultationConfirmController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("confirmation");
+		console.log("confirmation")
 		const { context, message, providersItems } = req.body;
-		const provider = message.order.provider;
+		const { locations, ...provider } = message.order.provider;
+		console.log("message.order.provider")
 		const domain = context?.domain;
-
+		console.log("provider",provider)
 		const updatedFulfillments =
 			domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
 				? updateFulfillments(
+					message?.order?.fulfillments,
+					ON_ACTION_KEY?.ON_SELECT,
+					"",
+					"bid_auction_service"
+				)
+				: domain === SERVICES_DOMAINS.ASTRO_SERVICE
+					? updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
 						"",
-						"bid_auction_service"
-				  )
-				: updateFulfillments(
+						"astroService"
+					)
+					: updateFulfillments(
 						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT
-				  );
+						ON_ACTION_KEY?.ON_SELECT,
+						""
+					);
+
+
+		console.log("updatefulfillment", updatedFulfillments)
 		const responseMessage = {
 			order: {
-				provider,
+				provider:{
+					...provider,
+					locations:[{
+						id:"L1"
+					}]
+				},
 				payments: message.order.payments.map(({ type }: { type: string }) => ({
 					type,
 					collected_by: "BAP",
 				})),
 
 				items: message.order.items.map(
-					({ location_ids, ...remaining }: { location_ids: any }) => {
-						if (!(remaining as any).parent_item_id) {
-							return {
-								location_ids,
-								...remaining,
-							};
-						} else {
-							return {
-								location_ids,
-								...remaining,
-								category_ids: [
-									uuidv4(),
-								],
-								tags: [
-									{
-										descriptor: {
-											code: "attribute",
-										},
-										list: [
-											{
-												descriptor: {
-													code: "type",
-												},
-												value: "customization",
-											},
-										],
-									},
-								],
-							};
-						}
-					}
+					({ ...remaining }: { location_ids: any; remaining: any }) => ({
+						...remaining,
+					})
 				),
 
 				fulfillments: updatedFulfillments,
@@ -136,40 +126,63 @@ const selectConsultationConfirmController = (
 					domain === SERVICES_DOMAINS.SERVICES
 						? quoteCreatorService(message?.order?.items, providersItems?.items)
 						: domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
-						? quoteCreatorHealthCareService(
+							? quoteCreatorHealthCareService(
 								message?.order?.items,
 								providersItems?.items,
 								"",
 								message?.order?.fulfillments[0]?.type,
 								"bid_auction_service"
-						  )
-						: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-						? quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type,
-								"agri-equipment-hiring"
-						  )
-						: quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type
-						  ),
+							)
+							: domain === SERVICES_DOMAINS.ASTRO_SERVICE ?
+								quoteCreatorAstroService(
+									message?.order?.items,
+									providersItems?.items,
+									"",
+									message?.order?.fulfillments[0]?.type,
+									"astro_service"
+								) :
+								domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
+									? quoteCreatorHealthCareService(
+										message?.order?.items,
+										providersItems?.items,
+										"",
+										message?.order?.fulfillments[0]?.type,
+										"agri-equipment-hiring"
+									)
+									: quoteCreatorHealthCareService(
+										message?.order?.items,
+										providersItems?.items,
+										"",
+										message?.order?.fulfillments[0]?.type
+									),
+
 			},
 		};
-		responseMessage.order.items[0].fulfillment_ids = ["F1"];
+		responseMessage.order.items[0].fulfillment_ids = [
+			"F1"
+		]
+
+		if (domain === SERVICES_DOMAINS.ASTRO_SERVICE) {
+			responseMessage.order.provider = {
+				...provider,
+				locations: [
+					{
+						id: "L1"
+					}
+				]
+			}
+		}
+
+		console.log("response Message onSelect",JSON.stringify(responseMessage))
 
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/")
-					? ON_ACTION_KEY.ON_SELECT
-					: `/${ON_ACTION_KEY.ON_SELECT}`
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+				? ON_ACTION_KEY.ON_SELECT
+				: `/${ON_ACTION_KEY.ON_SELECT}`
 			}`,
 			`${ON_ACTION_KEY.ON_SELECT}`,
 			"services"
@@ -206,7 +219,7 @@ const onSelectNoEquipmentAvaliable = (
 			ON_ACTION_KEY?.ON_SELECT
 		);
 
-		const provider = message.order.provider;
+		const { locations, ...provider } = message.order.provider;
 
 		const responseMessage = {
 			order: {
@@ -254,7 +267,7 @@ const selectMultiCollectionController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("multicollection");
+		console.log("multicollection")
 		const { context, message, providersItems } = req.body;
 		const updatedFulfillments = updateFulfillments(
 			req.body?.message?.order?.fulfillments,
@@ -262,7 +275,7 @@ const selectMultiCollectionController = (
 			"multi_collection"
 		);
 
-		const provider = message.order.provider;
+		const { locations, ...provider } = message.order.provider;
 
 		const responseMessage = {
 			order: {
@@ -311,7 +324,7 @@ const selectConsultationRejectController = (
 ) => {
 	try {
 		const { context, message, providersItems } = req.body;
-		const provider = message.order.provider;
+		const { locations, ...provider } = message.order.provider;
 
 		const domain = context?.domain;
 		const responseMessage = {
@@ -362,11 +375,11 @@ const selectConsultationRejectController = (
 					domain === SERVICES_DOMAINS.SERVICES
 						? quoteCreatorService(message?.order?.items, providersItems?.items)
 						: quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
-								"",
-								message?.order?.fulfillments[0]?.type
-						  ),
+							message?.order?.items,
+							providersItems?.items,
+							"",
+							message?.order?.fulfillments[0]?.type
+						),
 				error: {
 					code: 90001,
 					message: "Schedule not available",
@@ -395,7 +408,7 @@ const selectServiceCustomizationConfirmedController = async (
 ) => {
 	try {
 		const { context, message } = req.body;
-		const provider = message.order.provider;
+		const { locations, ...provider } = message.order.provider;
 		const { id, parent_item_id, location_ids, quantity, ...item } =
 			message?.order?.items[0];
 		const transactionKeys = await redis.keys(`${context.transaction_id}-*`);

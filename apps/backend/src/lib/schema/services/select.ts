@@ -141,19 +141,38 @@ export const selectSchema = {
                   },
                   quantity: {
                     type: "object",
-                    properties:{
+                    properties: {
                       selected: {
                       type: "object",
                       properties: {
                         count: {
                           type: "number",
                         }
-                    }}
+                        },
+                        required: ["count"],
+                      }
+                    }
                   }
-                }
                 },
-                required: ["id","location_ids","quantity"],
-              },
+                required: ["id", "location_ids"],
+                allOf: [
+                  {
+                    if: {
+                      properties: {
+                        domain: {
+                          enum: ["SRV18"]
+                        }
+                      }
+                    },
+                    then: {
+                      required: ["id", "location_ids"]
+                    },
+                    else: {
+                      required: ["id", "location_ids", "quantity"]
+                    }
+                  }
+                ]
+              }
             },
             fulfillments: {
               type: "array",
@@ -197,7 +216,8 @@ export const selectSchema = {
                                   type: "string",
                                 },
                               },
-                              required: ["start", "end"],
+                              // required: ["start", "end"],
+                              required: ["start"],
                             },
                             days: {
                               type: "array",

@@ -228,7 +228,7 @@ export const searchSchema = {
             },
           },
           required: [ //"fulfillment",
-             "payment", "tags"],
+              "tags"],
         },
       },
       required: ["intent"],

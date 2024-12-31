@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { checkIfCustomized, redisFetchFromServer, responseBuilder, send_nack, Stop, updateFulfillments } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
+import { ORDER_STATUS, SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 
 export const confirmController = (
@@ -40,10 +40,19 @@ export const confirmConsultationController = async (
 		}
 
 		const { fulfillments } = order;
-		const updatedFulfillments = updateFulfillments(
+    console.log("fulfillments",fulfillments)
+		let updatedFulfillments = updateFulfillments(
 			fulfillments,
-			ON_ACTION_KEY?.ON_CONFIRM
+			ON_ACTION_KEY?.ON_CONFIRM,
 		);
+    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+       updatedFulfillments = updateFulfillments(
+        fulfillments,
+        ON_ACTION_KEY?.ON_CONFIRM,
+        "",
+        "astroService"
+      );
+    }
 
 		const responseMessage = {
 			order: {
@@ -56,6 +65,13 @@ export const confirmConsultationController = async (
 				},
 			},
 		};
+    
+    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+      delete responseMessage.order.payments[0].params.transaction_id
+      
+    }
+
+    console.log("responseMEssageatonconfm",JSON.stringify(responseMessage))
 
 		return responseBuilder(
 			res,
@@ -130,7 +146,7 @@ export const confirmServiceCustomizationController = (
     const responseMessage = {
       order: {
         ...order,
-        status: ORDER_STATUS.ACCEPTED.toUpperCase(),
+        status: "Accepted",
         provider: {
           ...order?.provider,
           rateable: true,
