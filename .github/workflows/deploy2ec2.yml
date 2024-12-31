@@ -70,8 +70,12 @@ jobs:
             MOCKSERVER_ID=${{ secrets.MOCKSERVER_ID }}
             EOL
             
+            echo "HERE"
+            
             # Build and deploy
-            docker-compose up -d --build
+            sudo docker-compose up -d --build
+
+            echo "BUILT"
             
             # Cleanup
             docker builder prune -af
