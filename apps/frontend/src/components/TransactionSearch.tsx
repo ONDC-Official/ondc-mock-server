@@ -24,7 +24,7 @@ export const TransactionSearch = () => {
 		console.log('API URL:', import.meta.env.VITE_SERVER_URL);
 		try {
 			const response = await axios.get(
-				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`
+				`${import.meta.env.VITE_SERVER_URL || 'https://mock.ondc.org/api'}/analyse/${transaction}`
 			);
 			const formattedResponse = response.data
         .reduce(
