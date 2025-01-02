@@ -10,7 +10,6 @@
 			"persistent": false
 		},
 		"dev": {
-			"dependsOn": ["db:migrate:dev","start:nginx"],
 			"cache": false,
 			"persistent": true
 		},

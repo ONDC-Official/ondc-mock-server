@@ -237,10 +237,11 @@ export const InitiateRequestSection = () => {
 
 	const handleSubmit = async () => {
 		try {
+			console.log('API URL:', import.meta.env.VITE_SERVER_URL);
 			const response = await axios.post(
 				`${
 					import.meta.env.VITE_SERVER_URL
-				}/${domain}/initiate/${action}?mode=mock&version=${version}&scenario=${selectedScenario}`,
+				}/${domain.toLowerCase()}/initiate/${action}?mode=mock&version=${version}&scenario=${selectedScenario}`,
 				formState,
 				{
 					headers: {

@@ -21,6 +21,7 @@ export const TransactionSearch = () => {
 	const [transactionId, setTransactionId] = useState("");
 
 	const fetchTransaction = async (transaction: string) => {
+		console.log('API URL:', import.meta.env.VITE_SERVER_URL);
 		try {
 			const response = await axios.get(
 				`${import.meta.env.VITE_SERVER_URL}/analyse/${transaction}`

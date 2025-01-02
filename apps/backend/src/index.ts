@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import cron from "node-cron"; // Import node-cron
@@ -25,7 +26,7 @@ import {
 import { retailRouter } from "./controllers/retail";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 import { loadConfig } from "./lib/utils";
-import 'dotenv/config'
+
 
 export const app: Express = express();
 const port = process.env.PORT || 3000;
