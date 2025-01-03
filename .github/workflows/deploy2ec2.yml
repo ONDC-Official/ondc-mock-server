@@ -75,3 +75,7 @@ jobs:
             echo "BUILT"
             # Cleanup
             sudo docker builder prune -af
+
+            echo "NGINX Restarted"
+            # Restart nginx
+            sudo systemctl restart nginx
