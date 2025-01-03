@@ -19,6 +19,7 @@ import { useAction, useDomain, useSandbox } from "../utils/hooks";
 import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
+import { VITE_SERVER_URL } from "../utils/env";
 
 export const SandboxRequestSection = () => {
 	const [authHeader, setAuthHeader] = useState<string>();
@@ -69,7 +70,7 @@ export const SandboxRequestSection = () => {
 
 	const handleSubmit = async () => {
 		let url = `${
-			import.meta.env.VITE_SERVER_URL || "https://mock.ondc.org/api"
+			VITE_SERVER_URL
 		}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
 		)}/${action}?mode=sandbox&version=${version}`;

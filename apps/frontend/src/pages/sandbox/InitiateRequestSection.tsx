@@ -16,6 +16,7 @@ import { useDomain, useEnvironment, useMessage } from "../../utils/hooks";
 import HelpOutlineTwoToneIcon from "@mui/icons-material/HelpOutlineTwoTone";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import { VITE_SERVER_URL } from "../../utils/env";
 
 // import { Item } from "common/index";
 // type InitiateRequestSectionProp = {
@@ -98,7 +99,7 @@ export const InitiateRequestSection = () => {
 				message: { matchingItems: any[] };
 			}>(
 				`${
-					import.meta.env.VITE_SERVER_URL || 'https://mock.ondc.org/api'
+					VITE_SERVER_URL
 				}/${domain.toLowerCase()}/getCatalog/?mode=mock`,
 				{ transactionId },
 				{
@@ -237,10 +238,10 @@ export const InitiateRequestSection = () => {
 
 	const handleSubmit = async () => {
 		try {
-			console.log('API URL:', import.meta.env.VITE_SERVER_URL);
+			console.log('API URL:', VITE_SERVER_URL);
 			const response = await axios.post(
 				`${
-					import.meta.env.VITE_SERVER_URL
+					VITE_SERVER_URL
 				}/${domain.toLowerCase()}/initiate/${action}?mode=mock&version=${version}&scenario=${selectedScenario}`,
 				formState,
 				{

@@ -12,6 +12,7 @@ import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { MessageDialog } from "../../components";
 import { useMessage } from "../../utils/hooks";
+import { VITE_SERVER_URL } from "../../utils/env";
 
 export const Sign = () => {
 	const theme = useTheme();
@@ -22,7 +23,7 @@ export const Sign = () => {
 	const handleSubmit = async () => {
 		try {
 			const response = await axios.post(
-				`${import.meta.env.VITE_SERVER_URL || 'https://mock.ondc.org/api'}/auth/signCheck`,
+				`${VITE_SERVER_URL}/auth/signCheck`,
 				requestBody,
 				{
 					headers: {
