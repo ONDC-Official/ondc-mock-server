@@ -594,3 +594,30 @@ export const SWAGGER_DOMAIN_FIELDS = {
 	domainDepended: false,
 	options: ALL_DOMAINS,
 };
+export const All_Actions=[
+"Search","on_Search","Select","on_Select","Init","on_Init","Confirm","on_Confirm","Status","on_Status","Update","on_Update","Cancel","on_Cancel"
+]
+
+export const ALL_SUB_DOMAINS={
+	retail:["ONDC:RET1A",
+	"ONDC:RET1B",
+	"ONDC:RET1C",
+	"ONDC:RET1D",
+	"ONDC:RET10",
+	"ONDC:RET12",
+	"ONDC:RET13",
+	"ONDC:RET14",
+	"ONDC:RET10",
+	"ONDC:RET12"],
+	agri:["ONDC:AGR10",
+	"ONDC:AGR11"],
+	logistics:["ONDC:LOG10",
+	"ONDC:LOG11"],
+	subscription:["ONDC:MEC10"],
+	services:["ONDC:SRV11",
+	"ONDC:SRV13",
+	"ONDC:SRV14",
+	"ONDC:SRV16",
+	"ONDC:SRV17",
+	"ONDC:SRV18",]
+}
