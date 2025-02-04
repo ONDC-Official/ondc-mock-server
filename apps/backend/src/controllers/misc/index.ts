@@ -19,5 +19,5 @@ miscRouter.post(
 miscRouter.get("/scan", getAllTransactionIdController);
 miscRouter.get("/analyse/:transactionId", analyseController);
 miscRouter.get("/scenario/:domain/:action", getAllScenarios);
-miscRouter.post("/get-data",getPayload)
+miscRouter.get("/get-data", getPayload)
 miscRouter.post("/proxy", proxy)

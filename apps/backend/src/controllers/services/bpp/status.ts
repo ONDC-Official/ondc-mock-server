@@ -142,7 +142,7 @@ const statusRequest = async (
 		let responseMessage: any = {
 			order: {
 				id: message.order.id,
-				status: ORDER_STATUS.IN_PROGRESS,
+				status: (context.domain===SERVICES_DOMAINS.SERVICES)?ORDER_STATUS.IN_PROGRESS.toUpperCase() :ORDER_STATUS.IN_PROGRESS,
 				provider: {
 					...message.order.provider,
 					rateable: undefined,
@@ -482,7 +482,7 @@ export const astroservice = (responseMessage: any, req: Request, res: Response, 
 						...fulfillment.state, // spread state to retain other state details
 						descriptor: {
 							...fulfillment.state.descriptor, // spread descriptor to modify only the code
-							code: "IN_TRANSIT" // modify the code to "created"
+							code: "In_Transit" // modify the code to "created"
 						}
 					}
 				})),
@@ -504,7 +504,7 @@ export const astroservice = (responseMessage: any, req: Request, res: Response, 
 						...fulfillment.state, // spread state to retain other state details
 						descriptor: {
 							...fulfillment.state.descriptor, // spread descriptor to modify only the code
-							code: "AT_LOCATION" // modify the code to "created"
+							code: "At_Location" // modify the code to "created"
 						}
 					}
 				})),
@@ -521,7 +521,7 @@ export const astroservice = (responseMessage: any, req: Request, res: Response, 
 			...responseMessage, // spread the entire response
 			order: {
 				...responseMessage.order, // spread message to retain its content
-				status: "COMPLETED",
+				status: "Completed",
 				fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
 					...fulfillment, // spread the fulfillment object
 					state: {

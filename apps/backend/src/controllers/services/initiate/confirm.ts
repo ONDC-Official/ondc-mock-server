@@ -71,7 +71,7 @@ const intializeRequest = async (
 				order: {
 					...transaction.message.order,
 					id: uuidv4(),
-					status: ORDER_STATUS.CREATED,
+					status:(context.domain===SERVICES_DOMAINS.SERVICES) ?ORDER_STATUS.CREATED.toUpperCase() :ORDER_STATUS.CREATED,
 					provider: {
 						...provider,
 						locations:[{

@@ -200,7 +200,7 @@ function rescheduleRequest(message: any, update_target: string) {
 	);
 
 	fulfillments.map((itm: any) => {
-		itm.state.descriptor.code = "PENDING";
+		itm.state.descriptor.code = "Pending";
 	});
 
 	const responseMessage = {

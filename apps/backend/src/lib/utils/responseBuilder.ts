@@ -2486,7 +2486,6 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 			}
 		}
 		if(domain==="astroService"){
-			console.log("herrrr")
 			fulfillmentObj={
 				id:fulfillments[0].id || "FY1",
 				type:"Seller-Fulfilled",
@@ -2751,6 +2750,16 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						],
 						rateable: undefined,
 					  };
+					} else if(domain===SERVICES_DOMAINS.HEALTHCARE_SERVICES){
+						return {
+							...fulfillment,
+							state: {
+								...fulfillment.state,
+								descriptor: {
+								code: FULFILLMENT_STATES.CANCELLED,
+								}
+							}
+						}
 					}
 				  
 					// Default return if no conditions are met

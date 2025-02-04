@@ -91,7 +91,7 @@ export const updateRequoteController = (
 			order: {
 				...message.order,
 				id: uuidv4(),
-				status: FULFILLMENT_STATES.PENDING,
+				status: (context.domain===SERVICES_DOMAINS.SERVICES)?FULFILLMENT_STATES.PENDING.toUpperCase():FULFILLMENT_STATES.PENDING,
 				ref_order_ids: [on_confirm?.message?.order?.id],
 				provider: {
 					id: on_confirm?.message?.order?.provider.id,
@@ -128,7 +128,7 @@ export const updatePaymentController = (
 		order: {
 			...message.order,
 			id: uuidv4(),
-			status: FULFILLMENT_STATES.PENDING,
+			status:  (context.domain===SERVICES_DOMAINS.SERVICES)?FULFILLMENT_STATES.PENDING.toUpperCase():FULFILLMENT_STATES.PENDING,
 			ref_order_ids: [on_confirm?.message?.order?.id],
 			provider: {
 				id: on_confirm?.message?.order?.provider.id,

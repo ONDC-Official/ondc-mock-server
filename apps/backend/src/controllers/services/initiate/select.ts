@@ -70,6 +70,9 @@ const intializeRequest = async (
 					parent_obj=providerItems[i-1]
 				}
 			}
+			providerItems.forEach((item:any)=>{
+				parent_obj=providerItems.filter((itm:any)=>itm.id===item.parent_item_id)
+			})
 			console.log("parent_obj===>",parent_obj)
 			let startTime = parent_obj.time?.schedule?.times?.[0]?.split("T")[1];
 			// console.log("Start Time from parent_item::", startTime);
@@ -283,6 +286,7 @@ const intializeRequest = async (
 										area_code: "560001",
 									},
 									time: {
+										// days:"4",
 										label: "selected",
 										range: {
 											// should be dynamic on the basis of scehdule

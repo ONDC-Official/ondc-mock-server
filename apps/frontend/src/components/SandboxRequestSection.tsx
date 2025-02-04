@@ -20,6 +20,7 @@ import { URL_MAPPING } from "../utils";
 import axios, { AxiosError } from "axios";
 import { UserGuide } from "./UserGuideSection";
 import { VITE_SERVER_URL } from "../utils/env";
+import { Container } from "@mui/material";
 
 export const SandboxRequestSection = () => {
 	const [authHeader, setAuthHeader] = useState<string>();

@@ -46,21 +46,20 @@ export const MockRequestSection = () => {
 	useEffect(() => {
 		setLog("");
 		setLogError(false);
-
 	}, [domain]);
 
 	async function call() {
-		const response = await axios.get("http://localhost:3000/get-data",{
+		const response = await axios.get(`${VITE_SERVER_URL}/get-data`, {
 			params: {
-        action: Action.toLowerCase(),
-        domain: domain,
-				subdomain:Domain,
-				version:version
-    }
+				action: Action.toLowerCase(),
+				domain: domain,
+				subdomain: Domain,
+				version: version,
+			},
 		});
 		return response;
 	}
-// console.log(domain,"Domainnn")
+	// console.log(domain,"Domainnn")
 	useEffect(() => {
 		console.log("ACTION CHANGED:", Action);
 
@@ -68,13 +67,15 @@ export const MockRequestSection = () => {
 			const data = await call();
 			if (data.data.data) {
 				console.log("Response from backend:", data);
-				setLog(JSON.stringify(data.data.data))
-				detectAction(JSON.stringify(data.data.data) , version);
+				setLog(JSON.stringify(data.data.data));
+				detectAction(JSON.stringify(data.data.data), version);
 			}
 		};
 
-		if(Action !="" && Domain !=""){fetchData();}
-	}, [Action,Domain,version]);
+		if (Action != "" && Domain != "") {
+			fetchData();
+		}
+	}, [Action, Domain, version]);
 
 	useEffect(() => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -112,19 +113,21 @@ export const MockRequestSection = () => {
 		console.log("action", event);
 		setAction(value as string); // Ensure value is a string and set the version
 	};
-	
-	const handledomain = (event:
-		| React.MouseEvent<Element>
-		| React.KeyboardEvent<Element>
-		| React.FocusEvent<Element>
-		| null,
-	value: {} | null) => {
+
+	const handledomain = (
+		event:
+			| React.MouseEvent<Element>
+			| React.KeyboardEvent<Element>
+			| React.FocusEvent<Element>
+			| null,
+		value: {} | null
+	) => {
 		console.log("action", event);
 		setDomain(value as string); // Ensure value is a string and set the version
 	};
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		console.log("insidelog",e.target.value)
+		console.log("insidelog", e.target.value);
 		setLog(e.target.value);
 		detectAction(e.target.value, version);
 	};
@@ -176,44 +179,50 @@ export const MockRequestSection = () => {
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
 						<Typography variant="h5">Mock Server</Typography>
-						<Stack style={{ width: "100%" ,display:"flex",flexDirection:"row"}}>
-							{show && (<>
-								<Select
-									sx={{
-										height: "10%",
-										width: "22%",
-										marginLeft: "auto",
-										position: "relative",
-										left:"30%"
-									}}
-									placeholder="Select Domain"
-									value={Domain}
-									onChange={handledomain}
-								>
-									{ALL_SUB_DOMAINS[domain as  keyof typeof ALL_SUB_DOMAINS].map((action, index) => (
-										<Option  value={action} key={action + index}>
-											{action.split(":").pop()}
-										</Option>
-									))}
-								</Select>
-								<Select
-									sx={{
-										height: "10%",
-										width: "20%",
-										marginLeft: "auto",
-										position: "relative",
-										left:"15%"
-									}}
-									placeholder="Select Action"
-									value={Action}
-									onChange={handleAction}
-								>
-									{All_Actions.map((action, index) => (
-										<Option  value={action} key={action + index}>
-											{action}
-										</Option>
-									))}
-								</Select></>
+						<Stack
+							style={{ width: "100%", display: "flex", flexDirection: "row" }}
+						>
+							{show && (
+								<>
+									<Select
+										sx={{
+											height: "10%",
+											width: "22%",
+											marginLeft: "auto",
+											position: "relative",
+											left: "30%",
+										}}
+										placeholder="Select Domain"
+										value={Domain}
+										onChange={handledomain}
+									>
+										{ALL_SUB_DOMAINS[
+											domain as keyof typeof ALL_SUB_DOMAINS
+										].map((action, index) => (
+											<Option value={action} key={action + index}>
+												{action.split(":").pop()}
+											</Option>
+										))}
+									</Select>
+									<Select
+										sx={{
+											height: "10%",
+											width: "20%",
+											marginLeft: "auto",
+											position: "relative",
+											left: "15%",
+										}}
+										placeholder="Select Action"
+										value={Action}
+										onChange={handleAction}
+									>
+										{All_Actions.map((action, index) => (
+											<Option value={action} key={action + index}>
+												{action}
+											</Option>
+										))}
+									</Select>
+								</>
 							)}
 
 							<Fab
@@ -257,7 +266,7 @@ export const MockRequestSection = () => {
 								</Stack>
 							)}
 						</FormControl>
-						{action  && (
+						{action && (
 							<Grid container>
 								<Grid item xs={12} md={6}>
 									<Box
@@ -317,7 +326,7 @@ export const MockRequestSection = () => {
 							variant="solid"
 							onClick={handleSubmit}
 							disabled={
-								logError|| !Action
+								logError || !Action
 								// !action ||
 								// (scenarios!.length > 0 && !activeScenario) ?? false
 							}

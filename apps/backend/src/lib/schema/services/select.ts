@@ -219,11 +219,8 @@ export const selectSchema = {
                               // required: ["start", "end"],
                               required: ["start"],
                             },
-                            days: {
-                              type: "array",
-                              items: {
+                            days: { 
                                 type: "string",
-                              },
                             },
                           },
                           required: ["label", "range"],

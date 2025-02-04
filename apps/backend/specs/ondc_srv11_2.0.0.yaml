@@ -758,7 +758,7 @@ paths:
                                 id:
                                   type: string
                                 status:
-                                  const: Created
+                                  const: CREATED
                               required:
                                 - id
                                 - status
@@ -1362,7 +1362,7 @@ paths:
                           properties:
                             order:
                               required: 
-                                - created_at
+                                # - created_at
                                 - updated_at
                     - properties:
                         message:
@@ -1579,9 +1579,9 @@ paths:
                                 status:
                                   type: string
                                   enum:
-                                    - Created
-                                    - Accepted
-                                    - In-progress
+                                    - CREATED
+                                    - ACCEPTED
+                                    - IN-PROGRESS
                               required:
                                 - id
                                 - status
@@ -2485,9 +2485,9 @@ paths:
                                 status:
                                   type: string
                                   enum:
-                                    - Created
-                                    - Accepted
-                                    - Cancelled
+                                    - CREATED
+                                    - ACCEPTED
+                                    - CANCELLED
                               required:
                                 - id
                                 - status
@@ -4004,13 +4004,14 @@ components:
             policy
           type: string
           enum:
-            - Active
+            - ACTIVE
             - Complete
-            - Cancelled
-            - Created
-            - Accepted
-            - In-progress
-            - Completed
+            - CANCELLED
+            - CREATED
+            - ACCEPTED
+            - IN-PROGRESS
+            - COMPLETED
+            - PENDING
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.
