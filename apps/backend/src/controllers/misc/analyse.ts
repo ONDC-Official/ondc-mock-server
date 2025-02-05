@@ -19,7 +19,7 @@ export const analyseController = async (req: Request, res: Response) => {
 			},
 		});
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
-
+		console.log("transactionKeys===>",transactionKeys.flat())
 	if (transactionKeys.length === 0) return res.json([]);
 
 	if (
@@ -49,6 +49,10 @@ export const analyseController = async (req: Request, res: Response) => {
 				);
 				if (!each) return null;
 				var parsed = JSON.parse(each);
+				console.log("At result ",{
+					"action":(parsed.request as any).context.action,
+					parsed
+				})
 				return {
 					...parsed,
 					id: _key ? _key[1] : "0",
