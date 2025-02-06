@@ -81,9 +81,12 @@ async function send_response(
     }
     
     try {
+      console.log("Action",action,"uri",uri)
       const response = await axios.post(uri, res_obj, {
         headers: { ...headers ,"environment":env},
       });
+      console.log("response at Send_response",response.data,res_obj)
+      console.log(`Storing ${action} from Server at redis in Send_response`)
       await redis.set(
         `${transaction_id}-${action}-from-server-${id}-${time_now}`,
         JSON.stringify({
@@ -101,7 +104,7 @@ async function send_response(
       }
       throw err
     }
-
+    console.log("at SendResponse")
     return res.status(200).json({
       message: {
         ack: {

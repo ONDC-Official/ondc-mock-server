@@ -196,12 +196,12 @@ export const responseBuilder = async (
 						authorization: header,
 					},
 				});
-
+				console.log("response at response builder",response.data)
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
-
+				console.log(`Storing redis ${action} from Server in Response Builder`)
 				await redis.set(
 					`${
 						(async.context! as any).transaction_id
@@ -261,6 +261,7 @@ export const responseBuilder = async (
 			transaction_id: (reqContext as any).transaction_id,
 			message: { sync: { message: { ack: { status: "ACK" } } } },
 		});
+		console.log("at ResponseBuilder ")
 		return res.json({
 			sync: {
 				message: {

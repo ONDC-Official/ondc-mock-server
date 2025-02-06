@@ -42,6 +42,7 @@ export const analyseController = async (req: Request, res: Response) => {
 					/-to-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/
 				)
 		);
+		console.log("_transactionKeys",_transactionsKeys)
 		var transactions = await redis.mget(_transactionsKeys);
 		const Result=transactions.map((each, index) => {
 				let _key = _transactionsKeys[index].match(
