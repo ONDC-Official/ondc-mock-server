@@ -16,6 +16,7 @@ import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
+import { log } from "console";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -137,14 +138,19 @@ const intializeRequest = async (
 
 			//get the parent item in customization
 			items = [...providers?.[0].items];
-			const parent_item = items.find((itm: Item,index:number) =>{
-				// _.isEmpty(itm.parent_item_id)
+			console.log("items",JSON.stringify(items))
+			// const parent_item = items.find((itm: Item,index:number) =>{
+			// 	// _.isEmpty(itm.parent_item_id)
 			
-				_.isEmpty(itm.parent_item_id)
-				if(itm.parent_item_id===itm.id){
-					return itm
-				}
-			});
+			// 	_.isEmpty(itm.parent_item_id)
+			// 	if(itm.parent_item_id===itm.id){
+			// 		return itm
+			// 	}
+			// });
+			let parent_item:any;
+			items.forEach((item:any)=>{
+				parent_item=providerItems.find((itm:any)=>itm.id===item.parent_item_id)
+			})
 
 			// selecting elements based on categories selected
 			items = items.filter((itm: Item) => {
@@ -163,6 +169,9 @@ const intializeRequest = async (
 				}
 				return false;
 			});
+
+
+			console.log("415ed046-2bdf-4c04-8f94-dfdc3729a627",parent_item)
 
 			const { id, parent_item_id, location_ids } = parent_item;
 			items = [

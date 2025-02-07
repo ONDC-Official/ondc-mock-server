@@ -683,7 +683,6 @@ paths:
                                     - address
                                     - state
                                     - city
-                                    - tax_id
                                     - email
                                     - phone
                               required:

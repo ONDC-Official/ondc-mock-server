@@ -111,13 +111,13 @@ export const searchController = async (
 
 		onSearch.value.message = {
 			catalog: {
-				fulfillments:onSearch.value.message.catalog.fulfillments,
+				fulfillments: onSearch.value.message.catalog.fulfillments,
 				providers: [
 					{
-						id:onSearch.value.message.catalog.providers[0].id,
-						descriptor:onSearch.value.message.catalog.providers[0].descriptor,
-						locations:onSearch.value.message.catalog.providers[0].locations,
-						 items: updatedItems,
+						id: onSearch.value.message.catalog.providers[0].id,
+						descriptor: onSearch.value.message.catalog.providers[0].descriptor,
+						locations: onSearch.value.message.catalog.providers[0].locations,
+						items: updatedItems,
 						categories: updatedCategories,
 					},
 				],
@@ -157,7 +157,7 @@ export const searchController = async (
 				},
 			},
 		};
-		
+
 		return responseBuilder(
 			res,
 			next,
