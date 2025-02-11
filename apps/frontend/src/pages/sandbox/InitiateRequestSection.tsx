@@ -60,7 +60,7 @@ type OptionsType = {
 type Version = keyof OptionsType;
 
 export const InitiateRequestSection = () => {
-	const { handleMessageToggle, setMessageType, setCopy } = useMessage();
+	const { handleMessageToggle, setMessageType, setCopy,setTransaction_Id } = useMessage();
 	const [action, setAction] = useState<string>();
 	const { domain } = useDomain();
 	const { environment } = useEnvironment();
@@ -210,7 +210,6 @@ export const InitiateRequestSection = () => {
 			) {
 				setAllowSubmission(true);
 			} else if (checker(keys, formKeys, domain, version)) {
-				console.log("heerr1")
 				setAllowSubmission(true);
 			} else if (
 				checker(
@@ -221,7 +220,6 @@ export const InitiateRequestSection = () => {
 				scenarios?.domainDepended &&
 				!scenarios.options[domain as keyof SELECT_OPTIONS]
 			) {
-				console.log("heerr2")
 				setAllowSubmission(true);
 			} else {
 				setAllowSubmission(false);
@@ -275,9 +273,16 @@ export const InitiateRequestSection = () => {
 								: response.data.async.context.transaction_id
 						}`
 					);
+					setTransaction_Id(response.data.transaction_id
+						? response.data.transaction_id
+						: response.data.async.context.transaction_id)
 					setMessageType("success");
 					setCopy(response.data.transaction_id);
 				} else {
+					// console.log("response",response.data.transaction_id)
+					setTransaction_Id(response.data.transaction_id
+						? response.data.transaction_id
+						: response.data.async.context.transaction_id)
 					handleMessageToggle("Request Initiated Successfully!");
 					setMessageType("success");
 				}
