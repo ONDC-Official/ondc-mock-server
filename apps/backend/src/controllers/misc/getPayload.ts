@@ -31,9 +31,6 @@ export const getPayload = async (req: Request, res: Response) => {
 				case "ONDC:SRV18":
 					baseDir = path.join(__dirname, `../../../domain-repos/@${domain}/draft-agri_bids_and_auction/api/components/Examples/Agri_Bids_And_Auction/${action}/`)
 					break;
-				case "ONDC:SRV18":
-					baseDir = path.join(__dirname, `../../../domain-repos/@${domain}/draft-agri_equipment/api/components/Examples/Agri_Equipment_Hiring/${action}/`)
-					break
 			}
 			break;
 		case "retail":

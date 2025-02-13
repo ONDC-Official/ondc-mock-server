@@ -104,7 +104,6 @@ export const MockRequestSection = () => {
 			| null,
 		value: {} | null
 	) => {
-		console.log("event", event);
 		if (value) {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
@@ -117,7 +116,6 @@ export const MockRequestSection = () => {
 		| null,
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	value: {} | null) => {
-		console.log("action", event);
 		setAction(value as string); // Ensure value is a string and set the version
 	};
 
@@ -129,12 +127,10 @@ export const MockRequestSection = () => {
 			| null,
 		value: {} | null
 	) => {
-		console.log("action", event);
 		setDomain(value as string); // Ensure value is a string and set the version
 	};
 
 	const handleLogChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		console.log("insidelog", e.target.value);
 		setLog(e.target.value);
 		detectAction(e.target.value, version);
 	};

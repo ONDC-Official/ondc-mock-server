@@ -819,7 +819,6 @@ const initSellercollected=(req: Request,
 		}
 
 
-console.log("status")
 return	childOrderResponseBuilder(
 					0,
 					res,

@@ -65,7 +65,6 @@ export const SandboxRequestSection = () => {
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		value: {} | null
 	) => {
-		console.log("event", event);
 		if (value) {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
