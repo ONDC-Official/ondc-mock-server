@@ -1937,6 +1937,144 @@ export const quoteCreatorAstroService = (
 	}
 };
 
+export const quoteCreatorWeightment=(items: Item[],
+	providersItems?: any,
+	offers?: any,
+	fulfillment_type?: string,
+	service_name?: string,
+	scenario?: string)=>{
+		console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+		if(!Array.isArray(items)){
+		 items=ensureArray(items)
+		}
+			const providersItem=[providersItems[0]]
+	 //get price from on_search
+	 let breakup: any[] = [];
+ 
+	 // console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+	 items.forEach((item) => {
+		 // Find the corresponding item in the second array
+		 if (providersItems) {
+			 const matchingItem = providersItem.find(
+				 (secondItem: { id: string }) => secondItem?.id === item?.id
+			 );
+			 // If a matching item is found, update the price in the items array
+			 console.log("matchhing",matchingItem)
+			 if (matchingItem) {
+				 item.title = matchingItem?.descriptor?.name;
+				 // item.price = matchingItem?.price;
+				 item.available_quantity = {
+					 available:matchingItem?.quantity?.available,
+					 maximum:matchingItem?.quantity?.maximum
+				 };
+				 item.price = {
+					 currency: matchingItem.price.currency,
+					 value: matchingItem.price.value,
+				 };
+			 }
+		 }
+	 });
+	 items.forEach((item) => {
+		 // console.log("itemsbreakup",item)
+		 // console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
+		 breakup = [
+			 {
+				 title:item.title,
+				 price:{
+					 currency: "INR",
+					 value: (
+						 Number(item?.price?.value) * item?.quantity?.selected?.count
+					 ).toString(),
+				 },
+				 item:{
+					 id:item.id,
+					 price:item.price,
+					 quantity:{
+						 selected:{
+							 count:100
+						 }
+					 }
+				 },
+				 tags: [
+							 {
+								 "descriptor": {
+									 "code": "TITLE"
+								 },
+								 "list": [
+									 {
+										 "descriptor": {
+											 "code": "type"
+										 },
+										 "value": "item"
+									 }
+								 ]
+							 }
+						 ]
+			 }
+		 ];
+	 });
+
+	 breakup.push({
+		 "title": "tax",
+		 "price": {
+			 "currency": "INR",
+			 "value": "100"
+		 },
+		 "item": {
+			 "id": "I1"
+		 },
+		 "tags": [
+			 {
+				 "descriptor": {
+					 "code": "title"
+				 },
+				 "list": [
+					 {
+						 "descriptor": {
+							 "code": "type"
+						 },
+						 "value": "TAX"
+					 }
+				 ]
+			 }
+		 ]
+	 })
+	 // console.log("breakuppp",breakup)
+ 
+	 //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	 let totalPrice = 0;
+	 breakup.forEach((entry) => {
+		 // console.log("entryyy",entry)
+		 if(entry.title==="discount"){
+			 const priceValue = parseFloat(entry.price.value);
+			 if (!isNaN(priceValue)) {
+				 totalPrice -= priceValue;
+			 }
+			}
+			else{
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice += priceValue;
+			}}
+	 });
+ 
+	 
+	 const result = {
+		 breakup:[
+			 ...breakup,
+			 // ...chargesOnFulfillment
+		 ],
+		 price: {
+			 currency: "INR",
+			 value: totalPrice.toFixed(2),
+		 },
+		 ttl: "P1D",
+	 };
+ 
+	 // console.log("resultttttttttt", JSON.stringify(result));
+	 return result;
+}
+
 //QUOTE FOR SUBSCRIPTION PROCESS
 export const quoteSubscription = (
 	items: Item[],
@@ -2522,6 +2660,24 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						id: "F2",
 					});
 				}
+				if (domain === "weightment") {
+					updatedFulfillments = updatedFulfillments.map((itm: any) => ({
+						...itm,
+						stops: itm.stops?.length
+							? [
+									{
+										...itm.stops[0],
+										location: {
+											gps: "12.974002,77.613458",
+											area_code: "560001",
+										},
+									},
+									...itm.stops.slice(1),
+								]
+							: itm.stops,
+					}));
+				}
+				
 				break;
 			case ON_ACTION_KEY.ON_CONFIRM:
 				if(domain==="astroService"){
@@ -2570,6 +2726,33 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						return fulfill;
 				})
 
+				}
+				else if(domain==="weightment"){
+					updatedFulfillments.push(fulfillments[0])
+					updatedFulfillments=updatedFulfillments.map((itm:any)=>{
+						return {
+							...itm,
+							stops:[
+								{...itm.stops[0],
+									location:{
+										"gps": "12.974002,77.613458",
+                		"area_code": "560001"
+									},
+									instructions:{
+										"name": "Special Instructions",
+									 "short_desc": "Customer Special Instructions"
+								 },
+								 days:undefined,
+								 person:undefined
+								}
+							],
+							customer:{
+								person:{
+									name:	"Ramu"
+								}
+							}
+						}
+					})
 				}
 				else{
 				updatedFulfillments = fulfillments;
@@ -2762,8 +2945,17 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 								}
 							}
 						}
+					}else if(domain===SERVICES_DOMAINS.WEIGHTMENT){
+						return {
+							...fulfillment,
+							state: {
+								...fulfillment.state,
+								descriptor: {
+								code: FULFILLMENT_STATES.CANCELLED,
+								}
+						}
 					}
-				  
+				}
 					// Default return if no conditions are met
 					return fulfillment;
 				  });
@@ -2795,10 +2987,6 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				break;
 		}
 
-		// console.log(
-		// 	"updatedFulfillmentssssssssssss",
-		// 	JSON.stringify(updatedFulfillments)
-		// );
 		return updatedFulfillments;
 	} catch (err) {
 		console.log("Error occured in fulfillments method", err);

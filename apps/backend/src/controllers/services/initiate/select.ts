@@ -171,7 +171,7 @@ const intializeRequest = async (
 			});
 
 
-			console.log("415ed046-2bdf-4c04-8f94-dfdc3729a627",parent_item)
+
 
 			const { id, parent_item_id, location_ids } = parent_item;
 			items = [
@@ -290,7 +290,7 @@ const intializeRequest = async (
 							stops: [
 								{
 									type: "end",
-									location: {
+									location:(context.domain===SERVICES_DOMAINS.WEIGHTMENT)?undefined: {
 										gps: "12.974002,77.613458",
 										area_code: "560001",
 									},
@@ -307,7 +307,7 @@ const intializeRequest = async (
 												new Date(),
 										},
 									},
-									days: scenario === "customization" ? "4" : undefined,
+									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHTMENT) ? "4" : undefined,
 									// 	? fulfillments[0].stops[0].time.days.split(",")[0]
 									// 	: undefined,
 								},

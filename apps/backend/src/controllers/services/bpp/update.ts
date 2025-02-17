@@ -277,7 +277,7 @@ export const updateRescheduleController = (
 		message: { order },
 	} = req.body;
 
-	const responseMessage = {
+	let responseMessage = {
 		order: {
 			...order,
 			fulfillments: [
@@ -294,6 +294,20 @@ export const updateRescheduleController = (
 			],
 		},
 	};
+
+		if(context.domain===SERVICES_DOMAINS.WEIGHTMENT){
+				let {provider,quote,items,payments}=req.body.on_confirm.message.order
+			responseMessage={
+				order:{
+				...responseMessage.order,
+				provider,
+				quote,
+				items,
+				payments
+			}
+			}
+		}
+
 
 	return responseBuilder(
 		res,

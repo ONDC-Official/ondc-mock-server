@@ -54,9 +54,9 @@ const intializeRequest = async (
 		const { id, type, stops } = fulfillments[0];
 		const { id: parent_item_id, location_ids, ...item } = items[0];
 
-		items = items.map(
+		items = (context.domain === SERVICES_DOMAINS.WEIGHTMENT)?items:items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
-		);
+		)
 
 		const init = {
 			context: {
@@ -83,7 +83,10 @@ const intializeRequest = async (
 								{
 									...stops[0],
 									id: undefined,
-									location: {
+									location:(context.domain===SERVICES_DOMAINS.WEIGHTMENT)?{
+										gps: "12.974002,77.613458",
+										area_code: "560001",
+									} :{
 										gps: "12.974002,77.613458",
 										address: "My House #, My buildin",
 										city: {
@@ -97,10 +100,13 @@ const intializeRequest = async (
 											name: "Karnataka",
 										},
 									},
-									contact: {
+									days:undefined,
+									contact:(context.domain===SERVICES_DOMAINS.WEIGHTMENT)?undefined: {
 										phone: "9886098860",
 									},
-									time: stops[0].time,
+									time: {...stops[0].time,
+										days:"4"
+									},
 								},
 							],
 						},

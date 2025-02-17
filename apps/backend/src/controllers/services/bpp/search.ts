@@ -10,6 +10,7 @@ import {
 	HEALTHCARE_SERVICES_EXAMPLES_PATH,
 	responseBuilder,
 	SERVICES_EXAMPLES_PATH,
+	WEIGHTMENT_SERVICES_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
@@ -87,6 +88,15 @@ export const searchController = (
 				file = fs.readFileSync(
 					path.join(
 						ASTRO_SERVICES_EXAMPLES_PATH,
+						`on_search/on_search.yaml`
+					)
+				);
+				break;
+			
+			case SERVICES_DOMAINS.WEIGHTMENT:
+				file = fs.readFileSync(
+					path.join(
+						"/Users/naval/Desktop/new mock server/ondc-mock-server/apps/backend/domain-repos/@services/draft-weightment/api/components/Examples/Weighment_services_yaml",
 						`on_search/on_search.yaml`
 					)
 				);

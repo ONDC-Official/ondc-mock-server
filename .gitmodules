@@ -110,3 +110,7 @@
 	path = apps/backend/domain-repos/@agri/draft-agri_output
 	url = https://github.com/ONDC-Official/ONDC-AGR-Specifications
 	branch = draft-agri_output
+[submodule "apps/backend/domain-repos/@services/draft-weightment"]
+	path = apps/backend/domain-repos/@services/draft-weightment
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-weightment

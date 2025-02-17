@@ -76,6 +76,7 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV16",
 	"ONDC:SRV17",
 	"ONDC:SRV18",
+	"ONDC:SRV19"
 ];
 
 export const SUBSCRIPTION_DOMAINS = [
