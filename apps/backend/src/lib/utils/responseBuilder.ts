@@ -1989,11 +1989,7 @@ export const quoteCreatorWeightment=(items: Item[],
 				 item:{
 					 id:item.id,
 					 price:item.price,
-					 quantity:{
-						 selected:{
-							 count:100
-						 }
-					 }
+					 quantity:item.quantity
 				 },
 				 tags: [
 							 {
@@ -2256,7 +2252,7 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 				value: matchingItem.price.value,
 			};
 			item.price = pp;
-			if (matchingItem?.tags[0].descriptor.code != "reschedule_terms") {
+			if (!matchingItem.tags && matchingItem?.tags[0]?.descriptor.code != "reschedule_terms") {
 				item.tags = matchingItem?.tags;
 			} else {
 				const tag = [
@@ -2305,8 +2301,8 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	const itemtobe = {
 		id: items[0].id,
-		price: price,
-		quantity: items[0].quantity,
+		// price: price,
+		// quantity: items[0].quantity,
 	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
@@ -2945,7 +2941,7 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 								}
 							}
 						}
-					}else if(domain===SERVICES_DOMAINS.WEIGHTMENT){
+					}else if(domain===SERVICES_DOMAINS.WEIGHMENT){
 						return {
 							...fulfillment,
 							state: {

@@ -94,7 +94,7 @@ const selectConsultationConfirmController = (
 						"",
 						"astroService"
 					)
-					:domain===SERVICES_DOMAINS.WEIGHTMENT? updateFulfillments(
+					:domain===SERVICES_DOMAINS.WEIGHMENT? updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
 						"",
@@ -148,7 +148,7 @@ const selectConsultationConfirmController = (
 									message?.order?.fulfillments[0]?.type,
 									"astro_service"
 								) :
-								domain===SERVICES_DOMAINS.WEIGHTMENT?
+								domain===SERVICES_DOMAINS.WEIGHMENT?
 								quoteCreatorWeightment(
 									message?.order?.items,
 									providersItems?.items,

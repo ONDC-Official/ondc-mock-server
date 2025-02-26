@@ -127,7 +127,8 @@ export const onConfirmSchema = {
                   type: "boolean",
                 },
               },
-              required: ["id", "locations", "rateable"],
+              // required: ["id", "locations", "rateable"],
+              required:["id","rateable"]
             },
             items: {
               type: "array",
@@ -222,159 +223,81 @@ export const onConfirmSchema = {
 
               required: ["name", "address", "state", "city", "phone"],
             },
-            fulfillments: {
+            fulfillments:  {
               type: "array",
               items: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  state: {
-                    type: "object",
-                    properties: {
-                      descriptor: {
-                        type: "object",
-                        properties: {
-                          code: {
-                            type: "string",
-                          },
-                        },
-                        required: ["code"],
-                      },
-                    },
-                    required: ["descriptor"],
-                  },
-                  type: {
-                    type: "string",
-                  },
-                  tracking: {
-                    type: "boolean",
-                  },
-                  stops: {
-                    type: "array",
+                type: "object"
+              },
+              // ✅ Use "oneOf" for conditional validation based on domain
+              anyof: [
+                // If domain is "ONDC:MEC10", validate against "stops" schema
+                {
+                  properties: { domain: { const: "ONDC:MEC10" } },
+                  then: {
                     items: {
                       type: "object",
                       properties: {
-                        id: {
-                          type: "string",
-                        },
-                        type: {
-                          type: "string",
-                        },
-                        location: {
-                          type: "object",
-                          properties: {
-                            id: {
-                              type: "string",
-                            },
-                            descriptor: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
+                        stops: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              type: { type: "string" },
+                              location: {
+                                type: "object",
+                                properties: {
+                                  gps: { type: "string" },
+                                  area_code: { type: "string" }
                                 },
+                                required: ["gps", "area_code"]
                               },
-                              required: ["name"],
-                            },
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
+                              time: {
+                                type: "object",
+                                properties: {
+                                  label: { type: "string", const: "selected" },
+                                  range: {
+                                    type: "object",
+                                    properties: {
+                                      start: { type: "string" },
+                                      end: { type: "string" }
+                                    },
+                                    required: ["start"]
+                                  },
+                                  days: { type: "string" }
                                 },
-                              },
-                              required: ["name"],
+                                required: ["label", "range"]
+                              }
                             },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: ["gps"],
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["start", "end"],
-                            },
-                          },
-                          required: ["range"],
-                        },
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
-                            },
-                            email: {
-                              type: "string",
-                            },
-                          },
-                          // required: ["phone", "email"],
-                          required: ["email"],
-                        },
-                        person: {
-                          type: "object",
-                          properties: {
-                            name: {
-                              type: "string",
-                            },
-                          },
-                          required: ["name"],
-                        },
+                            required: ["type", "time"]
+                          }
+                        }
                       },
-                      if: { properties: { type: { const: "end" } } },
-                      then: {
-                        required: ["type", "location", "time"]
-                      },
-                      else: {
-                        required: ["type"],
-                      },
-                    },
-                  },
-                  rateable: {
-                    type: "boolean",
-                  },
+                      required: ["stops"]
+                    }
+                  }
                 },
-                required: [
-                  "id",
-                  "type",
-                  "stops"                ],
-              },
+                // If domain is "ONDC:MEC11", validate against "ONLINE" type schema
+                {
+                  properties: { domain: { const: "ONDC:MEC11" } },
+                  then: {
+                    items: {
+                      type: "object",
+                      properties: {
+                        id:{type:"string"},
+                        type: { type: "string", const: "ONLINE" },
+                        customer:{
+                          type:"object",
+                          person:{
+                            type:"object",
+                            name:{type:"string"}
+                          }
+                        }
+                      },
+                      required: ["type","id","customer"]
+                    }
+                  }
+                }
+              ]
             },
             quote: {
               type: "object",

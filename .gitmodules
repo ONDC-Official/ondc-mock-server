@@ -114,3 +114,7 @@
 	path = apps/backend/domain-repos/@services/draft-weightment
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-weightment
+[submodule "apps/backend/domain-repos/@mec/draft-audio_video"]
+	path = apps/backend/domain-repos/@mec/draft-audio_video
+	url = https://github.com/ONDC-Official/ONDC-MEC-Specifications
+	branch = draft-audio_video

@@ -404,10 +404,11 @@ export const InitiateRequestSection = () => {
 						{Object.keys(INITIATE_FIELDS)
 							.filter(
 								(action) =>
-									!(
-										(domain === "logistics" && action === "select") ||
-										(domain === "subscription" && action === "update")
-									)
+									!(domain === "logistics" && action === "select")
+									// !(
+									// 	(domain === "logistics" && action === "select") ||
+									// 	(domain === "subscription" && action === "update")
+									// )
 							)
 							.map((action, idx) => (
 								<Option value={action} key={"action-" + idx}>

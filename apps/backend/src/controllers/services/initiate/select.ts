@@ -290,7 +290,7 @@ const intializeRequest = async (
 							stops: [
 								{
 									type: "end",
-									location:(context.domain===SERVICES_DOMAINS.WEIGHTMENT)?undefined: {
+									location:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?undefined: {
 										gps: "12.974002,77.613458",
 										area_code: "560001",
 									},
@@ -307,7 +307,7 @@ const intializeRequest = async (
 												new Date(),
 										},
 									},
-									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHTMENT) ? "4" : undefined,
+									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHMENT) ? "4" : undefined,
 									// 	? fulfillments[0].stops[0].time.days.split(",")[0]
 									// 	: undefined,
 								},

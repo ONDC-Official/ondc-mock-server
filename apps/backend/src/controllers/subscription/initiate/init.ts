@@ -11,13 +11,15 @@ import {
 	SUBSCRIPTION_EXAMPLES_PATH,
 	quoteSubscription,
 	redisFetchFromServer,
+	quoteCommon,
+	SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import {
 	ACTTION_KEY,
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { BILLING_DETAILS } from "../../../lib/utils/apiConstants";
+import { BILLING_DETAILS, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 import path from "path";
 
 export const initiateInitController = async (
@@ -72,10 +74,13 @@ const intializeRequest = async (
 		let { payments, items } = transaction.message.order;
 		const { id, type, stops } = fulfillments[0];
 		const { id: parent_item_id, location_ids, ...item } = items[0];
-
+		console.log("items=====>",JSON.stringify(items))
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
+
+		let init;
+		if(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA){
 
 		let quoteData: any = transaction?.message?.order?.quote?transaction?.message?.order?.quote:quoteSubscription(
 			items,
@@ -121,7 +126,7 @@ const intializeRequest = async (
 
 		const response = YAML.parse(file.toString());
 
-		const init = {
+		init = {
 			context: {
 				...context,
 				timestamp: new Date().toISOString(),
@@ -151,6 +156,48 @@ const intializeRequest = async (
 				},
 			},
 		};
+
+	}
+	else	{
+		let file = fs.readFileSync(
+					path.join(SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH, "init/init.yaml")
+				);
+		const response = YAML.parse(file.toString());
+		init = {
+			context: {
+				...context,
+				timestamp: new Date().toISOString(),
+				action: ACTTION_KEY.INIT,
+				bap_id: MOCKSERVER_ID,
+				bap_uri: SUBSCRIPTION_BAP_MOCKSERVER_URL,
+				message_id: uuidv4(),
+			},
+			message: {
+				order: {
+					provider: {
+						...provider,
+					},
+					items:[{...items[0],quantity:{
+						selected:{
+							count:1
+						}
+					}}],
+					billing: BILLING_DETAILS,
+					// fulfillments,
+					// quote,
+					payments: [
+						{
+							...response?.value?.message?.order?.payments[0],
+						},
+					],
+				},
+			},
+		};
+		}
+
+
+		console.log("inittttttitititi",JSON.stringify(init))
+
 		await send_response(
 			res,
 			next,
