@@ -57,6 +57,7 @@ export const SandboxRequestSection = () => {
 	};
 
 	const handleVersion = (
+				//@ts-ignore
 		event:
 			| React.MouseEvent<Element>
 			| React.KeyboardEvent<Element>

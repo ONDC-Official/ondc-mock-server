@@ -97,6 +97,7 @@ export const MockRequestSection = () => {
 	const [curl, setCurl] = useState<string>();
 
 	const handleVersion = (
+		//@ts-ignore
 		event:
 			| React.MouseEvent<Element>
 			| React.KeyboardEvent<Element>
@@ -108,7 +109,7 @@ export const MockRequestSection = () => {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
 	};
-
+		//@ts-ignore
 	const handleAction = (event:
 		| React.MouseEvent<Element>
 		| React.KeyboardEvent<Element>
@@ -120,6 +121,7 @@ export const MockRequestSection = () => {
 	};
 
 	const handledomain = (
+				//@ts-ignore
 		event:
 			| React.MouseEvent<Element>
 			| React.KeyboardEvent<Element>
