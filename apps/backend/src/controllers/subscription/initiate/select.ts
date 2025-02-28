@@ -14,6 +14,7 @@ import fs from "fs";
 import YAML from "yaml";
 import _ from "lodash";
 import path from "path";
+import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -149,11 +150,12 @@ const intializeRequest = async (
 						},
 					})),
 
-					fulfillments: fulfillment,
-					payments: [{ type: payments?.[0].type }],
+					fulfillments: (context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)?fulfillment:[{type:"ONLINE"}],
+					payments:(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)? [{ type: payments?.[0].type }]:undefined,
 				},
 			},
 		};
+		console.log("Context.domain",context.domain)
 		await send_response(res, next, select, transaction_id, "select",scenario);
 	} catch (error) {
 		return next(error);

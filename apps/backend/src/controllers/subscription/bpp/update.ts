@@ -6,6 +6,7 @@ import {
 	redisFetchToServer,
 	responseBuilder,
 	send_nack,
+	SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
 	updateFulfillments,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
@@ -14,7 +15,11 @@ import {
 	FULFILLMENT_LABELS,
 	FULFILLMENT_STATES,
 	SERVICES_DOMAINS,
+	SUBSCRIPTION_DOMAINS,
 } from "../../../lib/utils/apiConstants";
+import path from "path";
+import fs from "fs";
+import YAML from "yaml";
 
 export const updateController = async (
 	req: Request,
@@ -87,23 +92,42 @@ export const updateRequoteController = (
 		const { context, message, on_confirm } = req.body;
 		//CREATED COMMON RESPONSE MESSAGE FOR ALL SCENRIO AND UPDATE ACCORDENGLY IN FUNCTIONS
 
-		const responseMessages = {
-			order: {
-				...message.order,
-				id: uuidv4(),
-				status: FULFILLMENT_STATES.PENDING,
-				ref_order_ids: [on_confirm?.message?.order?.id],
-				provider: {
-					id: on_confirm?.message?.order?.provider.id,
+		const file = fs.readFileSync(
+			path.join(
+				SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
+				"on_update/on_update.yaml"
+			)
+		)
+		const response = YAML.parse(file.toString());
+		let responseMessage:any;
+		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO){
+			responseMessage={
+				order:{
+					id:"01",
+					...response.value.message.order,
+				}
+			}
+		}
+		else{
+			 responseMessage = {
+				order: {
+					...message.order,
+					id: uuidv4(),
+					status: FULFILLMENT_STATES.PENDING,
+					ref_order_ids: [on_confirm?.message?.order?.id],
+					provider: {
+						id: on_confirm?.message?.order?.provider.id,
+					},
 				},
-			},
-		};
+			};
+		}
+		
 
 		return responseBuilder(
 			res,
 			next,
 			context,
-			responseMessages,
+			responseMessage,
 			`${req.body.context.bap_uri}${
 				req.body.context.bap_uri.endsWith("/")
 					? ON_ACTION_KEY.ON_UPDATE
@@ -285,6 +309,6 @@ export const updateRescheduleController = (
 				: `/${ON_ACTION_KEY.ON_UPDATE}`
 		}`,
 		`${ON_ACTION_KEY.ON_UPDATE}`,
-		"services"
+		"subscription"
 	);
 };

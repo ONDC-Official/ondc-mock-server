@@ -348,7 +348,8 @@ export const onStatusSchema = {
                     },
                   },
                 },
-                required: ["type", "stops"],
+                // required: ["type", "stops"],
+                required:["id","type"]
               },
             },
             quote: {

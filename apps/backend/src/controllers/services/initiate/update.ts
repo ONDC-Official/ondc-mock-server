@@ -18,6 +18,7 @@ import {
 	ACTTION_KEY,
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
+import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateUpdateController = async (
 	req: Request,
@@ -79,6 +80,23 @@ export const initiateUpdateController = async (
 			context,
 			message: responseMessage,
 		};
+
+		if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+			responseMessage={
+				update_target:"fulfillments",
+				order:{
+					id:message.order.id,
+					status:"In-Progress",
+					fulfillments:message.order.fulfillments.map((itm: any) => ({
+						...itm,
+						stops: itm.stops.map((stop: any) => ({
+							...stop,
+						})),
+					})),
+				}
+			}
+			update.message=responseMessage
+		}
 
 		const header = await createAuthHeader(update);
 
@@ -202,7 +220,6 @@ function rescheduleRequest(message: any, update_target: string) {
 	fulfillments.map((itm: any) => {
 		itm.state.descriptor.code = "Pending";
 	});
-
 	const responseMessage = {
 		update_target: "fulfillments",
 		order: {

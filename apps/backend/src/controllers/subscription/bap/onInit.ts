@@ -40,16 +40,16 @@ const onInitConsultationController = (req: Request, res: Response, next: NextFun
 				billing,
 				fulfillments: [{
 					...remainingfulfillments,
-					stops: stops.map(({ tags, ...stop }: { tags: any }) => {
-						return {
-							...stop,
-							customer: {
-								person: {
-									name: "Ramu"
-								}
-							}
-						}
-					})
+					// stops: stops.map(({ tags, ...stop }: { tags: any }) => {
+					// 	return {
+					// 		...stop,
+					// 		customer: {
+					// 			person: {
+					// 				name: "Ramu"
+					// 			}
+					// 		}
+					// 	}
+					// })
 				}],
 				quote: quote,
 				payments: [{

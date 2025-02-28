@@ -53,6 +53,14 @@ export const confirmConsultationController = async (
         "astroService"
       );
     }
+    if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+      updatedFulfillments = updateFulfillments(
+       fulfillments,
+       ON_ACTION_KEY?.ON_CONFIRM,
+       "",
+       "weightment"
+     );
+   }
 
 		const responseMessage = {
 			order: {
@@ -63,12 +71,13 @@ export const confirmConsultationController = async (
 					...order.provider,
 					rateable: true,
 				},
+        payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?[order.payments[0]]:order.payments
 			},
 		};
     
-    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE||context.domain===SERVICES_DOMAINS.WEIGHMENT){
       delete responseMessage.order.payments[0].params.transaction_id
-      
+     
     }
 
     console.log("responseMEssageatonconfm",JSON.stringify(responseMessage))

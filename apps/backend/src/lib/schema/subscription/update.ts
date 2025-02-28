@@ -132,38 +132,57 @@ export const updateSchema = {
               // required: ["id", "locations"],
               required: ["id"],
             },
-            items: {
+            items:{
               type: "array",
               items: {
                 type: "object",
                 properties: {
-                  id: {
-                    type: "string",
-                  },
-                  parent_item_id: {
-                    type: "string",
-                  },
+                  id: { type: "string" },
+                  quantity: { type: "object" },
                   fulfillment_ids: {
                     type: "array",
-                    items: {
-                      type: "string",
-                    },
+                    items: { type: "string" }
                   },
                   location_ids: {
                     type: "array",
-                    items: {
-                      type: "string",
-                    },
+                    items: { type: "string" },
+                    nullable: true // Making it optional
                   },
+                  tags: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        descriptor: {
+                          type: "object",
+                          properties: {
+                            code: { type: "string" }
+                          },
+                          required: ["code"]
+                        },
+                        list: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              descriptor: {
+                                type: "object",
+                                properties: {
+                                  code: { type: "string" }
+                                },
+                                required: ["code"]
+                              }
+                            }
+                          }
+                        }
+                      },
+                      required: ["descriptor", "list"]
+                    },
+                    nullable: true // Making it optional
+                  }
                 },
-                // required: [
-                //   "id",
-                //   "parent_item_id",
-                //   "fulfillment_ids",
-                //   "location_ids",
-                // ],
-                required: ["id","fulfillment_ids"],
-              },
+                required: ["id", "fulfillment_ids"]
+              }
             },
             payments: {
               type: "array",
@@ -488,11 +507,11 @@ export const updateSchema = {
           required: [
             "id",
             "status",
-            "provider",
+            // "provider",
             "items",
-            "payments",
-            "fulfillments",
-            "quote",
+            // "payments",
+            // "fulfillments",
+            // "quote",
           ],
         },
       },

@@ -11,9 +11,12 @@ import {
 	redisFetchToServer,
 	AGRI_EQUIPMENT_HIRING_EXAMPLES_PATH,
 	SUBSCRIPTION_BAP_MOCKSERVER_URL,
+	send_response,
+	SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
+	SUBSCRIPTION_BPP_MOCKSERVER_URL,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 
 export const initiateUpdateController = async (
 	req: Request,
@@ -29,7 +32,7 @@ export const initiateUpdateController = async (
 		if (!on_confirm) {
 			return send_nack(res, ERROR_MESSAGES.ON_CONFIRM_DOES_NOT_EXISTED);
 		}
-		on_confirm.context.bpp_uri = SUBSCRIPTION_BAP_MOCKSERVER_URL;
+		on_confirm.context.bpp_uri = SUBSCRIPTION_BPP_MOCKSERVER_URL;
 		// update_target = update_target ? update_target : "payments"
 
 		let { context, message } = on_confirm;
@@ -38,36 +41,19 @@ export const initiateUpdateController = async (
 		context.timestamp = timestamp;
 		let responseMessage: any;
 		// Need to reconstruct this logic
-
-		scenario = update_target ? update_target : "payments";
-
-		if (scenario === "payments"){
-			//FETCH ON UPDATE IF UPDATE PAYMENT FLOW COME
-			const on_update = await redisFetchToServer(
-				ON_ACTION_KEY.ON_UPDATE,
-				transactionId
-			);
-			if (!on_update) {
-				return send_nack(res, ERROR_MESSAGES.ON_UPDATE_DOES_NOT_EXISTED);
-			}
-			message = on_update.message;
+		const file = fs.readFileSync(
+			path.join(
+				SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
+				"update/update.yaml"
+			)
+		)
+		const response = YAML.parse(file.toString());
+		responseMessage={
+			update_target:"items",
+			order:{
+			...response.value.message.order,
+			id: "01"}
 		}
-
-		switch (scenario) {
-			case "payments":
-				responseMessage = updatePaymentController(message, update_target);
-				break;
-			case "fulfillments":
-				responseMessage = rescheduleRequest(message, update_target);
-				break;
-			case "items":
-				responseMessage = modifyItemsRequest(message, update_target);
-				break;
-			default:
-				responseMessage = requoteRequest(message, update_target);
-				break;
-		}
-
 		const update = {
 			context,
 			message: responseMessage,
@@ -75,38 +61,46 @@ export const initiateUpdateController = async (
 
 		const header = await createAuthHeader(update);
 
-		await redis.set(
-			`${transactionId}-update-from-server`,
-			JSON.stringify({ request: { ...update } })
-		);
-		const response = await axios.post(
-			`${context.bpp_uri}/update?scenario=${scenario}`,
-			update,
-			{
-				headers: {
-					authorization: header,
-				},
-			}
-		);
+		// await redis.set(
+		// 	`${transactionId}-update-from-server`,
+		// 	JSON.stringify({ request: { ...update } })
+		// );
+		// const response = await axios.post(
+		// 	`${context.bpp_uri}/update?scenario=${scenario}`,
+		// 	update,
+		// 	{
+		// 		headers: {
+		// 			authorization: header,
+		// 		},
+		// 	}
+		// );
 
-		await redis.set(
-			`${transactionId}-update-from-server`,
-			JSON.stringify({
-				request: { ...update },
-				response: {
-					response: response.data,
-					timestamp: new Date().toISOString(),
-				},
-			})
-		);
-		return res.json({
-			message: {
-				ack: {
-					status: "ACK",
-				},
-			},
+		// await redis.set(
+		// 	`${transactionId}-update-from-server`,
+		// 	JSON.stringify({
+		// 		request: { ...update },
+		// 		response: {
+		// 			response: response.data,
+		// 			timestamp: new Date().toISOString(),
+		// 		},
+		// 	})
+		// );
+		// return res.json({
+		// 	message: {
+		// 		ack: {
+		// 			status: "ACK",
+		// 		},
+		// 	},
+		// 	transactionId,
+		// });
+		await send_response(
+			res,
+			next,
+			update,
 			transactionId,
-		});
+			ACTTION_KEY.UPDATE,
+			(scenario = scenario)
+		);
 	} catch (error) {
 		return next(error);
 	}

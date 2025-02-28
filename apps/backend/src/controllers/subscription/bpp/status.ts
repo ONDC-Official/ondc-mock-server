@@ -4,6 +4,7 @@ import {
 	ORDER_STATUS,
 	PRINT_MEDIA_STATUS,
 	PRINT_MEDIA_STATUS_OBJECT,
+	SUBSCRIPTION_DOMAINS,
 } from "../../../lib/utils/apiConstants";
 import {
 	Fulfillment,
@@ -15,6 +16,8 @@ import {
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { childOrderResponseBuilder } from "./confirm";
+import { fullFormats } from "ajv-formats/dist/formats";
 
 export const statusController = async (
 	req: Request,
@@ -84,7 +87,7 @@ const statusRequest = async (
 			}
 		}
 		scenario = scenario ? scenario : next_status;
-
+		console.log("fulfillment",JSON.stringify(message.order.fulfillments[0]))
 		const responseMessage: any = {
 			order: {
 				id: message.order.id,
@@ -96,7 +99,9 @@ const statusRequest = async (
 				items: message.order.items,
 				billing: { ...message.order.billing, tax_id: undefined },
 
-				fulfillments: message.order.fulfillments.map(
+				fulfillments:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?message.order.fulfillments.map((fulfillment:any)=>({
+					...fulfillment
+				})) :message.order.fulfillments.map(
 					(fulfillment: Fulfillment) => ({
 						...fulfillment,
 						id: fulfillment.id,
@@ -112,9 +117,9 @@ const statusRequest = async (
 								id: undefined,
 								authorization: stop.authorization
 									? {
-											...stop.authorization,
-											status: FULFILLMENT_LABELS.CONFIRMED,
-									  }
+										...stop.authorization,
+										status: FULFILLMENT_LABELS.CONFIRMED,
+									}
 									: undefined,
 								person: stop.person ? stop.person : stop.customer?.person,
 							};
@@ -153,7 +158,7 @@ const statusRequest = async (
 				responseMessage.order.fulfillments.forEach(
 					(fulfillment: Fulfillment) => {
 						fulfillment.state.descriptor.code =
-						PRINT_MEDIA_STATUS_OBJECT.PENDING;
+							PRINT_MEDIA_STATUS_OBJECT.PENDING;
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization ? (stop.authorization = undefined) : undefined
 						);
@@ -168,9 +173,9 @@ const statusRequest = async (
 						fulfillment.stops.forEach((stop: Stop) =>
 							stop?.authorization
 								? (stop.authorization = {
-										...stop.authorization,
-										status: "valid",
-								  })
+									...stop.authorization,
+									status: "valid",
+								})
 								: undefined
 						);
 					}
@@ -215,20 +220,46 @@ const statusRequest = async (
 			default: //service started is the default case
 				break;
 		}
-
-		return responseBuilder(
-			res,
-			next,
-			req.body.context,
-			responseMessage,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/")
+		if (context.domain === SUBSCRIPTION_DOMAINS.AUDIO_VIDEO) {
+			responseBuilder(
+				res,
+				next,
+				req.body.context,
+				responseMessage,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
 					? ON_ACTION_KEY.ON_STATUS
 					: `/${ON_ACTION_KEY.ON_STATUS}`
-			}`,
-			`${ON_ACTION_KEY.ON_STATUS}`,
-			"subscription"
-		);
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"subscription"
+			)
+			await new Promise((resolve, reject) => {
+				setTimeout(() => {
+					resolve
+				}, 1000);
+			})
+
+			return childOrderResponseBuilder(
+				0, res, req.body.context, responseMessage, `${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+				? ON_ACTION_KEY.ON_STATUS
+				: `/${ON_ACTION_KEY.ON_STATUS}`
+			}`, `${ON_ACTION_KEY.ON_STATUS}`
+			)
+		}
+		else {
+			return responseBuilder(
+				res,
+				next,
+				req.body.context,
+				responseMessage,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_STATUS
+					: `/${ON_ACTION_KEY.ON_STATUS}`
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"subscription"
+			);
+		}
 	} catch (error) {
 		next(error);
 	}

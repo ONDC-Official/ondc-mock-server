@@ -64,7 +64,7 @@ const cancelRequest = async (
 ) => {
 	try {
 		const { context } = req.body;
-		const updatedFulfillments = updateFulfillments(
+		let updatedFulfillments = updateFulfillments(
 			transaction.message.order.fulfillments,
 			ON_ACTION_KEY?.ON_CANCEL
 			,"",context.domain

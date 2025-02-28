@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
 	MOCKSERVER_ID,
 	send_response,
+	SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH,
 	SUBSCRIPTION_BAP_MOCKSERVER_URL,
 	SUBSCRIPTION_EXAMPLES_PATH,
 } from "../../../lib/utils";
@@ -25,6 +26,12 @@ export const initiateSearchController = async (
 			case PRINT_MEDIA_CATEGORIES.NEWSPAPER:
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "search/search_print.yaml")
+				);
+				onSearch = YAML.parse(file.toString());
+				break;
+			case SUBSCRIPTION_DOMAINS.AUDIO_VIDEO:
+				file = fs.readFileSync(
+					path.join(SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH, "search/search_by_category.yaml")
 				);
 				onSearch = YAML.parse(file.toString());
 				break;

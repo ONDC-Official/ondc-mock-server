@@ -61,29 +61,29 @@ const onSelectConsultationController = (
 					{
 						id,
 						type,
-						stops: [
-							{
-								id: stops[0].id,
-								location: {
-									gps: "12.974002,77.613458",
-									address: "My House #, My buildin",
-									city: {
-										name: "Bengaluru",
-									},
-									country: {
-										code: "IND",
-									},
-									area_code: "560001",
-									state: {
-										name: "Karnataka",
-									},
-								},
-								contact: {
-									phone: "9886098860",
-								},
-								time: stops[0].time,
-							},
-						],
+						// stops: [
+						// 	{
+						// 		id: stops[0].id,
+						// 		location: {
+						// 			gps: "12.974002,77.613458",
+						// 			address: "My House #, My buildin",
+						// 			city: {
+						// 				name: "Bengaluru",
+						// 			},
+						// 			country: {
+						// 				code: "IND",
+						// 			},
+						// 			area_code: "560001",
+						// 			state: {
+						// 				name: "Karnataka",
+						// 			},
+						// 		},
+						// 		contact: {
+						// 			phone: "9886098860",
+						// 		},
+						// 		time: stops[0].time,
+						// 	},
+						// ],
 					},
 				],
 				payments,

@@ -13,7 +13,7 @@ import {
 	updateFulfillments,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ORDER_STATUS, PAYMENT_STATUS } from "../../../lib/utils/apiConstants";
+import { ORDER_STATUS, PAYMENT_STATUS, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import axios, { AxiosError } from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -67,11 +67,36 @@ export const confirmConsultationController = async (
 			order: {
 				...order,
 				status: ORDER_STATUS.ACCEPTED.toUpperCase(),
-				fulfillments,
+				fulfillments:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?[{...order.fulfillments[0],"tags": [
+                        {
+                            "descriptor": {
+                                "code": "INFO"
+                            },
+                            "list": [
+                                {
+                                    "descriptor": {
+                                        "code": "PARENT_ID"
+                                    },
+                                    "value": "F1"
+                                }
+                            ]
+                        }
+                    ]}]:order.fulfillments,
 				provider: {
 					...order.provider,
 					rateable: true,
 				},
+				items:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?[{...order.items[0],"tags": [
+                        {
+                            "descriptor": {
+                                "code": "TNC_LINK",
+                                "name": "Terms & Conditions",
+                                "short_desc": "Terms and Conditions"
+                            },
+                            "value": "https://abc.com/tnc.html"
+                        }
+                    ]}]:order.items,
+				quote:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?{...order.quote,breakup:[order.quote.breakup[0]]} :order.quote,
 				payments: [
 					{
 						...order?.payments[0],
@@ -80,7 +105,23 @@ export const confirmConsultationController = async (
 				],
 			},
 		};
-
+		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO){
+			
+			return responseBuilder(
+				res,
+				next,
+				context,
+				responseMessage,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/")
+						? ON_ACTION_KEY.ON_CONFIRM
+						: `/${ON_ACTION_KEY.ON_CONFIRM}`
+				}`,
+				`${ON_ACTION_KEY.ON_CONFIRM}`,
+				"subscription"
+			);
+		}
+		else{
 		responseBuilder(
 			res,
 			next,
@@ -321,7 +362,7 @@ export const confirmConsultationController = async (
 				);
 				i++;
 			}, 1000);
-		}
+		}}
 	} catch (error) {
 		next(error);
 	}

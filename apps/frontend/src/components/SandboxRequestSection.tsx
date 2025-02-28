@@ -57,11 +57,6 @@ export const SandboxRequestSection = () => {
 	};
 
 	const handleVersion = (
-		event:
-			| React.MouseEvent<Element>
-			| React.KeyboardEvent<Element>
-			| React.FocusEvent<Element>
-			| null,
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		value: {} | null
 	) => {
@@ -131,7 +126,7 @@ export const SandboxRequestSection = () => {
 							<Select
 								placeholder="Select a version"
 								sx={{ width: "100%" }}
-								onChange={(event, value) => handleVersion(event, value)} // Ensure both event and value are passed
+								onChange={(_,value) => handleVersion(value)} // Ensure both event and value are passed
 							>
 								<Option value="b2b">B2B</Option>
 								<Option value="b2c">B2c</Option>

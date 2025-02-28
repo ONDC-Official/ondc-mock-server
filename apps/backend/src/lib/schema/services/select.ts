@@ -226,7 +226,7 @@ export const selectSchema = {
                           required: ["label", "range"],
                         },
                       },
-                      required: ["type", "location","time"],
+                      required: ["type","time"],
                     },
                   },
                 },

@@ -22,9 +22,6 @@ import { UserGuide } from "./UserGuideSection";
 import { VITE_SERVER_URL } from "../utils/env";
 import { Fab } from "@mui/material";
 
-// type MockRequestSectionProp = {
-// 	domain: string;
-// };
 
 export const MockRequestSection = () => {
 	const [log, setLog] = useState<string>();
@@ -67,13 +64,10 @@ export const MockRequestSection = () => {
 }
 	// console.log(domain,"Domainnn")
 	useEffect(() => {
-		console.log("ACTION CHANGED:", Action);
 
 		const fetchData = async () => {
 			const data = await call();
-			console.log("Response from backend:", data.data);
 			if (data.data) {
-				console.log("Response from backend:", data);
 				setLog(JSON.stringify(data.data));
 				detectAction(JSON.stringify(data.data), version);
 			}
@@ -97,11 +91,6 @@ export const MockRequestSection = () => {
 	const [curl, setCurl] = useState<string>();
 
 	const handleVersion = (
-		event:
-			| React.MouseEvent<Element>
-			| React.KeyboardEvent<Element>
-			| React.FocusEvent<Element>
-			| null,
 		value: {} | null
 	) => {
 		if (value) {
@@ -109,22 +98,13 @@ export const MockRequestSection = () => {
 		}
 	};
 
-	const handleAction = (event:
-		| React.MouseEvent<Element>
-		| React.KeyboardEvent<Element>
-		| React.FocusEvent<Element>
-		| null,
+	const handleAction = (
 	// eslint-disable-next-line @typescript-eslint/ban-types
 	value: {} | null) => {
 		setAction(value as string); // Ensure value is a string and set the version
 	};
 
 	const handledomain = (
-		event:
-			| React.MouseEvent<Element>
-			| React.KeyboardEvent<Element>
-			| React.FocusEvent<Element>
-			| null,
 		value: {} | null
 	) => {
 		setDomain(value as string); // Ensure value is a string and set the version
@@ -197,7 +177,7 @@ export const MockRequestSection = () => {
 										}}
 										placeholder="Select Domain"
 										value={Domain}
-										onChange={handledomain}
+										onChange={(_,value)=>{handledomain(value)}}
 									>
 										{ALL_SUB_DOMAINS[
 											domain as keyof typeof ALL_SUB_DOMAINS
@@ -217,7 +197,7 @@ export const MockRequestSection = () => {
 										}}
 										placeholder="Select Action"
 										value={Action}
-										onChange={handleAction}
+										onChange={(_,value)=>{handleAction(value)}}
 									>
 										{All_Actions.map((action, index) => (
 											<Option value={action} key={action + index}>

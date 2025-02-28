@@ -20,7 +20,7 @@ bppRouter.post(
 
 bppRouter.post(
 	"/init",
-	jsonSchemaValidator({ domain: "subscription", action: "init" }),
+	// jsonSchemaValidator({ domain: "subscription", action: "init" }),
 	redisRetriever,
 	initController
 );
