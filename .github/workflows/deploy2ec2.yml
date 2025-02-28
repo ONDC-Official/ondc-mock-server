@@ -32,7 +32,7 @@ jobs:
           script: |
             # Remove existing directory
             if [[ -d "~/ondc-mock-server" ]]; then
-              docker-compose -f ~/ondc-mock-server/docker-compose.yml down
+              docker compose -f ~/ondc-mock-server/docker-compose.yml down
               rm -rf ~/ondc-mock-server
             fi
 
@@ -71,7 +71,7 @@ jobs:
             echo "HERE"
             
             # Build and deploy
-            sudo docker-compose up -d --build
+            sudo docker compose up -d --build
 
             echo "BUILT"
             # Cleanup
