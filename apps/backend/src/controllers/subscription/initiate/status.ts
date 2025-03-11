@@ -74,7 +74,8 @@ const intializeRequest = async (
 			status,
 			transaction_id,
 			"status",
-			senarios[statusIndex]
+			""
+			// senarios[statusIndex]
 		);
 		
 	} catch (error) {

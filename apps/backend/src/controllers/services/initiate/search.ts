@@ -13,6 +13,7 @@ import {
 	SERVICES_BAP_MOCKSERVER_URL,
 	BID_AUCTION_SERVICES_EXAMPLES_PATH,
 	ASTRO_SERVICES_EXAMPLES_PATH,
+	WEIGHMENT_SERVICES_EXAMPLES_PATH
 } from "../../../lib/utils";
 import { ACTTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
@@ -80,6 +81,15 @@ export const initiateSearchController = async (
 				);
 				onSearch = YAML.parse(file.toString());
 				break;
+				
+			case SERVICES_DOMAINS.WEIGHMENT:
+				file=fs.readFileSync(
+					path.join(
+						WEIGHMENT_SERVICES_EXAMPLES_PATH,
+						"search/search.yaml"
+					)
+				);
+				onSearch = YAML.parse(file.toString());
 			default:
 				file = fs.readFileSync(
 					path.join(SERVICES_EXAMPLES_PATH, "search/search_by_category.yaml")

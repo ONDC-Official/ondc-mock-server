@@ -1937,6 +1937,140 @@ export const quoteCreatorAstroService = (
 	}
 };
 
+export const quoteCreatorWeightment=(items: Item[],
+	providersItems?: any,
+	offers?: any,
+	fulfillment_type?: string,
+	service_name?: string,
+	scenario?: string)=>{
+		console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+		if(!Array.isArray(items)){
+		 items=ensureArray(items)
+		}
+			const providersItem=[providersItems[0]]
+	 //get price from on_search
+	 let breakup: any[] = [];
+ 
+	 // console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+	 items.forEach((item) => {
+		 // Find the corresponding item in the second array
+		 if (providersItems) {
+			 const matchingItem = providersItem.find(
+				 (secondItem: { id: string }) => secondItem?.id === item?.id
+			 );
+			 // If a matching item is found, update the price in the items array
+			 console.log("matchhing",matchingItem)
+			 if (matchingItem) {
+				 item.title = matchingItem?.descriptor?.name;
+				 // item.price = matchingItem?.price;
+				 item.available_quantity = {
+					 available:matchingItem?.quantity?.available,
+					 maximum:matchingItem?.quantity?.maximum
+				 };
+				 item.price = {
+					 currency: matchingItem.price.currency,
+					 value: matchingItem.price.value,
+				 };
+			 }
+		 }
+	 });
+	 items.forEach((item) => {
+		 // console.log("itemsbreakup",item)
+		 // console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
+		 breakup = [
+			 {
+				 title:item.title,
+				 price:{
+					 currency: "INR",
+					 value: (
+						 Number(item?.price?.value) * item?.quantity?.selected?.count
+					 ).toString(),
+				 },
+				 item:{
+					 id:item.id,
+					 price:item.price,
+					 quantity:item.quantity
+				 },
+				 tags: [
+							 {
+								 "descriptor": {
+									 "code": "TITLE"
+								 },
+								 "list": [
+									 {
+										 "descriptor": {
+											 "code": "type"
+										 },
+										 "value": "item"
+									 }
+								 ]
+							 }
+						 ]
+			 }
+		 ];
+	 });
+
+	 breakup.push({
+		 "title": "tax",
+		 "price": {
+			 "currency": "INR",
+			 "value": "100"
+		 },
+		 "item": {
+			 "id": "I1"
+		 },
+		 "tags": [
+			 {
+				 "descriptor": {
+					 "code": "title"
+				 },
+				 "list": [
+					 {
+						 "descriptor": {
+							 "code": "type"
+						 },
+						 "value": "TAX"
+					 }
+				 ]
+			 }
+		 ]
+	 })
+	 // console.log("breakuppp",breakup)
+ 
+	 //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	 let totalPrice = 0;
+	 breakup.forEach((entry) => {
+		 // console.log("entryyy",entry)
+		 if(entry.title==="discount"){
+			 const priceValue = parseFloat(entry.price.value);
+			 if (!isNaN(priceValue)) {
+				 totalPrice -= priceValue;
+			 }
+			}
+			else{
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice += priceValue;
+			}}
+	 });
+ 
+	 
+	 const result = {
+		 breakup:[
+			 ...breakup,
+			 // ...chargesOnFulfillment
+		 ],
+		 price: {
+			 currency: "INR",
+			 value: totalPrice.toFixed(2),
+		 },
+		 ttl: "P1D",
+	 };
+ 
+	 // console.log("resultttttttttt", JSON.stringify(result));
+	 return result;
+}
+
 //QUOTE FOR SUBSCRIPTION PROCESS
 export const quoteSubscription = (
 	items: Item[],
@@ -2118,7 +2252,7 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 				value: matchingItem.price.value,
 			};
 			item.price = pp;
-			if (matchingItem?.tags[0].descriptor.code != "reschedule_terms") {
+			if (!matchingItem.tags && matchingItem?.tags[0]?.descriptor.code != "reschedule_terms") {
 				item.tags = matchingItem?.tags;
 			} else {
 				const tag = [
@@ -2167,8 +2301,8 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	const itemtobe = {
 		id: items[0].id,
-		price: price,
-		quantity: items[0].quantity,
+		// price: price,
+		// quantity: items[0].quantity,
 	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
@@ -2217,6 +2351,119 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	return result;
 };
+export const quoteOTT = (tempItems: Item[], providersItems?: any) => {
+	const items: Item[] = JSON.parse(JSON.stringify(tempItems));
+	providersItems=ensureArray(providersItems)
+	//get price from on_search
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find(
+			(secondItem: { id: string }) => secondItem.id === item.id
+		);
+		// If a matching item is found, update the price in the items array
+		if (matchingItem) {
+			item.title = matchingItem?.descriptor?.name;
+			const pp = {
+				currency: matchingItem.price.currency,
+				value: matchingItem.price.value,
+			};
+			item.price = pp;
+				const tag = [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "item",
+							},
+						],
+					},
+				];
+				item.tags = tag;
+			
+		}
+	});
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (
+					Number(item?.price?.value) * item.quantity.selected.count
+				).toString(),
+			},
+			tags: item.tags,
+			item: {
+				id: item.id,
+				price: item.price,
+				quantity: item.quantity ? item.quantity : undefined,
+			},
+		});
+	});
+	const price = {
+		currency: items[0].price.currency,
+		value: items[0].price.value,
+	};
+
+	const itemtobe = {
+		id: items[0].id,
+		// price: price,
+		// quantity: items[0].quantity,
+	};
+	//ADD STATIC TAX IN BREAKUP QUOTE
+	breakup.push({
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item: itemtobe,
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+	let totalPrice = 0;
+
+	breakup.forEach((entry) => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	return result;
+}
 
 export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 	let result;
@@ -2522,6 +2769,24 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						id: "F2",
 					});
 				}
+				if (domain === "weightment") {
+					updatedFulfillments = updatedFulfillments.map((itm: any) => ({
+						...itm,
+						stops: itm.stops?.length
+							? [
+									{
+										...itm.stops[0],
+										location: {
+											gps: "12.974002,77.613458",
+											area_code: "560001",
+										},
+									},
+									...itm.stops.slice(1),
+								]
+							: itm.stops,
+					}));
+				}
+				
 				break;
 			case ON_ACTION_KEY.ON_CONFIRM:
 				if(domain==="astroService"){
@@ -2570,6 +2835,33 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						return fulfill;
 				})
 
+				}
+				else if(domain==="weightment"){
+					updatedFulfillments.push(fulfillments[0])
+					updatedFulfillments=updatedFulfillments.map((itm:any)=>{
+						return {
+							...itm,
+							stops:[
+								{...itm.stops[0],
+									location:{
+										"gps": "12.974002,77.613458",
+                		"area_code": "560001"
+									},
+									instructions:{
+										"name": "Special Instructions",
+									 "short_desc": "Customer Special Instructions"
+								 },
+								 days:undefined,
+								 person:undefined
+								}
+							],
+							customer:{
+								person:{
+									name:	"Ramu"
+								}
+							}
+						}
+					})
 				}
 				else{
 				updatedFulfillments = fulfillments;
@@ -2762,8 +3054,17 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 								}
 							}
 						}
+					}else if(domain===SERVICES_DOMAINS.WEIGHMENT){
+						return {
+							...fulfillment,
+							state: {
+								...fulfillment.state,
+								descriptor: {
+								code: FULFILLMENT_STATES.CANCELLED,
+								}
+						}
 					}
-				  
+				}
 					// Default return if no conditions are met
 					return fulfillment;
 				  });
@@ -2795,10 +3096,6 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				break;
 		}
 
-		// console.log(
-		// 	"updatedFulfillmentssssssssssss",
-		// 	JSON.stringify(updatedFulfillments)
-		// );
 		return updatedFulfillments;
 	} catch (err) {
 		console.log("Error occured in fulfillments method", err);

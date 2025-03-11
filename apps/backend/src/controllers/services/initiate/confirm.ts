@@ -101,7 +101,14 @@ const intializeRequest = async (
 							}),
 						},
 					],
-					payments: [
+					payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)? [	{
+						...payments[0],
+						params: {
+							...payments[0]?.params,
+							transaction_id: uuidv4(),
+						},
+						status: PAYMENT_STATUS.PAID,
+					}]:[
 						{
 							...payments[0],
 							params: {

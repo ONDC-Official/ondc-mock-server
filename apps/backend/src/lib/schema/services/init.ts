@@ -139,31 +139,54 @@ export const initSchema = {
                   },
                   quantity: {
                     type: "object",
-                    properties: {
-                      selected: {
-                        type: "object",
-                        properties: {
-                          count: {
-                            type: "integer",
-                          },
+                    anyOf: [
+                      {
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV17"]
+                            }
+                          }
                         },
-                        required: ["count"],
+                        then: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                measure: {
+                                  type: "object",
+                                  properties: {
+                                    unit: {
+                                      type: "string"
+                                    },
+                                    value: {
+                                      type: "number"
+                                    }
+                                  },
+                                  required: ["unit", "value"]
+                                }
+                              },
+                              required: ["measure"]
+                            }
+                          }
+                        }
                       },
-                      // measure: {
-                      //   type: "object",
-                      //   properties: {
-                      //     unit: {
-                      //       type: "string",
-                      //     },
-                      //     value: {
-                      //       type: "string",
-                      //     },
-                      //   },
-                      //   required: ["unit", "value"],
-                      // },
-                    },
-                    // required: ["selected", "measure"],
-                    required: ["selected"],
+                      {
+                        else: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                count: {
+                                  type: "number"
+                                }
+                              },
+                              required: ["count"]
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                 },
                 required: [
@@ -280,11 +303,11 @@ export const initSchema = {
                           },
                           required: [
                             "gps",
-                            "address",
-                            "city",
-                            "country",
+                            // "address",
+                            // "city",
+                            // "country",
                             "area_code",
-                            "state",
+                            // "state",
                           ],
                         },
                         contact: {
@@ -320,7 +343,7 @@ export const initSchema = {
                           required: ["label", "range"],
                         },
                       },
-                      required: ["type", "location", "contact", "time"],
+                      required: ["type", "location","time"],
                     },
                   },
                 },

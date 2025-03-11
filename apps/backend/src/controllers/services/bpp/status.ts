@@ -437,9 +437,90 @@ const statusRequest = async (
 				astroservice(responseMessage, req, res, message)
 			}
 		}
-		else {
-			// console.log("responseMessage", JSON.stringify(responseMessage))
+		if(domain === SERVICES_DOMAINS.WEIGHMENT){
+			const createdate = new Date(message.order.created_at)
+		createdate.setSeconds(createdate.getSeconds() + 10);
 
+		const updatedate = new Date(message.order.updated_at)
+		updatedate.setSeconds(updatedate.getSeconds() + 10);
+			const onStatusAtlocation = {
+				...responseMessage, // spread the entire response
+				order: {
+					...responseMessage.order, // spread message to retain its content
+					fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+						...fulfillment, // spread the fulfillment object
+						state: {
+							...fulfillment.state, // spread state to retain other state details
+							descriptor: {
+								...fulfillment.state.descriptor, // spread descriptor to modify only the code
+								code: "At_Location" // modify the code to "created"
+							},
+						},
+						"authorization": {
+                "type": "OTP",
+                "token": "1234",
+                "valid_from": "2024-04-04T22:00:00Z",
+                "valid_to": "2024-04-04T23:00:00Z",
+                "status": "valid"
+              }
+					})),
+					created_at: createdate.toISOString(),
+					updated_at: updatedate.toISOString()
+				}
+	
+			}
+
+			const onStatusCompleted = {
+				...responseMessage, // spread the entire response
+				order: {
+					...responseMessage.order, // spread message to retain its content
+					status: "Completed",
+					fulfillments: responseMessage.order.fulfillments.map((fulfillment: any) => ({
+						...fulfillment, // spread the fulfillment object
+						state: {
+							...fulfillment.state, // spread state to retain other state details
+							descriptor: {
+								...fulfillment.state.descriptor, // spread descriptor to modify only the code
+								code: "COMPLETED" // modify the code to "created"
+							}
+						},
+						"authorization": {
+                "type": "OTP",
+                "token": "1234",
+                "valid_from": "2024-04-04T22:00:00Z",
+                "valid_to": "2024-04-04T23:00:00Z",
+                "status": "valid"
+              }
+					})),
+					created_at: createdate.toISOString(),
+					updated_at: updatedate.toISOString()
+				}
+			}
+			 responseBuilder(
+				res,
+				next,
+				req.body.context,
+				onStatusAtlocation,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_STATUS
+					: `/${ON_ACTION_KEY.ON_STATUS}`
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"services"
+			);
+				await new Promise((resolve) => setTimeout(resolve, 10000));
+	
+				return childOrderResponseBuilder(
+					0,
+					res,
+					req.body.context,
+					onStatusCompleted,
+					`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+					}`,
+					"on_status"
+				);
+		}
+		else {
 			return responseBuilder(
 				res,
 				next,

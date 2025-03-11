@@ -393,7 +393,7 @@ export const onUpdateSchema = {
                         "location",
                         "time",
                         "contact",
-                        "person",
+                        // "person",
                       ],
                     },
                   },
@@ -458,7 +458,8 @@ export const onUpdateSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "price"],
+                        // required: ["id", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",

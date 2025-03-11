@@ -459,7 +459,8 @@ export const onCancelSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -543,7 +544,7 @@ export const onCancelSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id",
+                      // "transaction_id",
                       "bank_account_number",
                       "virtual_payment_address",
                     ],

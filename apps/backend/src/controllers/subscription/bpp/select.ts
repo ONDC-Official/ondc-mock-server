@@ -6,9 +6,12 @@ import {
 	checkSelectedItems,
 	updateFulfillments,
 	quoteSubscription,
+	quoteCommon,
+	quoteOTT,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
+import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const selectController = async (
 	req: Request,
@@ -70,12 +73,15 @@ const selectConsultationConfirmController = (
 			message?.order?.fulfillments[0]
 		);
 
-		let updatedFulfillments = updateFulfillments(
-			message?.order?.fulfillments,
-			ON_ACTION_KEY?.ON_SELECT,
-			"",
-			"subscription"
-		);
+			if(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA){
+				var updatedFulfillments = updateFulfillments(
+					message?.order?.fulfillments,
+					ON_ACTION_KEY?.ON_SELECT,
+					"",
+					"subscription"
+				);
+			}
+
 
 		switch (scenario) {
 			case "single-order-offline-without-subscription":
@@ -104,17 +110,29 @@ const selectConsultationConfirmController = (
 					message?.order?.fulfillments[0]
 				);
 		}
+		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO){
+			 quoteData = quoteOTT(
+				message?.order?.items,
+				providersItems?.items,
+				);
+		}
 		let responseMessage: any = {
 			order: {
 				provider,
-				payments: message?.order?.payments,
-				items: message.order.items.map(
-					({ ...remaining }: { location_ids: any; remaining: any }) => ({
-						...remaining,
-					})
-				),
-
-				fulfillments: updatedFulfillments,
+				payments: (context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)?message?.order?.payments:undefined,
+				items: (context.domain === SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)
+				? message.order.items.map(
+						({ location_ids, price, quantity, tags,title, ...remaining }: any) => ({
+							...remaining,
+						})
+					)
+				: message.order.items.map(
+						({ location_ids, ...remaining }: any) => ({
+							...remaining,
+							location_ids,
+						})
+					)			,
+				fulfillments:(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)?updatedFulfillments:[{id:"F1",type:"ONLINE"}],
 				quote: quoteData,
 			},
 		};
@@ -186,7 +204,7 @@ const selectConsultationConfirmController = (
 				},
 			];
 		}
-
+		console.log("====>",JSON.stringify(responseMessage))
 		return responseBuilder(
 			res,
 			next,
