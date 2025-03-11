@@ -108,86 +108,181 @@ export const onSelectSchema = {
               },
               required: ["id"],
             },
-            items: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  fulfillment_ids: {
-                    type: "array",
-                    items: {
-                      type: "string",
-                    },
-                  },
-                  id: {
-                    type: "string",
-                  },
-                  parent_item_id: {
-                    type: "string",
-                  },
-                
-                  quantity: {
+            if:{
+              properties:{
+                domain:{
+                  enum:["ONDC:MEC10"]
+                }
+              }
+            },
+            then:{
+              properties:{
+                items: {
+                  type: "array",
+                  items: {
                     type: "object",
                     properties: {
-                      selected: {
-                        type: "object",
-                        properties: {
-                          count: {
-                            type: "number",
-                          }
-                        }
-                      }
-                    }
-                  },
-                  time: {
-                    type: "object",
-                    properties: {
-                      label: {
+                      fulfillment_ids: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                      id: {
                         type: "string",
                       },
-                      range: {
-                        type: "object",
-                        properties: {
-                          start: {
-                            type: "string",
-                          },
-                          end: {
-                            type: "string",
-                          },
-                        },
-                        required: ["start", "end"],
+                      parent_item_id: {
+                        type: "string",
                       },
-                      schedule: {
+                    
+                      quantity: {
                         type: "object",
                         properties: {
-                          frequency: {
+                          selected: {
+                            type: "object",
+                            properties: {
+                              count: {
+                                type: "number",
+                              }
+                            }
+                          }
+                        }
+                      },
+                      time: {
+                        type: "object",
+                        properties: {
+                          label: {
                             type: "string",
                           },
-                          holidays: {
-                            type: "array",
-                            items: {
-                              type: "string",
+                          range: {
+                            type: "object",
+                            properties: {
+                              start: {
+                                type: "string",
+                              },
+                              end: {
+                                type: "string",
+                              },
                             },
+                            required: ["start", "end"],
                           },
-                          times: {
-                            type: "array",
-                            items: {
-                              type: "string",
+                          schedule: {
+                            type: "object",
+                            properties: {
+                              frequency: {
+                                type: "string",
+                              },
+                              holidays: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                              times: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
                             },
                           },
                         },
+                        required: ["label", "schedule"],
                       },
                     },
-                    required: ["label", "schedule"],
+                    required: [
+                      // "fulfillment_ids",
+                      "id",
+                      "quantity"
+                    ],
                   },
-                },
-                required: [
-                  // "fulfillment_ids",
-                  "id",
-                  "quantity"
-                ],
-              },
+                }
+              }
             },
+            else:{
+              properties:{
+                items: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      fulfillment_ids: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                      id: {
+                        type: "string",
+                      },
+                      parent_item_id: {
+                        type: "string",
+                      },
+                    
+                      quantity: {
+                        type: "object",
+                        properties: {
+                          selected: {
+                            type: "object",
+                            properties: {
+                              count: {
+                                type: "number",
+                              }
+                            }
+                          }
+                        }
+                      },
+                      time: {
+                        type: "object",
+                        properties: {
+                          label: {
+                            type: "string",
+                          },
+                          range: {
+                            type: "object",
+                            properties: {
+                              start: {
+                                type: "string",
+                              },
+                              end: {
+                                type: "string",
+                              },
+                            },
+                            required: ["start", "end"],
+                          },
+                          schedule: {
+                            type: "object",
+                            properties: {
+                              frequency: {
+                                type: "string",
+                              },
+                              holidays: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                              times: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        required: ["label", "schedule"],
+                      },
+                    },
+                    required: [
+                      // "fulfillment_ids",
+                      "id",
+                      // "quantity"
+                    ],
+                  },
+                }
+              }
+            } ,
             fulfillments: {
               type: "array",
               items: {
@@ -298,7 +393,8 @@ export const onSelectSchema = {
                     },
                   },
                 },
-                required: ["id", "stops"],
+                // required: ["id", "stops"],
+                required:["id"]
               },
             },
             quote: {
@@ -422,8 +518,7 @@ export const onSelectSchema = {
               required: ["price", "breakup", "ttl"],
             },
           },
-          required: ["provider", "items", "fulfillments", 
-          ],
+          required: ["provider", "items", "fulfillments"],
         },
       },
       required: ["order"],

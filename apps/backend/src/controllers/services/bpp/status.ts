@@ -437,7 +437,7 @@ const statusRequest = async (
 				astroservice(responseMessage, req, res, message)
 			}
 		}
-		if(domain === SERVICES_DOMAINS.WEIGHTMENT){
+		if(domain === SERVICES_DOMAINS.WEIGHMENT){
 			const createdate = new Date(message.order.created_at)
 		createdate.setSeconds(createdate.getSeconds() + 10);
 
@@ -454,8 +454,15 @@ const statusRequest = async (
 							descriptor: {
 								...fulfillment.state.descriptor, // spread descriptor to modify only the code
 								code: "At_Location" // modify the code to "created"
-							}
-						}
+							},
+						},
+						"authorization": {
+                "type": "OTP",
+                "token": "1234",
+                "valid_from": "2024-04-04T22:00:00Z",
+                "valid_to": "2024-04-04T23:00:00Z",
+                "status": "valid"
+              }
 					})),
 					created_at: createdate.toISOString(),
 					updated_at: updatedate.toISOString()
@@ -476,26 +483,34 @@ const statusRequest = async (
 								...fulfillment.state.descriptor, // spread descriptor to modify only the code
 								code: "COMPLETED" // modify the code to "created"
 							}
-						}
+						},
+						"authorization": {
+                "type": "OTP",
+                "token": "1234",
+                "valid_from": "2024-04-04T22:00:00Z",
+                "valid_to": "2024-04-04T23:00:00Z",
+                "status": "valid"
+              }
 					})),
 					created_at: createdate.toISOString(),
 					updated_at: updatedate.toISOString()
 				}
 			}
-	
-			async function callFunctionsSequentially() {
-				await childOrderResponseBuilder(
-					0,
-					res,
-					req.body.context,
-					onStatusAtlocation,
-					`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
-					}`,
-					"on_status"
-				);
+			 responseBuilder(
+				res,
+				next,
+				req.body.context,
+				onStatusAtlocation,
+				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_STATUS
+					: `/${ON_ACTION_KEY.ON_STATUS}`
+				}`,
+				`${ON_ACTION_KEY.ON_STATUS}`,
+				"services"
+			);
 				await new Promise((resolve) => setTimeout(resolve, 10000));
 	
-				await childOrderResponseBuilder(
+				return childOrderResponseBuilder(
 					0,
 					res,
 					req.body.context,
@@ -504,10 +519,6 @@ const statusRequest = async (
 					}`,
 					"on_status"
 				);
-			}
-	
-			callFunctionsSequentially();
-			
 		}
 		else {
 			return responseBuilder(

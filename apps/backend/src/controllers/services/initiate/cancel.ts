@@ -40,6 +40,7 @@ const intializeRequest = async (
 		const cancel = {
 			context: {
 				...context,
+				timestamp: new Date().toISOString(),
 				action: ACTTION_KEY.CANCEL,
 				message_id: uuidv4(),
 			},

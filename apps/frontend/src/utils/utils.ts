@@ -163,6 +163,7 @@ export const getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 	return { nodes, edges };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const _getNodesAndEdges = (formattedResponse: any, theme: Theme) => {
 	const { transaction_id, bpp_id, bpp_uri, bap_id, bap_uri } =
 		formattedResponse.length > 1

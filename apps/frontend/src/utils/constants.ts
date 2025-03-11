@@ -80,7 +80,7 @@ export const SERVICE_DOMAINS = [
 ];
 
 export const SUBSCRIPTION_DOMAINS = [
-	"ONDC:MEC10"
+	"ONDC:MEC10","ONDC:MEC11"
 ]
 
 export const RETAIL_DOMAINS = ["b2b", "b2c"];
@@ -441,7 +441,8 @@ export const INITIATE_FIELDS = {
 			domainDepended: true,
 			options: {
 				agri: AGRI_SCENARIOS["search"].map((each) => each.scenario),
-				agrioutput: AGRI_OUTPUT_SCENARIOS["search"].map((each) => each.scenario)
+				agrioutput: AGRI_OUTPUT_SCENARIOS["search"].map((each) => each.scenario),
+				subscription:["city","category","item"]
 			},
 		},
 	],
@@ -540,6 +541,7 @@ export const INITIATE_FIELDS = {
 				b2c: ["payments", "fulfillments", "items"],
 				logistics: ["fulfillments"],
 				agri: AGRI_SCENARIOS["update"].map((each) => each.scenario),
+				subscription:["items"],
 				retail: ["payments"],
 				agrioutput: AGRI_OUTPUT_SCENARIOS["update"].map((each) => each.scenario)
 			},

@@ -1989,11 +1989,7 @@ export const quoteCreatorWeightment=(items: Item[],
 				 item:{
 					 id:item.id,
 					 price:item.price,
-					 quantity:{
-						 selected:{
-							 count:100
-						 }
-					 }
+					 quantity:item.quantity
 				 },
 				 tags: [
 							 {
@@ -2256,7 +2252,7 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 				value: matchingItem.price.value,
 			};
 			item.price = pp;
-			if (matchingItem?.tags[0].descriptor.code != "reschedule_terms") {
+			if (!matchingItem.tags && matchingItem?.tags[0]?.descriptor.code != "reschedule_terms") {
 				item.tags = matchingItem?.tags;
 			} else {
 				const tag = [
@@ -2305,8 +2301,8 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	const itemtobe = {
 		id: items[0].id,
-		price: price,
-		quantity: items[0].quantity,
+		// price: price,
+		// quantity: items[0].quantity,
 	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
@@ -2355,6 +2351,119 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	return result;
 };
+export const quoteOTT = (tempItems: Item[], providersItems?: any) => {
+	const items: Item[] = JSON.parse(JSON.stringify(tempItems));
+	providersItems=ensureArray(providersItems)
+	//get price from on_search
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		const matchingItem = providersItems.find(
+			(secondItem: { id: string }) => secondItem.id === item.id
+		);
+		// If a matching item is found, update the price in the items array
+		if (matchingItem) {
+			item.title = matchingItem?.descriptor?.name;
+			const pp = {
+				currency: matchingItem.price.currency,
+				value: matchingItem.price.value,
+			};
+			item.price = pp;
+				const tag = [
+					{
+						descriptor: {
+							code: "title",
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type",
+								},
+								value: "item",
+							},
+						],
+					},
+				];
+				item.tags = tag;
+			
+		}
+	});
+
+	let breakup: any[] = [];
+
+	items.forEach((item) => {
+		breakup.push({
+			title: item.title,
+			price: {
+				currency: "INR",
+				value: (
+					Number(item?.price?.value) * item.quantity.selected.count
+				).toString(),
+			},
+			tags: item.tags,
+			item: {
+				id: item.id,
+				price: item.price,
+				quantity: item.quantity ? item.quantity : undefined,
+			},
+		});
+	});
+	const price = {
+		currency: items[0].price.currency,
+		value: items[0].price.value,
+	};
+
+	const itemtobe = {
+		id: items[0].id,
+		// price: price,
+		// quantity: items[0].quantity,
+	};
+	//ADD STATIC TAX IN BREAKUP QUOTE
+	breakup.push({
+		title: "tax",
+		price: {
+			currency: "INR",
+			value: "10",
+		},
+		item: itemtobe,
+		tags: [
+			{
+				descriptor: {
+					code: "title",
+				},
+				list: [
+					{
+						descriptor: {
+							code: "type",
+						},
+						value: "tax",
+					},
+				],
+			},
+		],
+	});
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+
+	let totalPrice = 0;
+
+	breakup.forEach((entry) => {
+		const priceValue = parseFloat(entry.price.value);
+		if (!isNaN(priceValue)) {
+			totalPrice += priceValue;
+		}
+	});
+
+	const result = {
+		breakup,
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	return result;
+}
 
 export const quoteCreatorService = (items: Item[], providersItems?: any) => {
 	let result;
@@ -2945,7 +3054,7 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 								}
 							}
 						}
-					}else if(domain===SERVICES_DOMAINS.WEIGHTMENT){
+					}else if(domain===SERVICES_DOMAINS.WEIGHMENT){
 						return {
 							...fulfillment,
 							state: {

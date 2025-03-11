@@ -104,28 +104,69 @@ export const confirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["CREATED"]
+              enum: ["Created"]
             },
-            provider: {
-              type: "object",
-              properties: {
-                id: {
-                  type: "string",
-                },
-                locations: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      id: {
-                        type: "string",
+            if:{
+              properties:{
+                domain:{
+                  enum:["ONDC:MEC10"]
+                }
+              }
+            },
+            then:{
+              provider:{
+                  type: "object",
+                  properties: {
+                    id: {
+                      type: "string",
+                    },
+                    locations: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          id: {
+                            type: "string",
+                          },
+                        },
+                        required: ["id"],
                       },
                     },
-                    required: ["id"],
+                  },
+                 required: ["id", "locations"],
+            }
+          },
+            else:{
+              provider:{
+                type: "object",
+                properties: {
+                  id: {
+                    type: "string",
                   },
                 },
-              },
-              required: ["id", "locations"],
+               required: ["id"],
+            }
+            // provider: {
+            //   type: "object",
+            //   properties: {
+            //     id: {
+            //       type: "string",
+            //     },
+            //     locations: {
+            //       type: "array",
+            //       items: {
+            //         type: "object",
+            //         properties: {
+            //           id: {
+            //             type: "string",
+            //           },
+            //         },
+            //         required: ["id"],
+            //       },
+            //     },
+            //   },
+            //   // required: ["id", "locations"],
+            //   required:["id"]
             },
             items: {
               type: "array",
@@ -223,135 +264,78 @@ export const confirmSchema = {
             fulfillments: {
               type: "array",
               items: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  type: {
-                    type: "string",
-                  },
-                  tracking: {
-                    type: "boolean",
-                  },
-                  stops: {
-                    type: "array",
+                type: "object"
+              },
+              // ✅ Use "oneOf" for conditional validation based on domain
+              anyof: [
+                // If domain is "ONDC:MEC10", validate against "stops" schema
+                {
+                  properties: { domain: { const: "ONDC:MEC10" } },
+                  then: {
                     items: {
                       type: "object",
                       properties: {
-                        type: {
-                          type: "string",
-                        },
-                        location: {
-                          type: "object",
-                          properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
+                        stops: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              type: { type: "string" },
+                              location: {
+                                type: "object",
+                                properties: {
+                                  gps: { type: "string" },
+                                  area_code: { type: "string" }
                                 },
+                                required: ["gps", "area_code"]
                               },
-                              required: ["name"],
-                            },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
+                              time: {
+                                type: "object",
+                                properties: {
+                                  label: { type: "string", const: "selected" },
+                                  range: {
+                                    type: "object",
+                                    properties: {
+                                      start: { type: "string" },
+                                      end: { type: "string" }
+                                    },
+                                    required: ["start"]
+                                  },
+                                  days: { type: "string" }
                                 },
-                              },
-                              required: ["code"],
+                                required: ["label", "range"]
+                              }
                             },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: [
-                            "gps",
-                            "area_code",
-                          ],
-                        },
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
-                            },
-                            email: {
-                              type: "string",
-                            },
-                          },
-                          // required: ["phone", "email"],
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            label: {
-                              type: "string",
-                            },
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["start", "end"],
-                            },
-
-                          },
-                          required: ["label", "range"],
-                        },
-                        customer: {
-                          type: "object",
-                          properties: {
-                            person: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: ["person"],
-                        },
+                            required: ["type", "time"]
+                          }
+                        }
                       },
-                      // required: [
-                      //   "type",
-                      //   "location",
-                      //   "contact",
-                      //   "time",
-                      //   "customer",
-                      // ],
-                      required: [
-                        "type",
-                      ],
-                    },
-                  },
+                      required: ["stops"]
+                    }
+                  }
                 },
-                required: ["id", "type", "stops"],
-              },
+                // If domain is "ONDC:MEC11", validate against "ONLINE" type schema
+                {
+                  properties: { domain: { const: "ONDC:MEC11" } },
+                  then: {
+                    items: {
+                      type: "object",
+                      properties: {
+                        id:{type:"string"},
+                        type: { type: "string", const: "ONLINE" },
+                        customer:{
+                          type:"object",
+                          person:{
+                            type:"object",
+                            name:{type:"string"}
+                          }
+                        }
+                      },
+                      required: ["type","id","customer"]
+                    }
+                  }
+                }
+              ]
             },
             quote: {
               type: "object",
@@ -421,7 +405,8 @@ export const confirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                     },
                     required: ["title", "price", "item"],

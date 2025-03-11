@@ -295,7 +295,7 @@ export const updateRescheduleController = (
 		},
 	};
 
-		if(context.domain===SERVICES_DOMAINS.WEIGHTMENT){
+		if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
 				let {provider,quote,items,payments}=req.body.on_confirm.message.order
 			responseMessage={
 				order:{

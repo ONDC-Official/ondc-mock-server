@@ -81,7 +81,7 @@ export const initiateUpdateController = async (
 			message: responseMessage,
 		};
 
-		if(context.domain===SERVICES_DOMAINS.WEIGHTMENT){
+		if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
 			responseMessage={
 				update_target:"fulfillments",
 				order:{

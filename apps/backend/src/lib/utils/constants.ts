@@ -13,8 +13,8 @@ export const SERVICES_EXAMPLES_PATH =
 export const ASTRO_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-astro/api/components/Examples/Astro_services_yaml";
 
-export const WEIGHTMENT_SERVICES_EXAMPLES_PATH =
-	"./domain-repos/@services/draft-weightment/api/components/Examples/Weightment_services_yaml";
+export const WEIGHMENT_SERVICES_EXAMPLES_PATH =
+	"./domain-repos/@services/draft-weightment/api/components/Examples/Weighment_services_yaml";
 
 export const AGRI_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-agri-services/api/components/Examples/Agriculture_services_yaml";
@@ -35,6 +35,9 @@ export const B2C_EXAMPLES_PATH =
 
 export const LOGISTICS_EXAMPLES_PATH =
 	"./domain-repos/@logistics/draft-2.x/api/components/Examples";
+
+export const SUBSCRIPTION_AUDIO_VIDEO_EXAMPLES_PATH =
+	"./domain-repos/@mec/draft-audio_video/api/components/Examples/OTT_services_yaml";
 
 export const SUBSCRIPTION_EXAMPLES_PATH =
 	"./domain-repos/@mec/draft-print_media/api/components/Examples/Print_Content_yaml";

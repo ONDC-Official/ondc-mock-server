@@ -17,6 +17,7 @@ import {
 	quoteCreatorAstroService,
 	ASTRO_SERVICES_EXAMPLES_PATH,
 	quoteCreatorWeightment,
+	WEIGHMENT_SERVICES_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -121,7 +122,7 @@ const initConsultationController = (
 				"astroService"
 			);
 		}
-		if(domain===SERVICES_DOMAINS.WEIGHTMENT){
+		if(domain===SERVICES_DOMAINS.WEIGHMENT){
 			updatedFulfillments = updateFulfillments(
 				fulfillments,
 				ON_ACTION_KEY?.ON_INIT,
@@ -161,9 +162,9 @@ const initConsultationController = (
 					path.join(ASTRO_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 				);
 				break;
-			case SERVICES_DOMAINS.WEIGHTMENT:
+			case SERVICES_DOMAINS.WEIGHMENT:
 				file=	fs.readFileSync(
-					path.join("/Users/naval/Desktop/new mock server/ondc-mock-server/apps/backend/domain-repos/@services/draft-weightment/api/components/Examples/Weighment_services_yaml", "on_init/on_init.yaml")
+					path.join(WEIGHMENT_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 				);
 				break;
 			default:
@@ -202,7 +203,7 @@ const initConsultationController = (
 					fulfillments[0]?.type,
 					"astro-service"
 				)
-				:domain===SERVICES_DOMAINS.WEIGHTMENT?
+				:domain===SERVICES_DOMAINS.WEIGHMENT?
 				quoteCreatorWeightment(
 					items,
 					providersItems,
@@ -228,7 +229,7 @@ const initConsultationController = (
 				cancellation_terms: response?.value?.message?.order?.cancellation_terms,
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
 
-				payments: [
+				payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?[response?.value?.message?.order?.payments[0]] :[
 					response?.value?.message?.order?.payments[0],
 					{
 						id:
@@ -306,7 +307,7 @@ const initConsultationController = (
 			responseMessage.order.payments.splice(0,1)
 			responseMessage.order.payments[0].type="PRE-FULFILLMENT"
 		}else{
-			(responseMessage.order as any).items=(context.domain===SERVICES_DOMAINS.WEIGHTMENT)?[{quantity:items[0].quantity,fulfillment_ids:items[0].fulfillment_ids,location_ids:items[0].location_ids,id:items[0].id}]:items,
+			(responseMessage.order as any).items=(context.domain===SERVICES_DOMAINS.WEIGHMENT)?[{quantity:items[0].quantity,fulfillment_ids:items[0].fulfillment_ids,location_ids:items[0].location_ids,id:items[0].id}]:items,
 			(responseMessage.order as any).locations=locations
 		}
 

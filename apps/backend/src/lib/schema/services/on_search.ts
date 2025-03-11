@@ -199,8 +199,8 @@ export const onSearchSchema = {
                     required: [
                       "name",
                       "short_desc",
-                      "long_desc",
-                      "images",
+                      // "long_desc",
+                      // "images",
                     ],
                   },
                   rating: {
@@ -330,7 +330,7 @@ export const onSearchSchema = {
                           type: "string",
                         },
                       },
-                      required: ["id", "type", "desc", "url"],
+                      required: ["id", "type"],
                     },
                   },
                   categories: {
@@ -1108,8 +1108,8 @@ export const onSearchSchema = {
                           },
                           required: [
                             "code",
-                            "short_desc",
-                            "long_desc",
+                            // "short_desc",
+                            // "long_desc",
                           ],
                         },
                         location_ids: {
@@ -1208,7 +1208,7 @@ export const onSearchSchema = {
                 required: [
                   "id",
                   "descriptor",
-                  "rating",
+                  // "rating",
                   // "ttl",
                   // "time",
                   "locations",
