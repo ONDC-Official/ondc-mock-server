@@ -22,7 +22,6 @@ import { UserGuide } from "./UserGuideSection";
 import { VITE_SERVER_URL } from "../utils/env";
 import { Fab } from "@mui/material";
 
-
 export const MockRequestSection = () => {
 	const [log, setLog] = useState<string>();
 	const [showCurl, setShowCurl] = useState(false);
@@ -46,25 +45,24 @@ export const MockRequestSection = () => {
 	}, [domain]);
 
 	async function call() {
-    try {
-        const response = await axios.get(`${VITE_SERVER_URL}/get-data`, {
-            timeout: 30000, // 30 sec timeout
-            params: {
-                action: Action.toLowerCase(),
-                domain: domain,
-                subdomain: Domain,
-                version: version,
-            },
-        });
-        return response.data; // Return only data
-    } catch (error) {
-        console.error("Error:", error);
-        return null;
-    }
-}
+		try {
+			const response = await axios.get(`${VITE_SERVER_URL}/get-data`, {
+				timeout: 30000, // 30 sec timeout
+				params: {
+					action: Action.toLowerCase(),
+					domain: domain,
+					subdomain: Domain,
+					version: version,
+				},
+			});
+			return response.data; // Return only data
+		} catch (error) {
+			console.error("Error:", error);
+			return null;
+		}
+	}
 	// console.log(domain,"Domainnn")
 	useEffect(() => {
-
 		const fetchData = async () => {
 			const data = await call();
 			if (data.data) {
@@ -91,20 +89,38 @@ export const MockRequestSection = () => {
 	const [curl, setCurl] = useState<string>();
 
 	const handleVersion = (
+		//@ts-ignore
+		event:
+			| React.MouseEvent<Element>
+			| React.KeyboardEvent<Element>
+			| React.FocusEvent<Element>
+			| null,
 		value: {} | null
 	) => {
 		if (value) {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
 	};
-
+	//@ts-ignore
 	const handleAction = (
-	// eslint-disable-next-line @typescript-eslint/ban-types
-	value: {} | null) => {
+		event:
+			| React.MouseEvent<Element>
+			| React.KeyboardEvent<Element>
+			| React.FocusEvent<Element>
+			| null,
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		value: {} | null
+	) => {
 		setAction(value as string); // Ensure value is a string and set the version
 	};
 
 	const handledomain = (
+		//@ts-ignore
+		event:
+			| React.MouseEvent<Element>
+			| React.KeyboardEvent<Element>
+			| React.FocusEvent<Element>
+			| null,
 		value: {} | null
 	) => {
 		setDomain(value as string); // Ensure value is a string and set the version
@@ -177,7 +193,9 @@ export const MockRequestSection = () => {
 										}}
 										placeholder="Select Domain"
 										value={Domain}
-										onChange={(_,value)=>{handledomain(value)}}
+										onChange={(_, value) => {
+											handledomain(value);
+										}}
 									>
 										{ALL_SUB_DOMAINS[
 											domain as keyof typeof ALL_SUB_DOMAINS
@@ -197,7 +215,9 @@ export const MockRequestSection = () => {
 										}}
 										placeholder="Select Action"
 										value={Action}
-										onChange={(_,value)=>{handleAction(value)}}
+										onChange={(_, value) => {
+											handleAction(value);
+										}}
 									>
 										{All_Actions.map((action, index) => (
 											<Option value={action} key={action + index}>
