@@ -132,7 +132,7 @@ export const SandboxRequestSection = () => {
 							<Select
 								placeholder="Select a version"
 								sx={{ width: "100%" }}
-								onChange={(_, value) => handleVersion(value)} // Ensure both event and value are passed
+								onChange={(_, value) => handleVersion(null,value)} // Ensure both event and value are passed
 							>
 								<Option value="b2b">B2B</Option>
 								<Option value="b2c">B2c</Option>

@@ -101,8 +101,8 @@ export const MockRequestSection = () => {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
 	};
-	//@ts-ignore
 	const handleAction = (
+			//@ts-ignore
 		event:
 			| React.MouseEvent<Element>
 			| React.KeyboardEvent<Element>
@@ -194,7 +194,7 @@ export const MockRequestSection = () => {
 										placeholder="Select Domain"
 										value={Domain}
 										onChange={(_, value) => {
-											handledomain(value);
+											handledomain(null, value);
 										}}
 									>
 										{ALL_SUB_DOMAINS[
@@ -216,7 +216,7 @@ export const MockRequestSection = () => {
 										placeholder="Select Action"
 										value={Action}
 										onChange={(_, value) => {
-											handleAction(value);
+											handleAction(null,value);
 										}}
 									>
 										{All_Actions.map((action, index) => (
