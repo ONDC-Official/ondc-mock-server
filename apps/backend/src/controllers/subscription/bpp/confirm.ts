@@ -317,7 +317,7 @@ export const confirmConsultationController = async (
 					`${req.body.context.bap_uri}${
 						req.body.context.bap_uri.endsWith("/") ? "on_update" : "/on_update"
 					}`,
-					"on_update"
+					"on_update1"
 				);
 				i++;
 			}, 1000);
@@ -405,15 +405,15 @@ export const childOrderResponseBuilder = async (
 				JSON.stringify(log)
 			);
 
-			if (error instanceof AxiosError && id === 0 && action === "on_confirm") {
-				res.status(error.status || 500).json(error);
-			}
+			// if (error instanceof AxiosError && id === 0 && action === "on_confirm") {
+			// 	res.status(error.status || 500).json(error);
+			// }
 
-			if (error instanceof AxiosError) {
-				console.log(error.response?.data);
-			}
+			// if (error instanceof AxiosError) {
+			// 	console.log(error.response?.data);
+			// }
 
-			throw error;
+			// throw error;
 		}
 
 		logger.info({
