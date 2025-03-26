@@ -79,6 +79,56 @@ export const confirmConsultationController = async (
       delete responseMessage.order.payments[0].params.transaction_id
      
     }
+    if(context.domain===SERVICES_DOMAINS.AGRI_EQUIPMENT){
+      responseMessage.order.cancellation_terms=[
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "PENDING",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "IN_TRANSIT",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "AT_LOCATION",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        }
+      ]
+      responseMessage.order.fulfillments=[{...responseMessage.order.fulfillments[0],tracking:false}]
+    }
 
     console.log("responseMEssageatonconfm",JSON.stringify(responseMessage))
 

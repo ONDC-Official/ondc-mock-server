@@ -124,7 +124,22 @@ export const initiateUpdateController = async (
 		// 		},
 		// 	})
 		// );
-
+		if(context.domain === SERVICES_DOMAINS.AGRI_EQUIPMENT){
+			responseMessage.order.items=[{
+				...responseMessage.order.items[0],
+				"payment_ids": [
+            "PY2"
+          ],
+					"quantity": {
+            "unitized": {
+              "measure": {
+                "unit": "hours",
+                "value": "2"
+              }
+            }
+          }
+			}]
+		}
 		await send_response(
 			res,
 			next,

@@ -106,16 +106,16 @@ export const responseBuilder = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "b2c"
-			? B2C_BPP_MOCKSERVER_URL
-			: domain === "retail"
-			? REATIL_BPP_MOCKSERVER_URL
-			: domain === "logistics"
-			? LOGISTICS_BPP_MOCKSERVER_URL
-			: domain === "subscription"
-			? SUBSCRIPTION_BPP_MOCKSERVER_URL
-			: domain === "agri"
-			? AGRI_BPP_MOCKSERVER_URL
-			: SERVICES_BPP_MOCKSERVER_URL;
+				? B2C_BPP_MOCKSERVER_URL
+				: domain === "retail"
+					? REATIL_BPP_MOCKSERVER_URL
+					: domain === "logistics"
+						? LOGISTICS_BPP_MOCKSERVER_URL
+						: domain === "subscription"
+							? SUBSCRIPTION_BPP_MOCKSERVER_URL
+							: domain === "agri"
+								? AGRI_BPP_MOCKSERVER_URL
+								: SERVICES_BPP_MOCKSERVER_URL;
 
 	if (action.startsWith("on_")) {
 		async = {
@@ -164,32 +164,29 @@ export const responseBuilder = async (
 				).length;
 				if (domain === "services") {
 					await redis.set(
-						`${
-							(async.context! as any).transaction_id
+						`${(async.context! as any).transaction_id
 						}-${action}-from-server-${id}-${ts.toISOString()}`,
 						JSON.stringify(log)
 					);
 				} else {
 					await redis.set(
-						`${
-							(async.context! as any).transaction_id
+						`${(async.context! as any).transaction_id
 						}-${logIndex}-${action}-from-server-${id}-${ts.toISOString()}`,
 						JSON.stringify(log)
 					);
 				}
 			} else {
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
 			}
 
 			try {
-				if(uri.endsWith("/")){
-					uri=uri.substring(0,uri.length-1)
-				  }
+				if (uri.endsWith("/")) {
+					uri = uri.substring(0, uri.length - 1)
+				}
 				console.log("URI BEING SENT :::", uri);
 				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
@@ -203,8 +200,7 @@ export const responseBuilder = async (
 				};
 				// console.log(`Storing redis ${action} from Server in Response Builder`)
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
@@ -213,22 +209,21 @@ export const responseBuilder = async (
 					error instanceof AxiosError
 						? error?.response?.data
 						: {
-								message: {
-									ack: {
-										status: "NACK",
-									},
+							message: {
+								ack: {
+									status: "NACK",
 								},
-								error: {
-									message: error,
-								},
-						  };
+							},
+							error: {
+								message: error,
+							},
+						};
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response,
 				};
 				await redis.set(
-					`${
-						(async.context! as any).transaction_id
+					`${(async.context! as any).transaction_id
 					}-${action}-from-server-${id}-${ts.toISOString()}`,
 					JSON.stringify(log)
 				);
@@ -302,14 +297,14 @@ export const sendStatusAxiosCall = async (
 		domain === "b2b"
 			? B2B_BPP_MOCKSERVER_URL
 			: domain === "agri-services"
-			? AGRI_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "logistics"
-			? LOGISTICS_BPP_MOCKSERVER_URL
-			: domain === "healthcare-service"
-			? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
-			: domain === "agri-equipment-hiring"
-			? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
-			: SERVICES_BPP_MOCKSERVER_URL;
+				? AGRI_SERVICES_BPP_MOCKSERVER_URL
+				: domain === "logistics"
+					? LOGISTICS_BPP_MOCKSERVER_URL
+					: domain === "healthcare-service"
+						? HEALTHCARE_SERVICES_BPP_MOCKSERVER_URL
+						: domain === "agri-equipment-hiring"
+							? AGRI_EQUIPMENT_BPP_MOCKSERVER_URL
+							: SERVICES_BPP_MOCKSERVER_URL;
 
 	async = {
 		...async,
@@ -351,15 +346,15 @@ export const sendStatusAxiosCall = async (
 				error instanceof AxiosError
 					? error?.response?.data
 					: {
-							message: {
-								ack: {
-									status: "NACK",
-								},
+						message: {
+							ack: {
+								status: "NACK",
 							},
-							error: {
-								message: error,
-							},
-					  };
+						},
+						error: {
+							message: error,
+						},
+					};
 			log.response = {
 				timestamp: new Date().toISOString(),
 				response: response,
@@ -612,7 +607,7 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 
 //AGRI DOMAIN QUOTE CREATORS
 export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
-	 console.log("itemssssssssssss", providersItems);
+	console.log("itemssssssssssss", providersItems);
 	//get price from on_search
 	let breakup: any[] = [];
 	const chargesOnFulfillment = [
@@ -657,8 +652,8 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 				item.title = matchingItem?.descriptor?.name;
 				// item.price = matchingItem?.price;
 				item.available_quantity = {
-					available:matchingItem?.quantity?.available,
-					maximum:matchingItem?.quantity?.maximum
+					available: matchingItem?.quantity?.available,
+					maximum: matchingItem?.quantity?.maximum
 				};
 				item.price = {
 					currency: matchingItem.price.currency,
@@ -671,48 +666,48 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 		// console.log("itemsbreakup",item)
 		// console.log("itemmsmsss",item)
 		breakup = [...breakup,
-			{
-				title: item.title,
-				"@ondc/org/item_id": item.id,
-				"@ondc/org/item_quantity": {
-					count: item?.quantity?.count? item?.quantity?.count:item?.quantity?.selected?.count,
-				},
-				"@ondc/org/title_type": "item",
-				price: {
-					currency: "INR",
-					value: (
-						Number(item?.price?.value) * (item?.quantity?.count?Number(item?.quantity?.count):Number(item?.quantity?.selected?.count))
-					).toString(),
-				},
-				tags: item.tags,
-				item: {
-					// id: item.id,
-					price: item.price,
-					quantity: item.available_quantity ? item.available_quantity : undefined,
-				},
+		{
+			title: item.title,
+			"@ondc/org/item_id": item.id,
+			"@ondc/org/item_quantity": {
+				count: item?.quantity?.count ? item?.quantity?.count : item?.quantity?.selected?.count,
 			},
-			{
-				"@ondc/org/item_id": item?.id,
-				"@ondc/org/title_type": "tax",
-				price: {
-					currency: "INR",
-					value: "0.00",
-				},
-				title: "Tax",
+			"@ondc/org/title_type": "item",
+			price: {
+				currency: "INR",
+				value: (
+					Number(item?.price?.value) * (item?.quantity?.count ? Number(item?.quantity?.count) : Number(item?.quantity?.selected?.count))
+				).toString(),
 			},
-			{
-				"@ondc/org/item_id": item?.id,
-				"@ondc/org/title_type": "discount",
-				price: {
-					currency: "INR",
-					value: "0",
-				},
-				title: "Discount",
+			tags: item.tags,
+			item: {
+				// id: item.id,
+				price: item.price,
+				quantity: item.available_quantity ? item.available_quantity : undefined,
 			},
+		},
+		{
+			"@ondc/org/item_id": item?.id,
+			"@ondc/org/title_type": "tax",
+			price: {
+				currency: "INR",
+				value: "0.00",
+			},
+			title: "Tax",
+		},
+		{
+			"@ondc/org/item_id": item?.id,
+			"@ondc/org/title_type": "discount",
+			price: {
+				currency: "INR",
+				value: "0",
+			},
+			title: "Discount",
+		},
 		];
-		
+
 	});
-	console.log("breakuppp",breakup)
+	console.log("breakuppp", breakup)
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
@@ -729,9 +724,9 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 		}
 	});
 
-	
+
 	const result = {
-		breakup:[
+		breakup: [
 			...breakup,
 			...chargesOnFulfillment
 		],
@@ -745,16 +740,16 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 	return result;
 };
 
-function ensureArray(item:any) {
+function ensureArray(item: any) {
 	return Array.isArray(item) ? item : [item];
 }
 
-export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scenario?:string) => {
-	 console.log("itemssssssssssss", items, JSON.stringify(providersItems));
-	 if(!Array.isArray(items)){
-		items=ensureArray(items)
-	 }
-	   const providersItem=[providersItems[0].items[0]]
+export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scenario?: string) => {
+	console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+	if (!Array.isArray(items)) {
+		items = ensureArray(items)
+	}
+	const providersItem = [providersItems[0].items[0]]
 	//get price from on_search
 	let breakup: any[] = [];
 	// const chargesOnFulfillment = [
@@ -795,13 +790,13 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scena
 				(secondItem: { id: string }) => secondItem?.id === item?.id
 			);
 			// If a matching item is found, update the price in the items array
-			console.log("matchhing",matchingItem)
+			console.log("matchhing", matchingItem)
 			if (matchingItem) {
 				item.title = matchingItem?.descriptor?.name;
 				// item.price = matchingItem?.price;
 				item.available_quantity = {
-					available:matchingItem?.quantity?.available,
-					maximum:matchingItem?.quantity?.maximum
+					available: matchingItem?.quantity?.available,
+					maximum: matchingItem?.quantity?.maximum
 				};
 				item.price = {
 					currency: matchingItem.price.currency,
@@ -815,41 +810,41 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scena
 		// console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
 		breakup = [
 			{
-				title:item.title,
-				price:{
+				title: item.title,
+				price: {
 					currency: "INR",
 					value: (
 						Number(item?.price?.value) * item?.quantity?.selected?.count
 					).toString(),
 				},
-				item:{
-					id:item.id,
-					price:item.price,
-					quantity:{
-						selected:{
-							count:100
+				item: {
+					id: item.id,
+					price: item.price,
+					quantity: {
+						selected: {
+							count: 100
 						}
 					}
 				},
 				tags: [
-              {
-                "descriptor": {
-                  "code": "TITLE"
-                },
-                "list": [
-                  {
-                    "descriptor": {
-                      "code": "type"
-                    },
-                    "value": "item"
-                  }
-                ]
-              }
-            ]
+					{
+						"descriptor": {
+							"code": "TITLE"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "item"
+							}
+						]
+					}
+				]
 			}
 		];
 	});
-	breakup.push(          {
+	breakup.push({
 		"title": "earnest_money_deposit",
 		"price": {
 			"currency": "INR",
@@ -955,17 +950,18 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scena
 	let totalPrice = 0;
 	breakup.forEach((entry) => {
 		// console.log("entryyy",entry)
-		if(entry.title==="discount"){
+		if (entry.title === "discount") {
 			const priceValue = parseFloat(entry.price.value);
 			if (!isNaN(priceValue)) {
 				totalPrice -= priceValue;
 			}
-		 }
-		 else{
-		 const priceValue = parseFloat(entry.price.value);
-		 if (!isNaN(priceValue)) {
-			 totalPrice += priceValue;
-		 }}
+		}
+		else {
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice += priceValue;
+			}
+		}
 	});
 	// chargesOnFulfillment.forEach((entry) => {
 	// 	const priceValue = parseFloat(entry.price.value);
@@ -974,9 +970,9 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scena
 	// 	}
 	// });
 
-	
+
 	const result = {
-		breakup:[
+		breakup: [
 			...breakup,
 			// ...chargesOnFulfillment
 		],
@@ -993,183 +989,184 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any,scena
 
 export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?: any) => {
 	// console.log("itemssssssssssss", items, JSON.stringify(providersItems));
-		const providersItem=[providersItems[0].items[0]]
- //get price from on_search
- let breakup: any[] = [];
+	const providersItem = [providersItems[0].items[0]]
+	//get price from on_search
+	let breakup: any[] = [];
 
- // console.log("itemssssssssssssEachhhhhhhhhhhh", items);
- items.forEach((item) => {
-	 // Find the corresponding item in the second array
-	 if (providersItems) {
-		 const matchingItem = providersItem.find(
-			 (secondItem: { id: string }) => secondItem?.id === item?.id
-		 );
-		 // If a matching item is found, update the price in the items array
-		//  console.log("matchhing",matchingItem)
-		 if (matchingItem) {
-			 item.title = matchingItem?.descriptor?.name;
-			 // item.price = matchingItem?.price;
-			 item.available_quantity = {
-				 available:matchingItem?.quantity?.available,
-				 maximum:matchingItem?.quantity?.maximum
-			 };
-			 item.price = {
-				 currency: matchingItem.price.currency,
-				 value: matchingItem.price.value,
-			 };
-		 }
-	 }
- });
- items.forEach((item) => {
-	 // console.log("itemsbreakup",item)
-	 // console.log("itemmsmsss",item)
-	 breakup = [
-		 {
-			 title:item.title,
-			 price: {
-				currency: "INR",
-				value: (
-					Number(item?.price?.value) * item?.quantity?.selected?.count
-				).toString(),
-			},
-			 item:{
-				 id:item.id,
-				 price:item.price,
-				 quantity:item?.quantity
-			 },
-			 tags: [
-						 {
-							 "descriptor": {
-								 "code": "TITLE"
-							 },
-							 "list": [
-								 {
-									 "descriptor": {
-										 "code": "type"
-									 },
-									 "value": "item"
-								 }
-							 ]
-						 }
-					 ]
-		 }
-	 ];
- });
- breakup.push({
-	 "title": "tax",
-	 "price": {
-		 "currency": "INR",
-		 "value": "50"
-	 },
-	 "item": {
-		 "id": "I1"
-	 },
-	 "tags": [
-		 {
-			 "descriptor": {
-				 "code": "title"
-			 },
-			 "list": [
-				 {
-					 "descriptor": {
-						 "code": "type"
-					 },
-					 "value": "tax"
-				 }
-			 ]
-		 }
-	 ]
- })
- breakup.push({
-	 "title": "discount",
-	 "price": {
-		 "currency": "INR",
-		 "value": "100"
-	 },
-	 "item": {
-		 "id": "I1"
-	 },
-	 "tags": [
-		 {
-			 "descriptor": {
-				 "code": "title"
-			 },
-			 "list": [
-				 {
-					 "descriptor": {
-						 "code": "type"
-					 },
-					 "value": "discount"
-				 }
-			 ]
-		 }
-	 ]
- })
- breakup.push({
-	 "title": "pickup_charge",
-	 "price": {
-		 "currency": "INR",
-		 "value": "100"
-	 },
-	 "item": {
-		 "id": "I1"
-	 },
-	 "tags": [
-		 {
-			 "descriptor": {
-				 "code": "title"
-			 },
-			 "list": [
-				 {
-					 "descriptor": {
-						 "code": "type"
-					 },
-					 "value": "misc"
-				 }
-			 ]
-		 }
-	 ]
- })
-//  console.log("breakuppp",breakup)
-
- //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
- let totalPrice = 0;
- breakup.forEach((entry) => {
-	//  console.log("entryyy",entry)
-	 if(entry.title==="discount"){
-		const priceValue = parseFloat(entry.price.value);
-		if (!isNaN(priceValue)) {
-			totalPrice -= priceValue;
+	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItem.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			//  console.log("matchhing",matchingItem)
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				// item.price = matchingItem?.price;
+				item.available_quantity = {
+					available: matchingItem?.quantity?.available,
+					maximum: matchingItem?.quantity?.maximum
+				};
+				item.price = {
+					currency: matchingItem.price.currency,
+					value: matchingItem.price.value,
+				};
+			}
 		}
-	 }
-	 else{
-	 const priceValue = parseFloat(entry.price.value);
-	 if (!isNaN(priceValue)) {
-		 totalPrice += priceValue;
-	 }}
- });
- // chargesOnFulfillment.forEach((entry) => {
- // 	const priceValue = parseFloat(entry.price.value);
- // 	if (!isNaN(priceValue)) {
- // 		totalPrice += priceValue;
- // 	}
- // });
+	});
+	items.forEach((item) => {
+		// console.log("itemsbreakup",item)
+		// console.log("itemmsmsss",item)
+		breakup = [
+			{
+				title: item.title,
+				price: {
+					currency: "INR",
+					value: (
+						Number(item?.price?.value) * item?.quantity?.selected?.count
+					).toString(),
+				},
+				item: {
+					id: item.id,
+					price: item.price,
+					quantity: item?.quantity
+				},
+				tags: [
+					{
+						"descriptor": {
+							"code": "TITLE"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "item"
+							}
+						]
+					}
+				]
+			}
+		];
+	});
+	breakup.push({
+		"title": "tax",
+		"price": {
+			"currency": "INR",
+			"value": "50"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "tax"
+					}
+				]
+			}
+		]
+	})
+	breakup.push({
+		"title": "discount",
+		"price": {
+			"currency": "INR",
+			"value": "100"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "discount"
+					}
+				]
+			}
+		]
+	})
+	breakup.push({
+		"title": "pickup_charge",
+		"price": {
+			"currency": "INR",
+			"value": "100"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "misc"
+					}
+				]
+			}
+		]
+	})
+	//  console.log("breakuppp",breakup)
 
- 
- const result = {
-	 breakup:[
-		 ...breakup,
-		 // ...chargesOnFulfillment
-	 ],
-	 price: {
-		 currency: "INR",
-		 value: totalPrice.toFixed(2),
-	 },
-	 ttl: "P1D",
- };
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		//  console.log("entryyy",entry)
+		if (entry.title === "discount") {
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice -= priceValue;
+			}
+		}
+		else {
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice += priceValue;
+			}
+		}
+	});
+	// chargesOnFulfillment.forEach((entry) => {
+	// 	const priceValue = parseFloat(entry.price.value);
+	// 	if (!isNaN(priceValue)) {
+	// 		totalPrice += priceValue;
+	// 	}
+	// });
 
- // console.log("resultttttttttt", JSON.stringify(result));
- return result;
+
+	const result = {
+		breakup: [
+			...breakup,
+			// ...chargesOnFulfillment
+		],
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	// console.log("resultttttttttt", JSON.stringify(result));
+	return result;
 };
 
 
@@ -1208,13 +1205,13 @@ export const quoteCreatorAgriService = (
 			item:
 				item.title === "tax"
 					? {
-							id: item.id,
-					  }
+						id: item.id,
+					}
 					: {
-							id: item.id,
-							price: item.price,
-							quantity: item.quantity ? item.quantity : undefined,
-					  },
+						id: item.id,
+						price: item.price,
+						quantity: item.quantity ? item.quantity : undefined,
+					},
 		});
 	});
 
@@ -1355,13 +1352,13 @@ export const quoteCreatorHealthCareService = (
 				item:
 					item.title === "tax"
 						? {
-								id: item?.id,
-						  }
+							id: item?.id,
+						}
 						: {
-								id: item?.id,
-								price: item?.price,
-								quantity: item?.quantity ? item?.quantity : undefined,
-						  },
+							id: item?.id,
+							price: item?.price,
+							quantity: item?.quantity ? item?.quantity : undefined,
+						},
 			});
 		});
 
@@ -1568,7 +1565,7 @@ export const quoteCreatorAstroService = (
 	scenario?: string
 ) => {
 	try {
-		console.log("items",items,"proovidersITems",providersItems)
+		console.log("items", items, "proovidersITems", providersItems)
 		//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
@@ -1622,7 +1619,7 @@ export const quoteCreatorAstroService = (
 					currency: "INR",
 					value: (Number(item?.price?.value) * quantity).toString(),
 				},
-				tags:[
+				tags: [
 					{
 						"descriptor": {
 							"code": "title"
@@ -1640,13 +1637,13 @@ export const quoteCreatorAstroService = (
 				item:
 					item.title === "tax"
 						? {
-								id: item?.id,
-						  }
+							id: item?.id,
+						}
 						: {
-								id: item?.id,
-								price: item?.price,
-								quantity: item?.quantity ? item?.quantity : undefined,
-						  },
+							id: item?.id,
+							price: item?.price,
+							quantity: item?.quantity ? item?.quantity : undefined,
+						},
 			});
 		});
 
@@ -1657,37 +1654,37 @@ export const quoteCreatorAstroService = (
 			{
 				"title": "Pujari Name",
 				"price": {
-				  "currency": "INR",
-				  "value": "0"
-				},
-				"item": {
-				  "id": "I1",
-				  "quantity": {
-					"selected": {
-					  "count": 1
-					}
-				  },
-				  "price": {
 					"currency": "INR",
 					"value": "0"
-				  }
+				},
+				"item": {
+					"id": "I1",
+					"quantity": {
+						"selected": {
+							"count": 1
+						}
+					},
+					"price": {
+						"currency": "INR",
+						"value": "0"
+					}
 				},
 				"tags": [
-				  {
-					"descriptor": {
-					  "code": "title"
-					},
-					"list": [
-					  {
+					{
 						"descriptor": {
-						  "code": "type"
+							"code": "title"
 						},
-						"value": "ITEM"
-					  }
-					]
-				  }
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "ITEM"
+							}
+						]
+					}
 				]
-			  },
+			},
 			{
 				title: "TAX",
 				price: {
@@ -1695,7 +1692,7 @@ export const quoteCreatorAstroService = (
 					value: "10",
 				},
 				item: {
-					id:"I1"
+					id: "I1"
 				},
 				tags: [
 					{
@@ -1720,7 +1717,7 @@ export const quoteCreatorAstroService = (
 					value: "10",
 				},
 				item: {
-					id:"I1"
+					id: "I1"
 				},
 				tags: [
 					{
@@ -1738,61 +1735,61 @@ export const quoteCreatorAstroService = (
 					},
 				],
 			},
-			  {
+			{
 				title: "Potli",
 				price: {
-				  currency: "INR",
-				  value: "50"
+					currency: "INR",
+					value: "50"
 				},
 				item: {
-				  id: "I1",
-				  "add-ons": [
-					{
-					  id: "ADDON01"
-					}
-				  ]
-				},
-				tags: [
-				  {
-					descriptor: {
-					  code: "title"
-					},
-					list: [
-					  {
-						descriptor: {
-						  code: "type"
-						},
-						value: "ADD_ON"
-					  }
-					]
-				  }
-				]
-			  },
-				{
-					"title": "Convenience Fee",
-					"price": {
-						"currency": "INR",
-						"value": "0"
-					},
-					"item": {
-						"id": "I1"
-					},
-					"tags": [
+					id: "I1",
+					"add-ons": [
 						{
-							"descriptor": {
-								"code": "title"
-							},
-							"list": [
-								{
-									"descriptor": {
-										"code": "type"
-									},
-									"value": "MISC"
-								}
-							]
+							id: "ADDON01"
 						}
 					]
-				}
+				},
+				tags: [
+					{
+						descriptor: {
+							code: "title"
+						},
+						list: [
+							{
+								descriptor: {
+									code: "type"
+								},
+								value: "ADD_ON"
+							}
+						]
+					}
+				]
+			},
+			{
+				"title": "Convenience Fee",
+				"price": {
+					"currency": "INR",
+					"value": "0"
+				},
+				"item": {
+					"id": "I1"
+				},
+				"tags": [
+					{
+						"descriptor": {
+							"code": "title"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "MISC"
+							}
+						]
+					}
+				]
+			}
 		);
 
 		// if (
@@ -1937,138 +1934,139 @@ export const quoteCreatorAstroService = (
 	}
 };
 
-export const quoteCreatorWeightment=(items: Item[],
+export const quoteCreatorWeightment = (items: Item[],
 	providersItems?: any,
 	offers?: any,
 	fulfillment_type?: string,
 	service_name?: string,
-	scenario?: string)=>{
-		console.log("itemssssssssssss", items, JSON.stringify(providersItems));
-		if(!Array.isArray(items)){
-		 items=ensureArray(items)
-		}
-			const providersItem=[providersItems[0]]
-	 //get price from on_search
-	 let breakup: any[] = [];
- 
-	 // console.log("itemssssssssssssEachhhhhhhhhhhh", items);
-	 items.forEach((item) => {
-		 // Find the corresponding item in the second array
-		 if (providersItems) {
-			 const matchingItem = providersItem.find(
-				 (secondItem: { id: string }) => secondItem?.id === item?.id
-			 );
-			 // If a matching item is found, update the price in the items array
-			 console.log("matchhing",matchingItem)
-			 if (matchingItem) {
-				 item.title = matchingItem?.descriptor?.name;
-				 // item.price = matchingItem?.price;
-				 item.available_quantity = {
-					 available:matchingItem?.quantity?.available,
-					 maximum:matchingItem?.quantity?.maximum
-				 };
-				 item.price = {
-					 currency: matchingItem.price.currency,
-					 value: matchingItem.price.value,
-				 };
-			 }
-		 }
-	 });
-	 items.forEach((item) => {
-		 // console.log("itemsbreakup",item)
-		 // console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
-		 breakup = [
-			 {
-				 title:item.title,
-				 price:{
-					 currency: "INR",
-					 value: (
-						 Number(item?.price?.value) * item?.quantity?.selected?.count
-					 ).toString(),
-				 },
-				 item:{
-					 id:item.id,
-					 price:item.price,
-					 quantity:item.quantity
-				 },
-				 tags: [
-							 {
-								 "descriptor": {
-									 "code": "TITLE"
-								 },
-								 "list": [
-									 {
-										 "descriptor": {
-											 "code": "type"
-										 },
-										 "value": "item"
-									 }
-								 ]
-							 }
-						 ]
-			 }
-		 ];
-	 });
+	scenario?: string) => {
+	console.log("itemssssssssssss", items, JSON.stringify(providersItems));
+	if (!Array.isArray(items)) {
+		items = ensureArray(items)
+	}
+	const providersItem = [providersItems[0]]
+	//get price from on_search
+	let breakup: any[] = [];
 
-	 breakup.push({
-		 "title": "tax",
-		 "price": {
-			 "currency": "INR",
-			 "value": "100"
-		 },
-		 "item": {
-			 "id": "I1"
-		 },
-		 "tags": [
-			 {
-				 "descriptor": {
-					 "code": "title"
-				 },
-				 "list": [
-					 {
-						 "descriptor": {
-							 "code": "type"
-						 },
-						 "value": "TAX"
-					 }
-				 ]
-			 }
-		 ]
-	 })
-	 // console.log("breakuppp",breakup)
- 
-	 //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-	 let totalPrice = 0;
-	 breakup.forEach((entry) => {
-		 // console.log("entryyy",entry)
-		 if(entry.title==="discount"){
-			 const priceValue = parseFloat(entry.price.value);
-			 if (!isNaN(priceValue)) {
-				 totalPrice -= priceValue;
-			 }
+	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
+	items.forEach((item) => {
+		// Find the corresponding item in the second array
+		if (providersItems) {
+			const matchingItem = providersItem.find(
+				(secondItem: { id: string }) => secondItem?.id === item?.id
+			);
+			// If a matching item is found, update the price in the items array
+			console.log("matchhing", matchingItem)
+			if (matchingItem) {
+				item.title = matchingItem?.descriptor?.name;
+				// item.price = matchingItem?.price;
+				item.available_quantity = {
+					available: matchingItem?.quantity?.available,
+					maximum: matchingItem?.quantity?.maximum
+				};
+				item.price = {
+					currency: matchingItem.price.currency,
+					value: matchingItem.price.value,
+				};
 			}
-			else{
+		}
+	});
+	items.forEach((item) => {
+		// console.log("itemsbreakup",item)
+		// console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
+		breakup = [
+			{
+				title: item.title,
+				price: {
+					currency: "INR",
+					value: (
+						Number(item?.price?.value) * item?.quantity?.selected?.count
+					).toString(),
+				},
+				item: {
+					id: item.id,
+					price: item.price,
+					quantity: item.quantity
+				},
+				tags: [
+					{
+						"descriptor": {
+							"code": "TITLE"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "item"
+							}
+						]
+					}
+				]
+			}
+		];
+	});
+
+	breakup.push({
+		"title": "tax",
+		"price": {
+			"currency": "INR",
+			"value": "100"
+		},
+		"item": {
+			"id": "I1"
+		},
+		"tags": [
+			{
+				"descriptor": {
+					"code": "title"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "type"
+						},
+						"value": "TAX"
+					}
+				]
+			}
+		]
+	})
+	// console.log("breakuppp",breakup)
+
+	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+	let totalPrice = 0;
+	breakup.forEach((entry) => {
+		// console.log("entryyy",entry)
+		if (entry.title === "discount") {
+			const priceValue = parseFloat(entry.price.value);
+			if (!isNaN(priceValue)) {
+				totalPrice -= priceValue;
+			}
+		}
+		else {
 			const priceValue = parseFloat(entry.price.value);
 			if (!isNaN(priceValue)) {
 				totalPrice += priceValue;
-			}}
-	 });
- 
-	 
-	 const result = {
-		 breakup:[
-			 ...breakup,
-			 // ...chargesOnFulfillment
-		 ],
-		 price: {
-			 currency: "INR",
-			 value: totalPrice.toFixed(2),
-		 },
-		 ttl: "P1D",
-	 };
- 
-	 // console.log("resultttttttttt", JSON.stringify(result));
-	 return result;
+			}
+		}
+	});
+
+
+	const result = {
+		breakup: [
+			...breakup,
+			// ...chargesOnFulfillment
+		],
+		price: {
+			currency: "INR",
+			value: totalPrice.toFixed(2),
+		},
+		ttl: "P1D",
+	};
+
+	// console.log("resultttttttttt", JSON.stringify(result));
+	return result;
 }
 
 //QUOTE FOR SUBSCRIPTION PROCESS
@@ -2132,71 +2130,86 @@ export const quoteSubscription = (
 					currency: "INR",
 					value: (Number(item?.price?.value) * quantity).toString(),
 				},
-				tags: item?.tags,
+				tags: [
+					{
+						"descriptor": {
+							"code": "title"
+						},
+						"list": [
+							{
+								"descriptor": {
+									"code": "type"
+								},
+								"value": "item"
+							}
+						]
+					}
+				],
 				item:
-					item.title === "tax"
-						? {
-								id: item?.id,
-						  }
-						: {
-								id: item?.id,
-								price: item?.price,
-								quantity: item?.quantity ? item?.quantity : undefined,
-						  },
+				{
+					fullfillment_ids:['FI1'],
+					id: item?.id,
+					price: {currency:item?.price?.currency,
+									value:item?.price?.value
+					},
+					quantity: item?.quantity ? item?.quantity : undefined,
+				},
 			});
 		});
 
 		//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
-
+		if (scenario !== 'full-payment' && scenario !== 'manual-payment') {
+			breakup?.push(
+				{
+					title: "tax",
+					price: {
+						currency: "INR",
+						value: "10",
+					},
+					item: { id: items[0].id },
+					tags: [
+						{
+							descriptor: {
+								code: "title",
+							},
+							list: [
+								{
+									descriptor: {
+										code: "type",
+									},
+									value: "tax",
+								},
+							],
+						},
+					],
+				},
+				{
+					title: "discount",
+					price: {
+						currency: "INR",
+						value: "10",
+					},
+					item: { id: items[0].id },
+					tags: [
+						{
+							descriptor: {
+								code: "title",
+							},
+							list: [
+								{
+									descriptor: {
+										code: "type",
+									},
+									value: "discount",
+								},
+							],
+						},
+					],
+				}
+			);
+		}
 		//ADD STATIC TAX AND DISCOUNT FOR ITEM ONE
-		breakup?.push(
-			{
-				title: "tax",
-				price: {
-					currency: "INR",
-					value: "10",
-				},
-				item: items[0],
-				tags: [
-					{
-						descriptor: {
-							code: "title",
-						},
-						list: [
-							{
-								descriptor: {
-									code: "type",
-								},
-								value: "tax",
-							},
-						],
-					},
-				],
-			},
-			{
-				title: "discount",
-				price: {
-					currency: "INR",
-					value: "10",
-				},
-				item: items[0],
-				tags: [
-					{
-						descriptor: {
-							code: "title",
-						},
-						list: [
-							{
-								descriptor: {
-									code: "type",
-								},
-								value: "discount",
-							},
-						],
-					},
-				],
-			}
-		);
+
 
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
@@ -2212,13 +2225,15 @@ export const quoteSubscription = (
 		});
 
 		const quotePrice =
-			scenario === "single-order"
-				? totalPrice
-				: calculateQuotePrice(
-						fulfillment?.stops[0]?.time?.duration,
-						fulfillment?.stops[0]?.time.schedule?.frequency,
-						totalPrice
-				  );
+  scenario === "single-order"
+    ? totalPrice
+      : (scenario === "full-payment")
+        ? totalPrice
+        : calculateQuotePrice(
+            fulfillment?.stops[0]?.time?.duration,
+            fulfillment?.stops[0]?.time?.schedule?.frequency,
+            totalPrice
+          );
 
 		const result = {
 			breakup,
@@ -2237,7 +2252,7 @@ export const quoteSubscription = (
 
 export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 	const items: Item[] = JSON.parse(JSON.stringify(tempItems));
-	providersItems=ensureArray(providersItems)
+	providersItems = ensureArray(providersItems)
 	//get price from on_search
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
@@ -2353,7 +2368,7 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 };
 export const quoteOTT = (tempItems: Item[], providersItems?: any) => {
 	const items: Item[] = JSON.parse(JSON.stringify(tempItems));
-	providersItems=ensureArray(providersItems)
+	providersItems = ensureArray(providersItems)
 	//get price from on_search
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
@@ -2368,23 +2383,23 @@ export const quoteOTT = (tempItems: Item[], providersItems?: any) => {
 				value: matchingItem.price.value,
 			};
 			item.price = pp;
-				const tag = [
-					{
-						descriptor: {
-							code: "title",
-						},
-						list: [
-							{
-								descriptor: {
-									code: "type",
-								},
-								value: "item",
-							},
-						],
+			const tag = [
+				{
+					descriptor: {
+						code: "title",
 					},
-				];
-				item.tags = tag;
-			
+					list: [
+						{
+							descriptor: {
+								code: "type",
+							},
+							value: "item",
+						},
+					],
+				},
+			];
+			item.tags = tag;
+
 		}
 	});
 
@@ -2599,11 +2614,11 @@ export const checkSelectedItems = async (data: any) => {
 		const { message, providersItems } = data;
 		const items = message?.order?.items;
 		let providersItem = providersItems?.items;
-		if(!providersItem){
-			providersItem=providersItems[0]?.items;
+		if (!providersItem) {
+			providersItem = providersItems[0]?.items;
 		}
 		let matchingItem: any = null;
-		console.log("providersItem",JSON.stringify(providersItems),JSON.stringify(providersItem),"items",JSON.stringify(items))
+		console.log("providersItem", JSON.stringify(providersItems), JSON.stringify(providersItem), "items", JSON.stringify(items))
 		items.forEach((item: any) => {
 			if (item) {
 				const selectedItem = item?.id;
@@ -2634,10 +2649,10 @@ export const updateFulfillments = (
 		// const rangeEnd = new Date().setHours(new Date().getHours() + 3).toString();
 
 		const rangeStart = new Date();
-rangeStart.setHours(rangeStart.getHours() + 2);
+		rangeStart.setHours(rangeStart.getHours() + 2);
 
-const rangeEnd = new Date();
-rangeEnd.setHours(rangeEnd.getHours() + 3);
+		const rangeEnd = new Date();
+		rangeEnd.setHours(rangeEnd.getHours() + 3);
 
 		let updatedFulfillments: any = [];
 		// logger.info(`daomain ${JSON.stringify(fulfillments)}`)
@@ -2653,16 +2668,37 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				"@ondc/org/category": "Standard Delivery",
 				"@ondc/org/provider_name": "Agro Fertilizer Store",
 				"@ondc/org/TAT": "P2D",
-				
+
 			};
 		} else {
 			fulfillmentObj = {
 				id: fulfillments[0]?.id ? fulfillments[0].id : "F1",
 				stops: fulfillments[0]?.stops.map((ele: any) => {
 					ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
+					if (scenario === "subscription-with-full-payments") {
+						ele.duration = "P8W";
+						ele.schedule= {
+							"frequency": "P1W"
+					}
+					}
 					return ele;
 				}),
-				tags: {
+
+				tags:(scenario === 'subscription-with-full-payments' || scenario === 'subscription-with-manual-payments' )? [
+					{
+							"descriptor": {
+									"code": "INFO"
+							},
+							"list": [
+									{
+											"descriptor": {
+													"code": "PARENT_ID"
+											},
+											"value": "F1"
+									}
+							]
+					}
+			]: {
 					descriptor: {
 						code: "schedule",
 					},
@@ -2693,7 +2729,7 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				},
 			};
 			fulfillmentObj.type = "Delivery";
-		
+
 			delete fulfillmentObj.tags;
 		} else {
 			fulfillmentObj.stops = fulfillments[0]?.stops.map((ele: any) => {
@@ -2713,54 +2749,54 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
 			};
 		}
-		if(domain==="agri_output"){
-			fulfillmentObj={
-				id:fulfillments[0].id || "F1",
+		if (domain === "agri_output") {
+			fulfillmentObj = {
+				id: fulfillments[0].id || "F1",
 				stops: [
-            {
-              "type": "end",
-              "location": {
-                "gps": "12.974002,77.613458",
-                "area_code": "560001"
-              },
-              "time": {
-                "label": "confirmed",
-                "range": {
-                  "start": "2024-06-09T22:00:00.000Z",
-                  "end": "2024-06-10T02:00:00.000Z"
-                }
-              }
-            }
-          ]
+					{
+						"type": "end",
+						"location": {
+							"gps": "12.974002,77.613458",
+							"area_code": "560001"
+						},
+						"time": {
+							"label": "confirmed",
+							"range": {
+								"start": "2024-06-09T22:00:00.000Z",
+								"end": "2024-06-10T02:00:00.000Z"
+							}
+						}
+					}
+				]
 			}
 		}
-		if(domain==="astroService"){
-			fulfillmentObj={
-				id:fulfillments[0].id || "FY1",
-				type:"Seller-Fulfilled",
+		if (domain === "astroService") {
+			fulfillmentObj = {
+				id: fulfillments[0].id || "FY1",
+				type: "Seller-Fulfilled",
 				stops: [
-            {
-              "type": "end",
-              "location": {
-                "gps": "12.974002,77.613458",
-                "area_code": "560001"
-              },
-              "time": {
-                "label": "confirmed",
-                "range": {
-                  "start": "2024-06-09T22:00:00.000Z",
-                  "end": "2024-06-10T02:00:00.000Z"
-                },
-								"days":"4"
-              }
-            }
-          ]
+					{
+						"type": "end",
+						"location": {
+							"gps": "12.974002,77.613458",
+							"area_code": "560001"
+						},
+						"time": {
+							"label": "confirmed",
+							"range": {
+								"start": "2024-06-09T22:00:00.000Z",
+								"end": "2024-06-10T02:00:00.000Z"
+							},
+							"days": "4"
+						}
+					}
+				]
 			}
 		}
-	
+
 		switch (action) {
 			case ON_ACTION_KEY.ON_SELECT:
-				console.log("fulllfilmentssss",fulfillmentObj)
+				console.log("fulllfilmentssss", fulfillmentObj)
 				// Always push the initial fulfillmentObj
 				updatedFulfillments.push(fulfillmentObj);
 				if (scenario === SCENARIO.MULTI_COLLECTION) {
@@ -2774,24 +2810,24 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 						...itm,
 						stops: itm.stops?.length
 							? [
-									{
-										...itm.stops[0],
-										location: {
-											gps: "12.974002,77.613458",
-											area_code: "560001",
-										},
+								{
+									...itm.stops[0],
+									location: {
+										gps: "12.974002,77.613458",
+										area_code: "560001",
 									},
-									...itm.stops.slice(1),
-								]
+								},
+								...itm.stops.slice(1),
+							]
 							: itm.stops,
 					}));
 				}
-				
+
 				break;
 			case ON_ACTION_KEY.ON_CONFIRM:
-				if(domain==="astroService"){
+				if (domain === "astroService") {
 					updatedFulfillments.push(fulfillmentObj)
-					
+
 					updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
 						(fulfill.state = {
 							descriptor: {
@@ -2806,7 +2842,7 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 									// 	start: new Date(rangeStart).toISOString(),
 									// 	end: new Date(rangeEnd).toISOString(),
 									// },
-									range:{
+									range: {
 										start: rangeStart.toISOString(),
 										end: rangeEnd.toISOString(),
 									}
@@ -2821,253 +2857,255 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 											...ele.time,
 											label: FULFILLMENT_LABELS.CONFIRMED,
 										},
-										instructions:{
-											 "name": "Special Instructions",
-                      "short_desc": "Customer Special Instructions"
+										instructions: {
+											"name": "Special Instructions",
+											"short_desc": "Customer Special Instructions"
 										},
-										person:{
-											name:"Rahul" }
+										person: {
+											name: "Rahul"
+										}
 									};
 								}
 								return ele;
 							})),
 							(fulfill.rateable = true);
 						return fulfill;
-				})
+					})
 
 				}
-				else if(domain==="weightment"){
+				else if (domain === "weightment") {
 					updatedFulfillments.push(fulfillments[0])
-					updatedFulfillments=updatedFulfillments.map((itm:any)=>{
+					updatedFulfillments = updatedFulfillments.map((itm: any) => {
 						return {
 							...itm,
-							stops:[
-								{...itm.stops[0],
-									location:{
+							stops: [
+								{
+									...itm.stops[0],
+									location: {
 										"gps": "12.974002,77.613458",
-                		"area_code": "560001"
+										"area_code": "560001"
 									},
-									instructions:{
+									instructions: {
 										"name": "Special Instructions",
-									 "short_desc": "Customer Special Instructions"
-								 },
-								 days:undefined,
-								 person:undefined
+										"short_desc": "Customer Special Instructions"
+									},
+									days: undefined,
+									person: undefined
 								}
 							],
-							customer:{
-								person:{
-									name:	"Ramu"
+							customer: {
+								person: {
+									name: "Ramu"
 								}
 							}
 						}
 					})
 				}
-				else{
-				updatedFulfillments = fulfillments;
-				// Add your logic for ON_CONFIRM
-				updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
-					(fulfill.state = {
-						descriptor: {
-							code: FULFILLMENT_STATES.PENDING,
-						},
-					}),
-						fulfill.stops.push({
-							type: "start",
-							...FULFILLMENT_START,
-							time: {
-								// range: {
-								// 	start: new Date(rangeStart).toISOString(),
-								// 	end: new Date(rangeEnd).toISOString(),
-								// },
-								range:{
-									start: rangeStart.toISOString(),
-									end: rangeEnd.toISOString(),
-								}
+				else {
+					updatedFulfillments = fulfillments;
+					// Add your logic for ON_CONFIRM
+					updatedFulfillments = updatedFulfillments.map((fulfill: any) => {
+						(fulfill.state = {
+							descriptor: {
+								code: FULFILLMENT_STATES.PENDING,
 							},
 						}),
-						(fulfill.stops = fulfill?.stops?.map((ele: any) => {
-							if (ele?.type === "end") {
-								ele = {
-									...ele,
-									...FULFILLMENT_END,
-									time: {
-										...ele.time,
-										label: FULFILLMENT_LABELS.CONFIRMED,
-									},
-									person:
-										ele.customer && ele.customer.person
-											? ele.customer.person
-											: FULFILLMENT_END.person,
-								};
-							}
-							return ele;
-						})),
-						(fulfill.rateable = true);
-					return fulfill;
-				});
-			}
+							fulfill.stops.push({
+								type: "start",
+								...FULFILLMENT_START,
+								time: {
+									// range: {
+									// 	start: new Date(rangeStart).toISOString(),
+									// 	end: new Date(rangeEnd).toISOString(),
+									// },
+									range: {
+										start: rangeStart.toISOString(),
+										end: rangeEnd.toISOString(),
+									}
+								},
+							}),
+							(fulfill.stops = fulfill?.stops?.map((ele: any) => {
+								if (ele?.type === "end") {
+									ele = {
+										...ele,
+										...FULFILLMENT_END,
+										time: {
+											...ele.time,
+											label: FULFILLMENT_LABELS.CONFIRMED,
+										},
+										person:
+											ele.customer && ele.customer.person
+												? ele.customer.person
+												: FULFILLMENT_END.person,
+									};
+								}
+								return ele;
+							})),
+							(fulfill.rateable = true);
+						return fulfill;
+					});
+				}
 				break;
 			case ON_ACTION_KEY.ON_CANCEL:
 				updatedFulfillments = fulfillments;
 				updatedFulfillments = updatedFulfillments.map((fulfillment: any) => {
 					if (fulfillment.type === "Delivery") {
-					  return {
-						...fulfillment,
-						state: {
-						  ...fulfillment.state,
-						  descriptor: {
-							code: FULFILLMENT_STATES.CANCELLED,
-						  },
-						},
-						end: {
-						  ...fulfillment.end,
-						  time: {
-							range: {
-							  end: rangeEnd,
-							  start: rangeStart,
-							},
-						  },
-						},
-						start: {
-						  ...fulfillment.start,
-						  time: {
-							range: {
-							  end: rangeEnd,
-							  start: rangeStart,
-							},
-						  },
-						},
-						tags: [
-						  {
-							code: "cancel_request",
-							list: [
-							  {
-								code: "reason_id",
-								value: "010",
-							  },
-							  {
-								code: "initiated_by",
-								value: "buyer-app.com",
-							  },
-							],
-						  },
-						  {
-							code: "precancel_state",
-							list: [
-							  {
-								code: "fulfillment_state",
-								value: "Pending",
-							  },
-							  {
-								code: "updated_at",
-								value: "2024-03-15T13:00:16.744Z",
-							  },
-							],
-						  },
-						],
-						rateable: undefined,
-					  };
-					} else if (fulfillment.type === "Cancel") {
-					  return {
-						...fulfillment,
-						state: {
-						  ...fulfillment.state,
-						  descriptor: {
-							code: FULFILLMENT_STATES.CANCELLED,
-						  },
-						},
-						tags: [
-						  {
-							code: "quote_trail",
-							list: [
-							  {
-								code: "type",
-								value: "item",
-							  },
-							  {
-								code: "id",
-								value: "13959",
-							  },
-							  {
-								code: "currency",
-								value: "INR",
-							  },
-							  {
-								code: "value",
-								value: "-1798.00",
-							  },
-							],
-						  },
-						  {
-							code: "quote_trail",
-							list: [
-							  {
-								code: "type",
-								value: "item",
-							  },
-							  {
-								code: "id",
-								value: "14574",
-							  },
-							  {
-								code: "currency",
-								value: "INR",
-							  },
-							  {
-								code: "value",
-								value: "-1640.00",
-							  },
-							],
-						  },
-						  {
-							code: "quote_trail",
-							list: [
-							  {
-								code: "type",
-								value: "delivery",
-							  },
-							  {
-								code: "id",
-								value: "5009-Delivery",
-							  },
-							  {
-								code: "currency",
-								value: "INR",
-							  },
-							  {
-								code: "value",
-								value: "-10.00",
-							  },
-							],
-						  },
-						],
-						rateable: undefined,
-					  };
-					} else if(domain===SERVICES_DOMAINS.HEALTHCARE_SERVICES){
 						return {
 							...fulfillment,
 							state: {
 								...fulfillment.state,
 								descriptor: {
-								code: FULFILLMENT_STATES.CANCELLED,
+									code: FULFILLMENT_STATES.CANCELLED,
+								},
+							},
+							end: {
+								...fulfillment.end,
+								time: {
+									range: {
+										end: rangeEnd,
+										start: rangeStart,
+									},
+								},
+							},
+							start: {
+								...fulfillment.start,
+								time: {
+									range: {
+										end: rangeEnd,
+										start: rangeStart,
+									},
+								},
+							},
+							tags: [
+								{
+									code: "cancel_request",
+									list: [
+										{
+											code: "reason_id",
+											value: "010",
+										},
+										{
+											code: "initiated_by",
+											value: "buyer-app.com",
+										},
+									],
+								},
+								{
+									code: "precancel_state",
+									list: [
+										{
+											code: "fulfillment_state",
+											value: "Pending",
+										},
+										{
+											code: "updated_at",
+											value: "2024-03-15T13:00:16.744Z",
+										},
+									],
+								},
+							],
+							rateable: undefined,
+						};
+					} else if (fulfillment.type === "Cancel") {
+						return {
+							...fulfillment,
+							state: {
+								...fulfillment.state,
+								descriptor: {
+									code: FULFILLMENT_STATES.CANCELLED,
+								},
+							},
+							tags: [
+								{
+									code: "quote_trail",
+									list: [
+										{
+											code: "type",
+											value: "item",
+										},
+										{
+											code: "id",
+											value: "13959",
+										},
+										{
+											code: "currency",
+											value: "INR",
+										},
+										{
+											code: "value",
+											value: "-1798.00",
+										},
+									],
+								},
+								{
+									code: "quote_trail",
+									list: [
+										{
+											code: "type",
+											value: "item",
+										},
+										{
+											code: "id",
+											value: "14574",
+										},
+										{
+											code: "currency",
+											value: "INR",
+										},
+										{
+											code: "value",
+											value: "-1640.00",
+										},
+									],
+								},
+								{
+									code: "quote_trail",
+									list: [
+										{
+											code: "type",
+											value: "delivery",
+										},
+										{
+											code: "id",
+											value: "5009-Delivery",
+										},
+										{
+											code: "currency",
+											value: "INR",
+										},
+										{
+											code: "value",
+											value: "-10.00",
+										},
+									],
+								},
+							],
+							rateable: undefined,
+						};
+					} else if (domain === SERVICES_DOMAINS.HEALTHCARE_SERVICES) {
+						return {
+							...fulfillment,
+							state: {
+								...fulfillment.state,
+								descriptor: {
+									code: FULFILLMENT_STATES.CANCELLED,
 								}
 							}
 						}
-					}else if(domain===SERVICES_DOMAINS.WEIGHMENT){
+					} else if (domain === SERVICES_DOMAINS.WEIGHMENT) {
 						return {
 							...fulfillment,
 							state: {
 								...fulfillment.state,
 								descriptor: {
-								code: FULFILLMENT_STATES.CANCELLED,
+									code: FULFILLMENT_STATES.CANCELLED,
 								}
+							}
 						}
 					}
-				}
 					// Default return if no conditions are met
 					return fulfillment;
-				  });
+				});
 				break;
 			case ON_ACTION_KEY.ON_UPDATE:
 				updatedFulfillments = fulfillments;
@@ -3083,12 +3121,12 @@ rangeEnd.setHours(rangeEnd.getHours() + 3);
 				}));
 				break;
 			case ON_ACTION_KEY.ON_INIT:
-				if(domain==="astroService"){
-				updatedFulfillments.push(fulfillmentObj)
-			}
-			else{
-				updatedFulfillments = fulfillments;
-			}
+				if (domain === "astroService") {
+					updatedFulfillments.push(fulfillmentObj)
+				}
+				else {
+					updatedFulfillments = fulfillments;
+				}
 				break;
 			default:
 				// Add your default logic if any

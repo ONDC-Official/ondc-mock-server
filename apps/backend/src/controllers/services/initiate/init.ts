@@ -124,7 +124,9 @@ const intializeRequest = async (
 				id:"L1"
 			}]
 		}
-
+		if(context.domain === SERVICES_DOMAINS.AGRI_EQUIPMENT){
+			init.message.order.items=[{...init.message.order.items[0],location_ids:["L1"]}]
+		}
 		console.log("init initiate response",JSON.stringify(init))
 
 		await send_response(

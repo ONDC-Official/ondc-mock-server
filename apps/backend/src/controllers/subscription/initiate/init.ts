@@ -20,6 +20,9 @@ import {
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import { BILLING_DETAILS, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 import path from "path";
+import { count } from "console";
+import { fullFormats } from "ajv-formats/dist/formats";
+import { tr } from "date-fns/locale";
 
 export const initiateInitController = async (
 	req: Request,
@@ -77,11 +80,11 @@ const intializeRequest = async (
 		items = items.map(
 			({ location_ids, ...items }: { location_ids: any }) => items
 		);
-
+		console.log("====>>>><<",JSON.stringify(transaction))
 		let init;
 		if(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA){
 
-		let quoteData: any = transaction?.message?.order?.quote?transaction?.message?.order?.quote:quoteSubscription(
+		let quoteData: any = transaction?.message?.order?.quote ?  transaction?.message?.order?.quote : quoteSubscription(
 			items,
 			providersItems,
 			"",
@@ -90,41 +93,41 @@ const intializeRequest = async (
 
 		let file: any;
 		/*****HANDLE SCENARIOS OF INIT*****/
-		switch (scenario) {
-			case "subscription-with-manual-payments":
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_manual.yaml")
-				);
-				break;
-			case "subscription-with-eMandate":
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_mandate.yaml")
-				);
-				break;
-			case "subscription-with-full-payments":
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_full.yaml")
-				);
-				break;
+		// switch (scenario) {
+		// 	case "subscription-with-manual-payments":
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_manual.yaml")
+		// 		);
+		// 		break;
+		// 	case "subscription-with-eMandate":
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_mandate.yaml")
+		// 		);
+		// 		break;
+		// 	case "subscription-with-full-payments":
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_full.yaml")
+		// 		);
+		// 		break;
 
-			case "single-order-offline-without-subscription":
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_single.yaml")
-				);
-				break;
-			case "single-order-online-without-subscription":
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
-				);
-				break;
-			default:
-				file = fs.readFileSync(
-					path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
-				);
-		}
+		// 	case "single-order-offline-without-subscription":
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init_single.yaml")
+		// 		);
+		// 		break;
+		// 	case "single-order-online-without-subscription":
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
+		// 		);
+		// 		break;
+		// 	default:
+		// 		file = fs.readFileSync(
+		// 			path.join(SUBSCRIPTION_EXAMPLES_PATH, "init/init.yaml")
+		// 		);
+		// }
 
-		const response = YAML.parse(file.toString());
-
+		// const response = YAML.parse(file.toString());
+console.log('fullfillmenst',JSON.stringify(transaction.message.order.fulfillments),"Scenariioo",scenario)
 		init = {
 			context: {
 				...context,
@@ -138,14 +141,15 @@ const intializeRequest = async (
 				order: {
 					provider: {
 						...provider,
-						locations: [{ id: uuidv4() }],
+						// locations: [{ id: uuidv4() }],
 					},
 					items,
 					billing: BILLING_DETAILS,
-					fulfillments,
+					fulfillments:transaction.message.order.fulfillments,
 					payments: [
 						{
-							...response?.value?.message?.order?.payments[0],
+							// ...response?.value?.message?.order?.payments[0],
+							...payments[0],
 							params: {
 								amount: (quoteData?.price?.value).toString(),
 								currency: "INR",
@@ -155,6 +159,47 @@ const intializeRequest = async (
 				},
 			},
 		};
+
+		init.message.order.items[0].quantity={
+			selected:{
+				count:1
+			}
+		}
+		if(scenario === 'single-order-offline-without-subscription' || scenario ==="single-order-online-without-subscription"){	
+			delete init.message.order.items[0].tags ; delete init.message.order.items[0]?.price ; delete init.message.order.items[0]?.title
+			delete init.message.order.payments[0].params
+			init.message.order.fulfillments[0].stops[0]={
+				...init.message.order.fulfillments[0].stops[0],
+				location:{
+					"address": "My House #, My buildin",
+					"area_code": "560001",
+					"city": {
+							"name": "Bengaluru"
+					},
+					"country": {
+							"code": "IND"
+					},
+					"gps": "12.974002,77.613458",
+					"state": {
+							"name": "Karnataka"
+					}
+			},
+			contact:{
+				"phone": "9886098860"
+			}
+			}
+			delete init.message.order.fulfillments[0].tags
+			delete init.message.order.provider.locations
+		}
+		if(scenario === 'subscription-with-full-payments'){
+			init.message.order.payments[0].tags=payments[0].tags[2]
+			init.message.order.fulfillments[0].stops[0].time.days='4'
+			init.message.order.fulfillments[0].stops[0].contact={
+				"phone": "9886098860"
+			}
+			delete init.message.order.fulfillments[0].stops[0].duration
+			delete init.message.order.fulfillments[0].stops[0].schedule
+		}
 
 	}
 	else	{
@@ -176,7 +221,8 @@ const intializeRequest = async (
 					provider: {
 						...provider,
 					},
-					items:[{...items[0],quantity:{
+					items:[{...items[0],
+						quantity:{
 						selected:{
 							count:1
 						}

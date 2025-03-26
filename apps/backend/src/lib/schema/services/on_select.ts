@@ -227,8 +227,8 @@ export const onSelectSchema = {
                 required: [
                   // "fulfillment_ids",
                   "id",
-                  "location_ids",
-                  "quantity"
+                  // "location_ids",
+                  // "quantity"
                 ],
               },
             },

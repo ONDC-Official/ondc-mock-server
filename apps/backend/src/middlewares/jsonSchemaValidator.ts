@@ -62,13 +62,21 @@ export const jsonSchemaValidator = <T extends Domain>({
     try {
       const l2 = await redis.get("l2_validations");
       const reqDomain = req.body.context.domain;
-      // console.log("domain at jsonSchema",domain)
+      console.log("domain at jsonSchema",domain,l2,reqDomain)
       if (l2 != null && JSON.parse(l2).includes(domain)) {
         if(reqDomain != undefined ) {
+          if(reqDomain==="ONDC:SRV17"){
+           const spec= await redis.get(`ondc_srv17.yaml`)
+           if(spec != null) {
+            return l2Validator(domain)(req, res, next);
+          }
+          }
+          else{
           const spec = await redis.get(`${domain}_${(reqDomain as string).toLowerCase().replace(":", "_")}_l2_validation`);
           if(spec != null) {
             return l2Validator(domain)(req, res, next);
           }
+        }
         }
       }
 

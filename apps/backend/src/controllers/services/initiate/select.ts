@@ -370,8 +370,82 @@ const intializeRequest = async (
 			]
 		}
 
-
-
+		(select.message as any)={ "order": {
+			"provider": {
+				"id": "P1",
+				"locations": [
+					{
+						"id": "L1"
+					}
+				]
+			},
+			"items": [
+				{
+					"id": "I1",
+					"fulfillment_ids": [
+						"F2"
+					],
+					"location_ids": [
+						"L1"
+					],
+					"category_ids": [
+						"SRV17-1035"
+					],
+					"quantity": {
+						"selected": {
+							"measure": {
+								"unit": "hours",
+								"value": "4"
+							}
+						}
+					},
+					"tags": [
+						{
+							"descriptor": {
+								"code": "ATTRIBUTE"
+							},
+							"list": [
+								{
+									"descriptor": {
+										"code": "TYPE"
+									},
+									"value": "item"
+								}
+							]
+						}
+					]
+				}
+			],
+			"fulfillments": [
+				{
+					"type": "Seller-Fulfilled",
+					"stops": [
+						{
+							"type": "end",
+							"time": {
+								"label": "selected",
+								"range": {
+									"start": "2024-06-09T22:00:00.000Z",
+									"end": "2024-06-10T02:00:00.000Z"
+								}
+							},
+							"location": {
+								"gps": "12.974002,77.613458",
+								"area_code": "560001"
+							}
+						}
+					]
+				}
+			],
+			"payments": [
+				{
+					"type": "PRE-FULFILLMENT"
+				},
+				{
+					"type": "ON-FULFILLMENT"
+				}
+			]
+		}}
 		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");

@@ -120,7 +120,8 @@ export const selectSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
+              required:["id"]
             },
             items: {
               type: "array",
@@ -260,7 +261,8 @@ export const selectSchema = {
                                 type: "string",
                             },
                           },
-                          required: ["label", "range"],
+                          // required: ["label", "range"],
+                          required: [ "range"],
                         },
                       },
                       required: ["type","time"],

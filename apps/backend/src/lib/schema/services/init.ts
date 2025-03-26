@@ -118,7 +118,7 @@ export const initSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
             },
             items: {
               type: "array",

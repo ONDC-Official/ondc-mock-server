@@ -170,7 +170,7 @@ export const updateRescheduleAndItemsController = (
 
 		//on_confirm items selected
 		const on_confirm_quantity =
-			on_confirm?.message?.order?.items[0]?.quantity?.selected?.count;
+			on_confirm?.message?.order?.items[0]?.quantity?.selected?.measure?.value;
 
 		const update_item_quantity = Number(
 			order?.items[0]?.quantity?.unitized?.measure?.value

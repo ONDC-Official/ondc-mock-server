@@ -103,7 +103,7 @@ export const onConfirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["CREATED", "ACCEPTED", "CANCELLED", "IN-PROGRESS", "ACTIVE"],
+              enum: ["Created", "Accepted", "Cancelled", "In-Progress", "Active"],
             },
             provider: {
               type: "object",
@@ -367,7 +367,8 @@ export const onConfirmSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -450,7 +451,7 @@ export const onConfirmSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id"
+                      // "transaction_id"
                     ],
                   },
                   status: {

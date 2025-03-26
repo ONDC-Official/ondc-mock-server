@@ -521,6 +521,16 @@ const statusRequest = async (
 				);
 		}
 		else {
+			if(context.domain === SERVICES_DOMAINS.AGRI_EQUIPMENT){
+				responseMessage.order.billing={
+					...responseMessage.order.billing,
+					tax_id:"XXXXXXXXXXX"
+				}
+				responseMessage.order.fulfillments=[{
+					...responseMessage.order.fulfillments[0],
+					rateable:true
+				}]
+			}
 			return responseBuilder(
 				res,
 				next,

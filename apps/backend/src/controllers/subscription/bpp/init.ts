@@ -22,6 +22,7 @@ import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import axios from "axios";
 import { AxiosError } from "axios";
 import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
+import { dlopen } from "process";
 
 export const initController = async (
 	req: Request,
@@ -79,7 +80,7 @@ const initConsultationController = (
 				order: { provider, items, billing, fulfillments, payments },
 			},
 		} = req.body;
-
+		const initItems=req.body.message.order.items
 		const { scenario } = req.query;
 
 		let file: any;
@@ -98,7 +99,7 @@ const initConsultationController = (
 			"",
 			fulfillments[0]
 		):quote
-
+		quoteData = req.body.quote ?req.body.quote :quoteData
 		/*****HANDLE SCENARIOS OF INIT*****/
 		switch (scenario) {
 			case "subscription-with-manual-payments":
@@ -149,7 +150,7 @@ const initConsultationController = (
 			order: {
 				provider: remainingProvider,
 				locations,
-				items,
+				items:initItems,
 				billing,
 				fulfillments: updatedFulfillments,
 				quote:quoteData,
@@ -163,63 +164,63 @@ const initConsultationController = (
 							currency: "INR",
 						},
 						tags:[
-							{
-								"descriptor": {
-										"code": "PAYMENT_METHOD",
-										"name": "Payment Method"
-								},
-								"list": [
-										{
-												"descriptor": {
-														"code": "MODE"
-												},
-												"value": "FULL_PAYMENT"
-										}
-								]
-						},...response?.value?.message?.order?.payments[0].tags,
-					{
-						"descriptor": {
-								"code": "SETTLEMENT_DETAILS"
-						},
-						"list": [
-								{
-										"descriptor": {
-												"code": "COUNTERPARTY"
-										},
-										"value": "BPP"
-								},
-								{
-										"descriptor": {
-												"code": "MODE"
-										},
-										"value": "UPI"
-								},
-								{
-										"descriptor": {
-												"code": "BENEFICIARY_NAME"
-										},
-										"value": "xxxxx"
-								},
-								{
-										"descriptor": {
-												"code": "BANK_ACCOUNT_NO"
-										},
-										"value": "xxxxx"
-								},
-								{
-										"descriptor": {
-												"code": "IFSC_CODE"
-										},
-										"value": "xxxxxxx"
-								},
-								{
-										"descriptor": {
-												"code": "UPI_ADDRESS"
-										},
-										"value": "xxxxxxx"
-								}
-						]
-				},
+							// {
+							// 	"descriptor": {
+							// 			"code": "PAYMENT_METHOD",
+							// 			"name": "Payment Method"
+							// 	},
+							// 	"list": [
+							// 			{
+							// 					"descriptor": {
+							// 							"code": "MODE"
+							// 					},
+							// 					"value": "FULL_PAYMENT"
+							// 			}
+							// 	]
+						...response?.value?.message?.order?.payments[0].tags,
+				// 	{
+				// 		"descriptor": {
+				// 				"code": "SETTLEMENT_DETAILS"
+				// 		},
+				// 		"list": [
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "COUNTERPARTY"
+				// 						},
+				// 						"value": "BPP"
+				// 				},
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "MODE"
+				// 						},
+				// 						"value": "UPI"
+				// 				},
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "BENEFICIARY_NAME"
+				// 						},
+				// 						"value": "xxxxx"
+				// 				},
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "BANK_ACCOUNT_NO"
+				// 						},
+				// 						"value": "xxxxx"
+				// 				},
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "IFSC_CODE"
+				// 						},
+				// 						"value": "xxxxxxx"
+				// 				},
+				// 				{
+				// 						"descriptor": {
+				// 								"code": "UPI_ADDRESS"
+				// 						},
+				// 						"value": "xxxxxxx"
+				// 				}
+				// 		]
+				// },
 			]
 					},
 				],
@@ -231,6 +232,39 @@ const initConsultationController = (
 			responseMessage.order.fulfillments=[{id:"FI1",type:"ONLINE"}]
 			delete responseMessage.order.locations
 		}
+
+		if(scenario === 'single-order-offline-without-subscription'){
+			delete responseMessage.order.items[0].tags ; delete responseMessage.order.items[0].price;
+			delete responseMessage.order.items[0].title;
+		 responseMessage.order.fulfillments[0].tags = [
+				{
+						"descriptor": {
+								"code": "INFO"
+						},
+						"list": [
+								{
+										"descriptor": {
+												"code": "PARENT_ID"
+										},
+										"value": "F1"
+								}
+						]
+				}
+		] ;
+			delete responseMessage.order.fulfillments[0].stops[0].location 
+			responseMessage.order.fulfillments[0].stops[0].time={
+				...responseMessage.order.fulfillments[0].stops[0].time,
+				days:"4"
+			}
+		}
+		console.log("onintttscenarrio",scenario)
+		if(scenario === 'subscription-with-full-payments'){
+			delete responseMessage.order.items[0].price
+			delete responseMessage.order.items[0].tags
+			delete responseMessage.order.items[0].title
+		}
+
+		console.log('onnnnniniiiiiiit',JSON.stringify(responseMessage))
 
 		responseBuilder(
 			res,
@@ -353,7 +387,7 @@ export const onStatusResponseBuilder = async (
 				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
 				JSON.stringify(log)
 			);
-			throw error;
+			// throw error;
 		}
 
 		logger.info({

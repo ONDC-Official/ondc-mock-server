@@ -148,6 +148,14 @@ export const PRINT_MEDIA_SCENARIOS = {
 			name: "Single Order Online without Subscription",
 			scenario: "single-order-online-without-subscription",
 		},
+		{
+			name: "Subscription with Full Payments",
+			scenario: "subscription-with-full-payments",
+		},
+		{
+			name: "Subscription with Manual Payments",
+			scenario: "subscription-with-manual-payments",
+		},
 	],
 
 	on_select: [
