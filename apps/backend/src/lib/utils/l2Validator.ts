@@ -25,18 +25,27 @@ export const l2Validator = (domain: string) => async (req: Request, res: Respons
     } | unknown>,
     isValid: boolean;
   // console.log("ACTION and REQ DOMAIN", action, reqDomain)
+  let specString
 
-  const specString = await redis.get(`${domain}_${(reqDomain as string).toLowerCase().replace(":", "_")}_l2_validation`);
-  // console.log("ACTION SCHEMA", specString)
+ try{ 
+  if(reqDomain==="ONDC:SRV17"){
+    specString= await redis.get(`${domain}_${(reqDomain as string).toLowerCase().replace(":", "_")}_l2_validation`)
+  }else{
+     specString = await redis.get(`${domain}_${(reqDomain as string).toLowerCase().replace(":", "_")}_l2_validation`);
+  }}
+  catch(er){
+    console.log(er)
+  }
+  // console.log("ACTION SCHEMA ---> specString", specString)
 
   const spec = JSON.parse(specString as string);
   const actionSchema = spec['paths'][`/${action}`]['post']['requestBody']['content']['application/json']['schema']
-  console.log("ACTION SCHEMA", actionSchema)
+  // console.log("ACTION SCHEMA", actionSchema)
   validate = ajv.compile(actionSchema as object);
 
 
   isValid = validate(req.body);
-  // console.log('isValid::::: ', isValid)
+  console.log('isValid::::: ', isValid)
   if (!isValid) {
     console.log("error json schema",action,validate.errors?.map(
       ({ message, params, instancePath }) => ({

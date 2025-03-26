@@ -53,22 +53,81 @@ export const confirmConsultationController = async (
         "astroService"
       );
     }
+    if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+      updatedFulfillments = updateFulfillments(
+       fulfillments,
+       ON_ACTION_KEY?.ON_CONFIRM,
+       "",
+       "weightment"
+     );
+   }
 
 		const responseMessage = {
 			order: {
 				...order,
-				status: ORDER_STATUS.ACCEPTED.toUpperCase(),
+				status: (context.domain===SERVICES_DOMAINS.SERVICES)?ORDER_STATUS.ACCEPTED.toUpperCase():ORDER_STATUS.ACCEPTED,
 				fulfillments: updatedFulfillments,
 				provider: {
 					...order.provider,
 					rateable: true,
 				},
+        payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?[order.payments[0]]:order.payments
 			},
 		};
     
-    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
+    if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE||context.domain===SERVICES_DOMAINS.WEIGHMENT){
       delete responseMessage.order.payments[0].params.transaction_id
-      
+     
+    }
+    if(context.domain===SERVICES_DOMAINS.AGRI_EQUIPMENT){
+      responseMessage.order.cancellation_terms=[
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "PENDING",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "IN_TRANSIT",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        },
+        {
+          "fulfillment_state": {
+            "descriptor": {
+              "code": "AT_LOCATION",
+              "short_desc": "002"
+            }
+          },
+          "cancellation_fee": {
+            "percentage": "0.00",
+            "amount": {
+              "currency": "INR",
+              "value": "0.00"
+            }
+          }
+        }
+      ]
+      responseMessage.order.fulfillments=[{...responseMessage.order.fulfillments[0],tracking:false}]
     }
 
     console.log("responseMEssageatonconfm",JSON.stringify(responseMessage))
@@ -146,7 +205,7 @@ export const confirmServiceCustomizationController = (
     const responseMessage = {
       order: {
         ...order,
-        status: "Accepted",
+        status: (context.domain===SERVICES_DOMAINS.SERVICES)?ORDER_STATUS.ACCEPTED.toUpperCase():ORDER_STATUS.ACCEPTED,
         provider: {
           ...order?.provider,
           rateable: true,
@@ -157,7 +216,7 @@ export const confirmServiceCustomizationController = (
             // state hard coded
             state: {
               descriptor: {
-                code: "PENDING",
+                code: "Pending",
               },
             },
             rateable: true,

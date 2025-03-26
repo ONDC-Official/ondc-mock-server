@@ -8,8 +8,9 @@ import {
 	updateFulfillments,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
-import { ORDER_STATUS } from "../../../lib/utils/apiConstants";
+import { ORDER_STATUS, SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
+import { timeStamp } from "console";
 
 export const confirmController = (
 	req: Request,
@@ -20,8 +21,11 @@ export const confirmController = (
 		if (checkIfCustomized(req.body.message.order?.items)) {
 			return confirmServiceCustomizationController(req, res, next);
 		}
-		
-		confirmConsultationController(req, res, next);
+		if(req.body.context.domain===SERVICES_DOMAINS.AGRI_OUTPUT){
+			confirmAgriOutputController(req,res,next)
+		}
+		else
+		{confirmConsultationController(req, res, next);}
 	} catch (error) {
 		return next(error);
 	}
@@ -212,3 +216,98 @@ export const confirmServiceCustomizationController = (
 		return next(error);
 	}
 };
+
+export const confirmAgriOutputController=async (
+	req: Request,
+	res: Response,
+	next: NextFunction
+)=>{
+	try {
+		const {
+			context,
+			message: { order },
+		} = req.body;
+
+		const on_init = await redisFetchFromServer(
+			ON_ACTION_KEY.ON_INIT,
+			context?.transaction_id
+		);
+
+		if (on_init && on_init?.error) {
+			return send_nack(
+				res,
+				on_init?.error?.message
+					? on_init?.error?.message
+					: ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED
+			);
+		}
+
+		if (!on_init) {
+			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED);
+		}
+
+		const { fulfillments,billing,cancellation_terms,payments,items} = order;
+		const {quote}=order
+		console.log("quottee",quote,on_init)
+		const responseMessage = {
+			order: {
+				...order,
+				status: "In-Progress",
+				fulfillments: [{
+					...fulfillments[0],
+					state: {
+						descriptor: {
+							code: "Placed",
+						},
+					},
+					stops:[{
+						...fulfillments[0].stops[0],
+						person:{
+							name:"Ramu"
+						},
+						contact:{
+							...fulfillments[0].stops[0].contact,
+							email:"nobody@nomail.com"
+						},
+						authorization: {
+							"type": "OTP",
+							"token": "1234",
+							"valid_from": "2024-06-10T22:00:00Z",
+							"valid_to": "2024-06-10T23:00:00Z",
+							"status": "valid"
+						}
+					}],
+					rateable:true
+				}],
+				billing,
+				items,
+				quote,
+				cancellation_terms:cancellation_terms||on_init.message.order.cancellation_terms,
+				provider: {
+					...order.provider,
+					rateable: true,
+				},
+				payments,
+				created_at:"2024-06-10T22:00:46.000Z",
+				updated_at:"2024-06-10T22:00:48.000Z"
+			},
+		};
+		console.log("oncnfmmmess",JSON.stringify(responseMessage))
+		delete responseMessage.order.locations
+		return responseBuilder(
+			res,
+			next,
+			context,
+			responseMessage,
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_CONFIRM
+					: `/${ON_ACTION_KEY.ON_CONFIRM}`
+			}`,
+			`${ON_ACTION_KEY.ON_CONFIRM}`,
+			"agri"
+		);
+	} catch(error){
+		return next(error)
+	}
+}

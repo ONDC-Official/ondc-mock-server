@@ -55,23 +55,24 @@ export const SandboxRequestSection = () => {
 	};
 
 	const handleVersion = (
+		//@ts-ignore
 		event:
 			| React.MouseEvent<Element>
 			| React.KeyboardEvent<Element>
 			| React.FocusEvent<Element>
 			| null,
+		// eslint-disable-next-line @typescript-eslint/ban-types
 		value: {} | null
 	) => {
-		console.log("event", event);
 		if (value) {
 			setVersion(value as string); // Ensure value is a string and set the version
 		}
 	};
 
 	const handleSubmit = async () => {
-		let url = `${
-			VITE_SERVER_URL
-		}/${domain.toLowerCase()}/${Object.keys(URL_MAPPING).filter((key) =>
+		let url = `${VITE_SERVER_URL}/${domain.toLowerCase()}/${Object.keys(
+			URL_MAPPING
+		).filter((key) =>
 			URL_MAPPING[key as keyof typeof URL_MAPPING].includes(action as string)
 		)}/${action}?mode=sandbox&version=${version}`;
 
@@ -112,6 +113,9 @@ export const SandboxRequestSection = () => {
 				>
 					<Stack spacing={2} justifyContent="center" alignItems="center">
 						<Typography variant="h5">Sandbox</Typography>
+						<Typography variant="h6" sx={{ fontSize: "0.8rem" }}>
+							If you are a Buyer and want to test Buyer(BAP)
+						</Typography>
 						<Box
 							sx={{
 								width: "100%",
@@ -128,7 +132,7 @@ export const SandboxRequestSection = () => {
 							<Select
 								placeholder="Select a version"
 								sx={{ width: "100%" }}
-								onChange={(event, value) => handleVersion(event, value)} // Ensure both event and value are passed
+								onChange={(_, value) => handleVersion(null,value)} // Ensure both event and value are passed
 							>
 								<Option value="b2b">B2B</Option>
 								<Option value="b2c">B2c</Option>

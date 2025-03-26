@@ -36,6 +36,7 @@ export const srvSchemaValidator =
 			| "cancel"
 			| "on_cancel"
 			| "rating"
+			
 	) =>
 	(req: Request, res: Response, next: NextFunction) => {
 		const ajv = new Ajv({

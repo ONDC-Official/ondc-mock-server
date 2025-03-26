@@ -12,6 +12,7 @@ import {
 	NEXT_ACTION_LOGISTICS,
 	B2C_SCENARIOS,
 	PRINT_MEDIA_SCENARIOS,
+	ASTRO_SERVICES_SCENARIOS,
 } from "openapi-specs/constants";
 import { LOGISTICS_DOMAINS_OBJECT, SERVICES_DOMAINS } from "../constants";
 // import { ALL_DOMAINS_FRONTEND } from "../constants";
@@ -39,6 +40,8 @@ export const useAction = () => {
 					? AGRI_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.EQUIPMENT_HIRING_SERVICES
 					? AGRI_EQUIPMENT_SERVICES_SCENARIOS
+					: servicesDomain === SERVICES_DOMAINS.ASTRO_SERVICE
+					? ASTRO_SERVICES_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.BID_AUCTION_SERVICE
 					? BID_AUCTION_SCENARIOS
 					: servicesDomain === SERVICES_DOMAINS.PRINT_MEDIA
@@ -54,7 +57,6 @@ export const useAction = () => {
 			if (!parsedLog.context!.action) setLogError(true);
 			const parsedAction = parsedLog.context.action;
 			setAction(parsedAction);
-
 			// Choose the appropriate action mapping based on the domain
 			const actionMapping =
 				domain.toLowerCase() === "logistics"
@@ -69,9 +71,10 @@ export const useAction = () => {
 			} else {
 				setScenarios([]);
 			}
-
+			console.log("scenarios",scenarios)
 			setLogError(false);
 		} catch (error) {
+			console.log("errror",error)
 			setLogError(true);
 			setAction(undefined);
 		}

@@ -9,7 +9,7 @@ import {
 } from "../../../lib/utils";
 import { ACTTION_KEY, ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
-import { ORDER_STATUS, PAYMENT_STATUS } from "../../../lib/utils/apiConstants";
+import { ORDER_STATUS, PAYMENT_STATUS, SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateConfirmController = async (
 	req: Request,
@@ -53,11 +53,13 @@ const intializeRequest = async (
 				},
 			},
 		} = transaction;
+		console.log("items in confirm",items)
+
 		const { transaction_id } = context;
 		const { stops, ...remainingfulfillments } = fulfillments[0];
 	
 		const timestamp = new Date().toISOString();
-
+		console.log("fulfillments",fulfillments)
 		const confirm = {
 			context: {
 				...context,
@@ -71,12 +73,16 @@ const intializeRequest = async (
 				order: {
 					...transaction.message.order,
 					id: uuidv4(),
-					status: ORDER_STATUS.CREATED.toUpperCase(),
+					status: ORDER_STATUS.CREATED,
 					provider: {
 						...provider,
 						locations,
 					},
-					fulfillments,
+					fulfillments:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?[{...fulfillments[0],customer: {
+            "person": {
+              "name": "xyz"
+            }
+          }}]:fulfillments,
 					payments: [
 						{
 							...payments[0],
@@ -92,7 +98,44 @@ const intializeRequest = async (
 				},
 			},
 		};
-		console.log("scenariooooooooooooooo",scenario)
+		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO ){confirm.message.order.payments[0].status="PAID";
+			delete confirm.message.order.payments[0].url}
+			if(context.domain === SUBSCRIPTION_DOMAINS.PRINT_MEDIA){
+				confirm.message.order.fulfillments=[
+					{...confirm.message.order.fulfillments[0],
+					"customer": {
+                        "person": {
+                            "name": "Ramu"
+                        }
+                    },
+					stops:[{
+						...confirm.message.order.fulfillments[0].stops[0],
+						"location": {
+                                "address": "My House #, My buildin",
+                                "area_code": "560001",
+                                "city": {
+                                    "name": "Bengaluru"
+                                },
+                                "country": {
+                                    "code": "IND"
+                                },
+                                "gps": "12.974002,77.613458",
+                                "state": {
+                                    "name": "Karnataka"
+                                }
+                            },
+														"instructions": {
+															"name": "Special Instructions",
+															"short_desc": "Customer Special Instructions"
+													},}
+
+					]}
+				]
+				delete confirm.message.order.fulfillments[0].stops[0].time.days
+				delete confirm.message.order.fulfillments[0].tags
+			}
+
+		console.log("scenariooooooooooooooo",JSON.stringify(confirm))
 		await send_response(res, next, confirm, transaction_id, "confirm", (scenario = scenario));
 	}catch(error){
 		next(error)

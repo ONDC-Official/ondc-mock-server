@@ -360,6 +360,10 @@ export const SERVICES_SCENARIOS = {
 			name: "Service",
 			scenario: "service",
 		},
+		{
+			name:"Service Seller Collected",
+			scenario:"sellercollected"
+		}
 	],
 	// confirm: [
 	// 	{
@@ -641,6 +645,40 @@ export const BID_AUCTION_SCENARIOS = {
 		},
 	],
 };
+
+export const ASTRO_SERVICES_SCENARIOS={
+	on_status:[
+		{
+			name :"Pujari Assigned",
+			scenario: "pujari-assigned",
+		},
+		{
+			name :"In Transit",
+			scenario: "in-transit",
+		},
+		{
+			name :"At Location",
+			scenario: "at-location",
+		},
+		{
+			name :"Completed",
+			scenario: "completed",
+		},
+		{
+			name :"Chat Room Created",
+			scenario: "chat-room-created",
+		},
+		{
+			name :"Chat Room Updated",
+			scenario: "chat-room-updated",
+		},
+		{
+			name :"Chat Room Open",
+			scenario: "chat-room-open",
+		},
+		
+	]
+}
 
 export const AGRI_EQUIPMENT_SERVICES_SCENARIOS = {
 	on_select: [

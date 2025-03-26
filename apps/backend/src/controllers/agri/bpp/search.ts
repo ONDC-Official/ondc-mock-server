@@ -6,6 +6,7 @@ import {
 	responseBuilder,
 	AGRI_EXAMPLES_PATH,
 	logger,
+	AGRI_OUTPUT_EXAMPLES_PATH,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
@@ -34,6 +35,14 @@ export const searchController = (
 					)
 				);
 				break;
+			case SERVICES_DOMAINS.AGRI_OUTPUT:
+					file = fs.readFileSync(
+						path.join(
+							AGRI_OUTPUT_EXAMPLES_PATH,
+							`on_search/${"on_search.yaml"}`
+						)
+					);
+					break;
 			default:
 				file = fs.readFileSync(
 					path.join(AGRI_EXAMPLES_PATH, "on_search/on_search.yaml")

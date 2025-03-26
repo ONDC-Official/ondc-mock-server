@@ -535,7 +535,7 @@ paths:
                                           - list
                                     required:
                                       - id
-                                      - parent_item_id
+                                      # - parent_item_id
                                       - fulfillment_ids
                               required:
                                 - items
@@ -683,7 +683,6 @@ paths:
                                     - address
                                     - state
                                     - city
-                                    - tax_id
                                     - email
                                     - phone
                               required:
@@ -794,10 +793,10 @@ paths:
                                               code:
                                                 type: string
                                                 enum:
-                                                  - PENDING
-                                                  - IN_TRANSIT
-                                                  - AT_LOCATION
-                                                  - COMPLETED
+                                                  - Pending
+                                                  - In_Transit
+                                                  - At_Location
+                                                  - Completed
                                             required:
                                               - code
                                         required:
@@ -899,7 +898,7 @@ paths:
                                                       - location
                                                       - time
                                                       - contact
-                                                      - person
+                                                      # - person
                                                   - properties:
                                                       location:
                                                         required:
@@ -1362,7 +1361,7 @@ paths:
                           properties:
                             order:
                               required: 
-                                - created_at
+                                # - created_at
                                 - updated_at
                     - properties:
                         message:
@@ -1582,9 +1581,6 @@ paths:
                                     - CREATED
                                     - ACCEPTED
                                     - IN-PROGRESS
-                              required:
-                                - id
-                                - status
                     - $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/allOf/1/allOf/1'
                     #- $ref: '#/paths/~1init/post/requestBody/content/application~1json/schema/allOf/1/allOf/2' 
                     - $ref: '#/paths/~1confirm/post/requestBody/content/application~1json/schema/allOf/1/allOf/5'
@@ -2521,7 +2517,7 @@ paths:
                                                       - location
                                                       - time
                                                       - contact
-                                                      - person
+                                                      # - person
                                                 - if:
                                                     properties:
                                                         type:
@@ -2532,7 +2528,7 @@ paths:
                                                       - location
                                                       - time
                                                       - contact
-                                                      - person
+                                                      # - person
                                                 - contains:
                                                     properties:
                                                       type:
@@ -2740,8 +2736,22 @@ paths:
                       properties:
                         order:
                           $ref: '#/components/schemas/Order'
-                      required:
-                        - order
+                      # required:
+                      #   - order
+                      allOf:
+                        - if:
+                            properties:
+                              context:
+                                properties:
+                                  action:
+                                    const: on_status
+                          then:
+                            properties:
+                              message:
+                                properties:
+                                  fulfillment:
+                                    required:
+                                      - tracking
                     error:
                       $ref: '#/components/schemas/Error'
                   required:
@@ -2826,6 +2836,27 @@ paths:
                                                 if:
                                                   type:
                                                     const: end
+                                                then:
+                                                  time:
+                                                    properties:
+                                                    required:
+                                                      - timestamp
+                                      - if:
+                                          state:
+                                            properties:
+                                              descriptor:
+                                                properties:
+                                                  code:
+                                                    const: In-Transit
+                                        then:
+                                          stops:
+                                            type: array
+                                            items:
+                                              type: object
+                                              properties:
+                                                if:
+                                                  type:
+                                                    const: start
                                                 then:
                                                   time:
                                                     properties:
@@ -3991,12 +4022,13 @@ components:
           type: string
           enum:
             - ACTIVE
-            - COMPLETE
+            - Complete
             - CANCELLED
             - CREATED
             - ACCEPTED
             - IN-PROGRESS
             - COMPLETED
+            - PENDING
         type:
           description: >-
             This is used to indicate the type of order being created to BPPs.

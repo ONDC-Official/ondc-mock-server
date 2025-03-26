@@ -17,7 +17,7 @@ export const Mock = () => {
 
 	return (
 		<MockProvider>
-			<Container sx={{ py: 2 }}>
+			<Container sx={{ py: 2 ,width:"80%" }}>
 				<Grid container spacing={2}>
 					<Grid item xs={12} lg={8}>
 						<MockRequestSection />

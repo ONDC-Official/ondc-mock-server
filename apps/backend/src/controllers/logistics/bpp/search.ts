@@ -111,10 +111,12 @@ export const searchController = async (
 
 		onSearch.value.message = {
 			catalog: {
-				...onSearch.value.message.catalog,
+				fulfillments: onSearch.value.message.catalog.fulfillments,
 				providers: [
 					{
-						...onSearch.value.message.catalog.providers[0],
+						id: onSearch.value.message.catalog.providers[0].id,
+						descriptor: onSearch.value.message.catalog.providers[0].descriptor,
+						locations: onSearch.value.message.catalog.providers[0].locations,
 						items: updatedItems,
 						categories: updatedCategories,
 					},
@@ -155,14 +157,13 @@ export const searchController = async (
 				},
 			},
 		};
-		
+
 		return responseBuilder(
 			res,
 			next,
 			req.body.context,
 			onSearch.value.message,
-			`${req.body.context.bap_uri}${
-				req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
+			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_search" : "/on_search"
 			}`,
 			`on_search`,
 			"logistics"

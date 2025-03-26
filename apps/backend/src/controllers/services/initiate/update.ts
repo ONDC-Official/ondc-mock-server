@@ -18,6 +18,7 @@ import {
 	ACTTION_KEY,
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
+import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initiateUpdateController = async (
 	req: Request,
@@ -80,6 +81,23 @@ export const initiateUpdateController = async (
 			message: responseMessage,
 		};
 
+		if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+			responseMessage={
+				update_target:"fulfillments",
+				order:{
+					id:message.order.id,
+					status:"In-Progress",
+					fulfillments:message.order.fulfillments.map((itm: any) => ({
+						...itm,
+						stops: itm.stops.map((stop: any) => ({
+							...stop,
+						})),
+					})),
+				}
+			}
+			update.message=responseMessage
+		}
+
 		const header = await createAuthHeader(update);
 
 		// await redis.set(
@@ -106,7 +124,22 @@ export const initiateUpdateController = async (
 		// 		},
 		// 	})
 		// );
-
+		if(context.domain === SERVICES_DOMAINS.AGRI_EQUIPMENT){
+			responseMessage.order.items=[{
+				...responseMessage.order.items[0],
+				"payment_ids": [
+            "PY2"
+          ],
+					"quantity": {
+            "unitized": {
+              "measure": {
+                "unit": "hours",
+                "value": "2"
+              }
+            }
+          }
+			}]
+		}
 		await send_response(
 			res,
 			next,
@@ -200,9 +233,8 @@ function rescheduleRequest(message: any, update_target: string) {
 	);
 
 	fulfillments.map((itm: any) => {
-		itm.state.descriptor.code = "PENDING";
+		itm.state.descriptor.code = "Pending";
 	});
-
 	const responseMessage = {
 		update_target: "fulfillments",
 		order: {

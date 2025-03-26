@@ -120,58 +120,180 @@ export const onInitSchema = {
                 required: ["id"],
               },
             },
-            items: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  parent_item_id: {
-                    type: "string",
-                  },
-                  fulfillment_ids: {
-                    type: "array",
-                    items: {
-                      type: "string",
-                    },
-                  },
-                  quantity: {
+            if:{
+              properties:{
+                domain:{
+                  enum:["ONDC:MEC10"]
+                }
+              }
+            },
+            then:{
+              properties:{
+                items: {
+                  type: "array",
+                  items: {
                     type: "object",
                     properties: {
-                      selected: {
+                      fulfillment_ids: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                      id: {
+                        type: "string",
+                      },
+                      parent_item_id: {
+                        type: "string",
+                      },
+                    
+                      quantity: {
                         type: "object",
                         properties: {
-                          count: {
-                            type: "integer",
+                          selected: {
+                            type: "object",
+                            properties: {
+                              count: {
+                                type: "number",
+                              }
+                            }
+                          }
+                        }
+                      },
+                      time: {
+                        type: "object",
+                        properties: {
+                          label: {
+                            type: "string",
+                          },
+                          range: {
+                            type: "object",
+                            properties: {
+                              start: {
+                                type: "string",
+                              },
+                              end: {
+                                type: "string",
+                              },
+                            },
+                            required: ["start", "end"],
+                          },
+                          schedule: {
+                            type: "object",
+                            properties: {
+                              frequency: {
+                                type: "string",
+                              },
+                              holidays: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                              times: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                            },
                           },
                         },
-                        required: ["count"],
+                        required: ["label", "schedule"],
                       },
-                      // measure: {
-                      //   type: "object",
-                      //   properties: {
-                      //     unit: {
-                      //       type: "string",
-                      //     },
-                      //     value: {
-                      //       type: "string",
-                      //     },
-                      //   },
-                      //   required: ["unit", "value"],
-                      // },
                     },
-                    // required: ["selected", "measure"],
-                    required: ["selected"],
+                    required: [
+                      // "fulfillment_ids",
+                      "id",
+                      "quantity"
+                    ],
                   },
-                },
-                required: [
-                  "id",
-                  // "fulfillment_ids",
-                  "quantity",
-                ],
-              },
+                }
+              }
+            },
+            else:{
+              properties:{
+                items: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      fulfillment_ids: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                      id: {
+                        type: "string",
+                      },
+                      parent_item_id: {
+                        type: "string",
+                      },
+                    
+                      quantity: {
+                        type: "object",
+                        properties: {
+                          selected: {
+                            type: "object",
+                            properties: {
+                              count: {
+                                type: "number",
+                              }
+                            }
+                          }
+                        }
+                      },
+                      time: {
+                        type: "object",
+                        properties: {
+                          label: {
+                            type: "string",
+                          },
+                          range: {
+                            type: "object",
+                            properties: {
+                              start: {
+                                type: "string",
+                              },
+                              end: {
+                                type: "string",
+                              },
+                            },
+                            required: ["start", "end"],
+                          },
+                          schedule: {
+                            type: "object",
+                            properties: {
+                              frequency: {
+                                type: "string",
+                              },
+                              holidays: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                              times: {
+                                type: "array",
+                                items: {
+                                  type: "string",
+                                },
+                              },
+                            },
+                          },
+                        },
+                        required: ["label", "schedule"],
+                      },
+                    },
+                    required: [
+                      // "fulfillment_ids",
+                      "id",
+                      // "quantity"
+                    ],
+                  },
+                }
+              }
             },
             billing: {
               type: "object",
@@ -216,155 +338,70 @@ export const onInitSchema = {
             fulfillments: {
               type: "array",
               items: {
-                type: "object",
-                properties: {
-                  id: {
-                    type: "string",
-                  },
-                  type: {
-                    type: "string",
-                  },
-                  tracking: {
-                    type: "boolean",
-                  },
-                  stops: {
-                    type: "array",
+                type: "object"
+              },
+              // ✅ Use "oneOf" for conditional validation based on domain
+              anyof: [
+                // If domain is "ONDC:MEC10", validate against "stops" schema
+                {
+                  properties: { domain: { const: "ONDC:MEC10" } },
+                  then: {
                     items: {
                       type: "object",
                       properties: {
-                        type: {
-                          type: "string",
-                        },
-                        location: {
-                          type: "object",
-                          properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: [
-                            "gps",
-                            // "address",
-                            // "city",
-                            // "country",
-                            "area_code",
-                            // "state",
-                          ],
-                        },
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
-                            },
-                          },
-                          required: ["phone"],
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            label: {
-                              type: "string",
-                            },
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["start", "end"],
-                            },
-
-                          },
-                          required: ["label", "range"],
-                        },
-                        tags: {
-                          type: "object",
-                          properties: {
-                            descriptor: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            list: {
-                              type: "array",
-                              items: {
+                        stops: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              type: { type: "string" },
+                              location: {
                                 type: "object",
                                 properties: {
-                                  descriptor: {
+                                  gps: { type: "string" },
+                                  area_code: { type: "string" }
+                                },
+                                required: ["gps", "area_code"]
+                              },
+                              time: {
+                                type: "object",
+                                properties: {
+                                  label: { type: "string", const: "selected" },
+                                  range: {
                                     type: "object",
                                     properties: {
-                                      code: {
-                                        type: "string",
-                                      },
+                                      start: { type: "string" },
+                                      end: { type: "string" }
                                     },
-                                    required: ["code"],
+                                    required: ["start"]
                                   },
-                                  value: {
-                                    type: "string",
-                                  },
+                                  days: { type: "string" }
                                 },
-                                required: ["descriptor", "value"],
-                              },
+                                required: ["label", "range"]
+                              }
                             },
-                          },
-                          required: ["descriptor", "list"],
-                        },
+                            required: ["type", "time"]
+                          }
+                        }
                       },
-                      // required: ["type", "location", "contact", "time", "tags"],
-                      if: { properties: { type: { const: "end" } } },
-                      then: {
-                        required: ["type", "location", "time"]
-                      },
-                      else: {
-                        required: ["type"],
-                      }
-                    },
-                  },
+                      required: ["stops"]
+                    }
+                  }
                 },
-                required: ["id", "type", "stops"],
-              },
+                // If domain is "ONDC:MEC11", validate against "ONLINE" type schema
+                {
+                  properties: { domain: { const: "ONDC:MEC11" } },
+                  then: {
+                    items: {
+                      type: "object",
+                      properties: {
+                        type: { type: "string", const: "ONLINE" }
+                      },
+                      required: ["type"]
+                    }
+                  }
+                }
+              ]
             },
             quote: {
               type: "object",
@@ -434,7 +471,8 @@ export const onInitSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -590,7 +628,7 @@ export const onInitSchema = {
           },
           required: [
             "provider",
-            "locations",
+            // "locations",
             "items",
             "billing",
             "fulfillments",

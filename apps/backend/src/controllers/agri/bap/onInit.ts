@@ -9,8 +9,8 @@ import { AGRI_EXAMPLES_PATH, SERVICES_EXAMPLES_PATH, checkIfCustomized, quoteCre
 export const onInitController = async (req: Request, res: Response, next: NextFunction) => {
 	try{
 		const on_search = await redisFetchFromServer("on_search", req.body.context.transaction_id);
-		const providersItems = on_search?.message?.catalog["bpp/providers"][0]?.items;
-		req.body.providersItems = providersItems
+		// const providersItems = on_search?.message?.catalog["bpp/providers"][0]?.items;
+		// req.body.providersItems = providersItems
 		if (checkIfCustomized(req.body.message.order.items)) {
 			return onInitServiceCustomizedController(req, res, next);
 		}

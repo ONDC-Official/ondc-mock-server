@@ -10,15 +10,21 @@ import InfoTwoToneIcon from "@mui/icons-material/InfoTwoTone";
 import WarningTwoToneIcon from "@mui/icons-material/WarningTwoTone";
 import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-
+import {  useNavigate } from "react-router-dom";
 export const MessageDialog = () => {
-	const { showDialog, closeDialog, message, messageType, copy } = useMessage();
+	const { showDialog, closeDialog, message, messageType, copy ,transaction_id} = useMessage();
+	const navigate = useNavigate();
 	const copyContent = () => {
 		if (copy)
 			navigator.clipboard.writeText(copy).catch((err) => {
 				console.log(err.message);
 			});
 	};
+	const handlebuttonclick=()=>{
+		closeDialog(); 
+		navigate(`/analyse?message=${transaction_id}`);
+	}
+
 	return (
 		<Dialog open={showDialog} onClose={closeDialog}>
 			<Box
@@ -53,6 +59,9 @@ export const MessageDialog = () => {
 				)}
 			</DialogContent>
 			<DialogActions>
+			{messageType==="success"    && <Button variant="contained" color="secondary" sx={{ fontSize: '0.8rem' }} onClick={handlebuttonclick} >
+					View in Transaction Analyser
+			</Button>}
 				<Button variant="contained" color="secondary" onClick={closeDialog}>
 					Close
 				</Button>

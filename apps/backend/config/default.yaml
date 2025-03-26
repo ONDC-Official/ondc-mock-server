@@ -2,3 +2,5 @@ l2_validations:
   services:
     - ondc_srv11: true
       version: 2.0.0
+    - ondc_srv17: true
+      version: 1.0.0

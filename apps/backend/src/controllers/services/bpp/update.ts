@@ -91,7 +91,7 @@ export const updateRequoteController = (
 			order: {
 				...message.order,
 				id: uuidv4(),
-				status: FULFILLMENT_STATES.PENDING,
+				status: (context.domain===SERVICES_DOMAINS.SERVICES)?FULFILLMENT_STATES.PENDING.toUpperCase():FULFILLMENT_STATES.PENDING,
 				ref_order_ids: [on_confirm?.message?.order?.id],
 				provider: {
 					id: on_confirm?.message?.order?.provider.id,
@@ -128,7 +128,7 @@ export const updatePaymentController = (
 		order: {
 			...message.order,
 			id: uuidv4(),
-			status: FULFILLMENT_STATES.PENDING,
+			status:  (context.domain===SERVICES_DOMAINS.SERVICES)?FULFILLMENT_STATES.PENDING.toUpperCase():FULFILLMENT_STATES.PENDING,
 			ref_order_ids: [on_confirm?.message?.order?.id],
 			provider: {
 				id: on_confirm?.message?.order?.provider.id,
@@ -170,7 +170,7 @@ export const updateRescheduleAndItemsController = (
 
 		//on_confirm items selected
 		const on_confirm_quantity =
-			on_confirm?.message?.order?.items[0]?.quantity?.selected?.count;
+			on_confirm?.message?.order?.items[0]?.quantity?.selected?.measure?.value;
 
 		const update_item_quantity = Number(
 			order?.items[0]?.quantity?.unitized?.measure?.value
@@ -277,7 +277,7 @@ export const updateRescheduleController = (
 		message: { order },
 	} = req.body;
 
-	const responseMessage = {
+	let responseMessage = {
 		order: {
 			...order,
 			fulfillments: [
@@ -294,6 +294,20 @@ export const updateRescheduleController = (
 			],
 		},
 	};
+
+		if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+				let {provider,quote,items,payments}=req.body.on_confirm.message.order
+			responseMessage={
+				order:{
+				...responseMessage.order,
+				provider,
+				quote,
+				items,
+				payments
+			}
+			}
+		}
+
 
 	return responseBuilder(
 		res,

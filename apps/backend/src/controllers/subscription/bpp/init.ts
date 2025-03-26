@@ -15,11 +15,13 @@ import {
 	TransactionType,
 	redis,
 	logger,
+	quoteCommon,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import axios from "axios";
 import { AxiosError } from "axios";
+import { SUBSCRIPTION_DOMAINS } from "../../../lib/utils/apiConstants";
 
 export const initController = async (
 	req: Request,
@@ -43,7 +45,7 @@ export const initController = async (
 			ON_ACTION_KEY.ON_SELECT,
 			transaction_id
 		);
-
+		req.body.quote=on_select?.message?.order?.quote
 		if (on_select && on_select?.error) {
 			return send_nack(
 				res,
@@ -72,6 +74,7 @@ const initConsultationController = (
 		const {
 			context,
 			providersItems,
+			quote,
 			message: {
 				order: { provider, items, billing, fulfillments, payments },
 			},
@@ -89,12 +92,12 @@ const initConsultationController = (
 			"subscription"
 		);
 
-		let quoteData = quoteSubscription(
+		let quoteData = (context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA) ? quoteSubscription(
 			items,
 			providersItems,
 			"",
 			fulfillments[0]
-		);
+		):quote
 
 		/*****HANDLE SCENARIOS OF INIT*****/
 		switch (scenario) {
@@ -140,8 +143,8 @@ const initConsultationController = (
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "on_init/on_init.yaml")
 				);
 		}
-
 		const response = YAML.parse(file.toString());
+		console.log("quoteeee",quoteData)
 		let responseMessage: any = {
 			order: {
 				provider: remainingProvider,
@@ -149,7 +152,7 @@ const initConsultationController = (
 				items,
 				billing,
 				fulfillments: updatedFulfillments,
-				quote: quoteData,
+				quote:quoteData,
 
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
 				payments: [
@@ -159,12 +162,102 @@ const initConsultationController = (
 							amount: (quoteData?.price?.value).toString(),
 							currency: "INR",
 						},
+						tags:[
+							{
+								"descriptor": {
+										"code": "PAYMENT_METHOD",
+										"name": "Payment Method"
+								},
+								"list": [
+										{
+												"descriptor": {
+														"code": "MODE"
+												},
+												"value": "FULL_PAYMENT"
+										}
+								]
+						},...response?.value?.message?.order?.payments[0].tags,
+					{
+						"descriptor": {
+								"code": "SETTLEMENT_DETAILS"
+						},
+						"list": [
+								{
+										"descriptor": {
+												"code": "COUNTERPARTY"
+										},
+										"value": "BPP"
+								},
+								{
+										"descriptor": {
+												"code": "MODE"
+										},
+										"value": "UPI"
+								},
+								{
+										"descriptor": {
+												"code": "BENEFICIARY_NAME"
+										},
+										"value": "xxxxx"
+								},
+								{
+										"descriptor": {
+												"code": "BANK_ACCOUNT_NO"
+										},
+										"value": "xxxxx"
+								},
+								{
+										"descriptor": {
+												"code": "IFSC_CODE"
+										},
+										"value": "xxxxxxx"
+								},
+								{
+										"descriptor": {
+												"code": "UPI_ADDRESS"
+										},
+										"value": "xxxxxxx"
+								}
+						]
+				},
+			]
 					},
 				],
 			},
 		};
 
 		delete req.body?.providersItems;
+		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO){
+			responseMessage.order.fulfillments=[{id:"FI1",type:"ONLINE"}]
+			delete responseMessage.order.locations
+		}
+
+		if(scenario === 'single-order-offline-without-subscription'){
+			delete responseMessage.order.items[0].tags ; delete responseMessage.order.items[0].price;
+			delete responseMessage.order.items[0].title;
+		 responseMessage.order.fulfillments[0].tags = [
+				{
+						"descriptor": {
+								"code": "INFO"
+						},
+						"list": [
+								{
+										"descriptor": {
+												"code": "PARENT_ID"
+										},
+										"value": "F1"
+								}
+						]
+				}
+		] ;
+			delete responseMessage.order.fulfillments[0].stops[0].location 
+			responseMessage.order.fulfillments[0].stops[0].time={
+				...responseMessage.order.fulfillments[0].stops[0].time,
+				days:"4"
+			}
+		}
+
+
 
 		responseBuilder(
 			res,
@@ -287,7 +380,7 @@ export const onStatusResponseBuilder = async (
 				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
 				JSON.stringify(log)
 			);
-			throw error;
+			// throw error;
 		}
 
 		logger.info({

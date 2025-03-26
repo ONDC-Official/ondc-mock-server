@@ -1,7 +1,7 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import Grow from "@mui/material/Grow";
-import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -10,8 +10,6 @@ import Toolbar from "@mui/material/Toolbar";
 import useTheme from "@mui/material/styles/useTheme";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import MenuIcon from "@mui/icons-material/Menu";
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
@@ -37,7 +35,6 @@ const NAV_LINKS = [
 		nested: false,
 		path: "/sandbox",
 	},
-
 ];
 
 type NavButtonProps = {
@@ -120,9 +117,9 @@ type CustomDrawerProps = {
 
 export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 	const { domain, setDomain } = useDomain();
-	const {environment,setEnvironment} = useEnvironment();
+	const { environment, setEnvironment } = useEnvironment();
 	const theme = useTheme();
-	const [mobileOpen, setMobileOpen] = React.useState(false);
+	const [mobileOpen, setMobileOpen] = React.useState(true);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 	const handleDrawerToggle = () => {
@@ -135,7 +132,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 		setEnvironment(event.target.value.toLowerCase());
 	};
 	const drawer = (
-		<div>
+		<div  >
 			<Toolbar />
 			<Divider />
 			<NavButton
@@ -149,7 +146,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 
 			<Divider />
 			<FormControl fullWidth sx={{ my: 1 }}>
-				<InputLabel id="select-domain-label">{domain ? "" : "Select Domain"}</InputLabel>
+				<InputLabel id="select-domain-label">
+					{domain ? "" : "Select Domain"}
+				</InputLabel>
 				<Select
 					labelId="select-domain-label"
 					label="Domain"
@@ -157,25 +156,29 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 				>
 					{Object.keys(ALL_DOMAINS).map((domain: string, key: number) => (
 						<MenuItem key={domain + key} value={domain}>
-							{domain === "Subscription"?"Subscription(Print Media)":domain}
+							{domain === "Subscription" ? "Subscription(Print Media)" : domain}
 						</MenuItem>
 					))}
 				</Select>
 			</FormControl>
-			<FormControl fullWidth >
-			<InputLabel id="select-environment-label">{environment ?  "" : "Select-Environment"}</InputLabel>
+			<FormControl fullWidth>
+				<InputLabel id="select-environment-label">
+					{environment ? "" : "Select-Environment"}
+				</InputLabel>
 				<Select
 					labelId="select-environment-label"
 					label="Environment"
 					onChange={handleEnvironment}
 				>
-					{Object.keys(ALL_Environment).map((Environment: string, key: number) => (
-						<MenuItem key={Environment + key} value={Environment}>
-							{Environment}
-						</MenuItem>
-					))}
-				</Select> 
-				</FormControl>
+					{Object.keys(ALL_Environment).map(
+						(Environment: string, key: number) => (
+							<MenuItem key={Environment + key} value={Environment}>
+								{Environment}
+							</MenuItem>
+						)
+					)}
+				</Select>
+			</FormControl>
 			<Divider />
 			<List>
 				{NAV_LINKS.map((link, index) => (
@@ -188,9 +191,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 							disabledTooltip={
 								domain.length === 0
 									? {
-										show: true,
-										text: "Select Domain to get started",
-									}
+											show: true,
+											text: "Select Domain to get started",
+									  }
 									: undefined
 							}
 						/>
@@ -236,9 +239,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			<AppBar component="nav">
+			<AppBar component="nav" sx={{width:"100vw"}}>
 				<Toolbar>
-					<IconButton
+					{/* <IconButton
 						color="inherit"
 						aria-label="open drawer"
 						edge="start"
@@ -246,7 +249,7 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 						sx={{ mr: 2 }}
 					>
 						<MenuIcon />
-					</IconButton>
+					</IconButton> */}
 					<Typography
 						variant="h6"
 						component="div"
@@ -256,9 +259,9 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-			<Box component="nav">
+			<Box component="nav" sx={{display:"flex",position:"static"}} > 
 				<Drawer
-					variant="temporary"
+					variant="permanent"
 					open={mobileOpen}
 					onClose={handleDrawerToggle}
 					ModalProps={{
@@ -266,6 +269,8 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 					}}
 					PaperProps={{
 						sx: {
+							// backgroundColor:"green",
+							height:"90%",		
 							// backgroundColor: theme.palette.primary.dark,
 							// color: theme.palette.primary.contrastText,
 						},
@@ -274,20 +279,23 @@ export const CustomDrawer = ({ children }: CustomDrawerProps) => {
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
+							height:"95%",
+							position:"static",
+							top:"65px"
 						},
 					}}
 				>
-					<Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-						<IconButton
+					{/* <Box sx={{ display: "flex", justifyContent: "flex-end",height:"10%" }}>
+						{/* <IconButton
 							// sx={{ color: theme.palette.primary.contrastText }}
 							onClick={handleDrawerToggle}
 						>
 							<MenuOpenIcon />
-						</IconButton>
-					</Box>
-					{drawer}
-				</Drawer>
-			</Box>
+						</IconButton>  */}
+					{/* </Box> */} 
+					{drawer} 
+				</Drawer> 
+			</Box> 
 			<Box
 				component="main"
 				sx={{

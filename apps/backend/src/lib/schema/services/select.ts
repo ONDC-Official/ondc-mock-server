@@ -120,7 +120,8 @@ export const selectSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
+              required:["id"]
             },
             items: {
               type: "array",
@@ -141,17 +142,54 @@ export const selectSchema = {
                   },
                   quantity: {
                     type: "object",
-                    properties: {
-                      selected: {
-                      type: "object",
-                      properties: {
-                        count: {
-                          type: "number",
-                        }
+                    anyOf: [
+                      {
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV17"]
+                            }
+                          }
                         },
-                        required: ["count"],
+                        then: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                measure: {
+                                  type: "object",
+                                  properties: {
+                                    unit: {
+                                      type: "string"
+                                    },
+                                    value: {
+                                      type: "number"
+                                    }
+                                  },
+                                  required: ["unit", "value"]
+                                }
+                              },
+                              required: ["measure"]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        else: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                count: {
+                                  type: "number"
+                                }
+                              },
+                              required: ["count"]
+                            }
+                          }
+                        }
                       }
-                    }
+                    ]
                   }
                 },
                 required: ["id", "location_ids"],
@@ -219,17 +257,15 @@ export const selectSchema = {
                               // required: ["start", "end"],
                               required: ["start"],
                             },
-                            days: {
-                              type: "array",
-                              items: {
+                            days: { 
                                 type: "string",
-                              },
                             },
                           },
-                          required: ["label", "range"],
+                          // required: ["label", "range"],
+                          required: [ "range"],
                         },
                       },
-                      required: ["type", "location","time"],
+                      required: ["type","time"],
                     },
                   },
                 },

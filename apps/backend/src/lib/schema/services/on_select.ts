@@ -133,16 +133,54 @@ export const onSelectSchema = {
                   },
                   quantity: {
                     type: "object",
-                    properties: {
-                      selected: {
-                        type: "object",
-                        properties: {
-                          count: {
-                            type: "number",
+                    anyOf: [
+                      {
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV17"]
+                            }
+                          }
+                        },
+                        then: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                measure: {
+                                  type: "object",
+                                  properties: {
+                                    unit: {
+                                      type: "string"
+                                    },
+                                    value: {
+                                      type: "number"
+                                    }
+                                  },
+                                  required: ["unit", "value"]
+                                }
+                              },
+                              required: ["measure"]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        else: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                count: {
+                                  type: "number"
+                                }
+                              },
+                              required: ["count"]
+                            }
                           }
                         }
                       }
-                    }
+                    ]
                   },
                   time: {
                     type: "object",
@@ -189,8 +227,8 @@ export const onSelectSchema = {
                 required: [
                   // "fulfillment_ids",
                   "id",
-                  "location_ids",
-                  "quantity"
+                  // "location_ids",
+                  // "quantity"
                 ],
               },
             },

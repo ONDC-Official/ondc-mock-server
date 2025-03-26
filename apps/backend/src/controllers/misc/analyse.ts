@@ -19,12 +19,11 @@ export const analyseController = async (req: Request, res: Response) => {
 			},
 		});
 	const transactionKeys = await redis.keys(`${transactionId}-*`);
-
 	if (transactionKeys.length === 0) return res.json([]);
 
 	if (
 		transactionKeys.filter(
-			(e) =>
+			(e:any) =>
 				e.match(
 					/-from-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/
 				) != null ||
@@ -34,7 +33,7 @@ export const analyseController = async (req: Request, res: Response) => {
 		).length > 0
 	) {
 		var _transactionsKeys = transactionKeys.filter(
-			(e) =>
+			(e:any) =>
 				e.match(
 					/-from-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/
 				) ||
@@ -43,7 +42,7 @@ export const analyseController = async (req: Request, res: Response) => {
 				)
 		);
 		var transactions = await redis.mget(_transactionsKeys);
-		const Result=transactions.map((each, index) => {
+		const Result=transactions.map((each:any, index:number) => {
 				let _key = _transactionsKeys[index].match(
 					/-from-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/
 				);
@@ -73,64 +72,44 @@ export const analyseController = async (req: Request, res: Response) => {
 		  
 			// Step 2: Prioritize objects within each action group
 			for (const action in grouped) {
-				
-			  const group = grouped[action];
-			  if (action === 'on_status') {
-				// Keep all sorted objects for on_status
-				const withResponse = group.filter((obj:any) => obj.response);
-				prioritized.push(...withResponse);
-			  } 
-			  else
-			  {// Find object with response
-			  const withResponse = group.find((item:any) => item.response);
-			  if (withResponse) {
-				prioritized.push(withResponse);
-			  } else {
-				// Fallback to any object if none has a response
-				prioritized.push(group[0]);
-			  }}
-			}
+				const group = grouped[action];
+
+				if (action === 'on_status' ) {
+						// Keep all sorted objects for these actions
+						const withResponse = group.filter((obj: any) => obj.response);
+						const withRequest = group.filter((obj: any) => obj.request);
+						
+						if (withResponse.length > 0) {
+								prioritized.push(...withResponse);
+						}
+						if (withRequest.length > 0) {
+								prioritized.push(...withRequest);
+						}
+
+						// If no request or response is found, push at least one entry
+						if (prioritized.length === 0 && group.length > 0) {
+								prioritized.push(group[0]);
+						}
+				} else {
+						// Find object with response
+						const withResponse = group.find((item: any) => item.response);
+						if (withResponse) {
+								prioritized.push(withResponse);
+						} else {
+								// Fallback to any object if none has a response
+								prioritized.push(group[0]);
+						}
+				}
+		}
 		  
 			return prioritized;
 		  }
 		  const transactionsss=prioritizeActions(Result)
 		
 		storedTransaction.push(
-			// transactions.map((each, index) => {
-			// 	let _key = _transactionsKeys[index].match(
-			// 		/-from-server(?:-(\d+))?(?:-(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z))?$/
-			// 	);
-			// 	if (!each) return null;
-			// 	var parsed = JSON.parse(each);
-			// 	return {
-			// 		...parsed,
-			// 		id: _key ? _key[1] : "0",
-			// 		type: "from_server",
-			// 		action: (parsed.request as any).context.action,
-			// 		timestamp: _key ? _key[2] : (parsed.request as any).context.timestamp,
-			// 	};
-			// })
 			transactionsss
 		);
 	}
-	// if (transactionKeys.filter((e) => e.match(/-from-server-(\d+)$/) != null).length > 0) {
-	//   var _transactionsKeys = transactionKeys.filter((e) => e.match(/-from-server-(\d+)$/));
-	//   var transactions = await redis.mget(_transactionsKeys);
-	//   storedTransaction.push(
-	//     transactions.map((each, index) => {
-	//       let _key = _transactionsKeys[index].match(/-from-server-(\d+)$/);
-	//       if (!each) return null;
-	//       var parsed = JSON.parse(each);
-	//       return {
-	//         ...parsed,
-	//         id: _key ? _key[1] : '0',
-	//         type: "from_server",
-	//         action: (parsed.request as any).context.action,
-	//         timestamp: (parsed.request as any).context.timeStamp,
-	//       };
-	//     })
-	//   );
-	// }
-	console.log('storedTransaction.flat()', storedTransaction.flat())
 	return res.json(storedTransaction.flat());
 };
+

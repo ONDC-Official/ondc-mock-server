@@ -146,18 +146,54 @@ export const onStatusSchema = {
                   },
                   quantity: {
                     type: "object",
-                    properties: {
-                      selected: {
-                        type: "object",
-                        properties: {
-                          count: {
-                            type: "integer",
-                          },
+                    anyOf: [
+                      {
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV17"]
+                            }
+                          }
                         },
-                        required: ["count"],
+                        then: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                measure: {
+                                  type: "object",
+                                  properties: {
+                                    unit: {
+                                      type: "string"
+                                    },
+                                    value: {
+                                      type: "number"
+                                    }
+                                  },
+                                  required: ["unit", "value"]
+                                }
+                              },
+                              required: ["measure"]
+                            }
+                          }
+                        }
                       },
-                    },
-                    required: ["selected"],
+                      {
+                        else: {
+                          properties: {
+                            selected: {
+                              type: "object",
+                              properties: {
+                                count: {
+                                  type: "number"
+                                }
+                              },
+                              required: ["count"]
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                 },
                 required: [
@@ -348,12 +384,12 @@ export const onStatusSchema = {
                         "location",
                         "time",
                         "contact",
-                        "person",
+                        // "person",
                       ],
                     },
                   },
                 },
-                required: ["id", "type", "state", "stops"],
+                required: ["id", "type", "state", "tracking","stops"],
               },
             },
             quote: {

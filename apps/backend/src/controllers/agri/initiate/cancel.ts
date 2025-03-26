@@ -36,11 +36,13 @@ const intializeRequest = async (
 ) => {
 	try{
 		const { context } = transaction;
+		const timestamp = new Date().toISOString();
 
 		let scenario = "ack"
 		const cancel = {
 			context: {
 				...context,
+				timestamp:timestamp,
 				action: ACTTION_KEY.CANCEL,
 				message_id: uuidv4(),
 			},

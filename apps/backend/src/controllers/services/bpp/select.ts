@@ -12,6 +12,7 @@ import {
 	redis,
 	quoteCreatorService,
 	quoteCreatorAstroService,
+	quoteCreatorWeightment,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -93,7 +94,13 @@ const selectConsultationConfirmController = (
 						"",
 						"astroService"
 					)
-					: updateFulfillments(
+					:domain===SERVICES_DOMAINS.WEIGHMENT? updateFulfillments(
+						message?.order?.fulfillments,
+						ON_ACTION_KEY?.ON_SELECT,
+						"",
+						"weightment"
+					):
+					updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
 						""
@@ -141,7 +148,15 @@ const selectConsultationConfirmController = (
 									message?.order?.fulfillments[0]?.type,
 									"astro_service"
 								) :
-								domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
+								domain===SERVICES_DOMAINS.WEIGHMENT?
+								quoteCreatorWeightment(
+									message?.order?.items,
+									providersItems?.items,
+									"",
+									message?.order?.fulfillments[0]?.type,
+									"weightment"
+								)
+								:domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
 									? quoteCreatorHealthCareService(
 										message?.order?.items,
 										providersItems?.items,

@@ -48,13 +48,14 @@ export const initiateConfirmController = async (
 		if (Object.keys(Init).includes("error")) {
 			return send_nack(res, "Init had errors");
 		}
+		console.log("message.order.provider.locations.",JSON.stringify(Init))
 		var newTime = new Date().toISOString();
 		const confirmProvider = {
 			...Init.message.order.provider,
-			locations:
-				Init.message.order.provider.locations.map((e: any) => {
+			locations:(!Init.message.order.provider?.locations)?[]:
+				Init.message.order.provider?.locations.map((e: any) => {
 					return { id: e.id };
-				}) ?? [],
+				}) ,
 		};
 		console.log("🚀 ~ confirmProvider:", confirmProvider);
 		const confirmItems = Init.message.order.items.map((e: any) => {

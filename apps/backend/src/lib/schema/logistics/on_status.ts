@@ -299,7 +299,7 @@ export const onStatusSchema = {
 														gps: {
 															type: "string",
 															pattern:
-																"^(-?[0-9]{1,3}(?:.[0-9]{6,15})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,15})?)$",
+																"^(-?[0-9]{1,3}(?:.[0-9]{6,17})?),( )*?(-?[0-9]{1,3}(?:.[0-9]{6,17})?)$",
 															errorMessage:
 																"Incorrect gps value (minimum of six decimal places are required)",
 														},

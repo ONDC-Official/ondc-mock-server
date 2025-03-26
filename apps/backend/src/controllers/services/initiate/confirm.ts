@@ -71,7 +71,7 @@ const intializeRequest = async (
 				order: {
 					...transaction.message.order,
 					id: uuidv4(),
-					status: ORDER_STATUS.CREATED.toUpperCase(),
+					status:(context.domain===SERVICES_DOMAINS.SERVICES) ?ORDER_STATUS.CREATED.toUpperCase() :ORDER_STATUS.CREATED,
 					provider: {
 						...provider,
 						locations:[{
@@ -101,7 +101,14 @@ const intializeRequest = async (
 							}),
 						},
 					],
-					payments: [
+					payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)? [	{
+						...payments[0],
+						params: {
+							...payments[0]?.params,
+							transaction_id: uuidv4(),
+						},
+						status: PAYMENT_STATUS.PAID,
+					}]:[
 						{
 							...payments[0],
 							params: {

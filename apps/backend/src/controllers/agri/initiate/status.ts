@@ -85,6 +85,9 @@ const intializeRequest = async (
 			case SERVICES_DOMAINS.AGRI_INPUT:
 				senarios=AGRI_STATUS;
 				break;
+			case SERVICES_DOMAINS.AGRI_OUTPUT:
+					senarios=AGRI_STATUS;
+					break;	
 			default: //service started is the default case
 				senarios = AGRI_HEALTH_STATUS;
 				break;

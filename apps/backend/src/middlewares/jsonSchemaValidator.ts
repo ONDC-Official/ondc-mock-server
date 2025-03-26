@@ -6,7 +6,7 @@ import { b2cSchemaValidator } from "../lib/schema/b2c";
 import { l2Validator, redis } from "../lib/utils";
 import { NextFunction, Request, Response } from "express";
 import { agriSchemaValidator } from "../lib/schema/agri";
-
+import { agriOutputSchemaValidator } from "../lib/schema/agri_output";
 type AllActions =
   | "search"
   | "on_search"
@@ -62,13 +62,21 @@ export const jsonSchemaValidator = <T extends Domain>({
     try {
       const l2 = await redis.get("l2_validations");
       const reqDomain = req.body.context.domain;
-      // console.log("domain at jsonSchema",domain)
+      console.log("domain at jsonSchema",domain,l2,reqDomain)
       if (l2 != null && JSON.parse(l2).includes(domain)) {
         if(reqDomain != undefined ) {
+          if(reqDomain==="ONDC:SRV17"){
+           const spec= await redis.get(`ondc_srv17.yaml`)
+           if(spec != null) {
+            return l2Validator(domain)(req, res, next);
+          }
+          }
+          else{
           const spec = await redis.get(`${domain}_${(reqDomain as string).toLowerCase().replace(":", "_")}_l2_validation`);
           if(spec != null) {
             return l2Validator(domain)(req, res, next);
           }
+        }
         }
       }
 
@@ -101,7 +109,12 @@ export const jsonSchemaValidator = <T extends Domain>({
         case "logistics":
           return logisticsSchemaValidator(action as LogisticsActions)(req, res, next);
         case "agri":
-          return agriSchemaValidator(action as AllActions)(req, res, next);
+          if(req.body.context.domain==="ONDC:AGR11"){
+            return agriOutputSchemaValidator(action as AllActions)(req, res, next);
+          }
+          else{
+            return agriSchemaValidator(action as AllActions)(req, res, next);
+          }
         default:
           throw new Error(`Unsupported domain: ${domain}`);
       }

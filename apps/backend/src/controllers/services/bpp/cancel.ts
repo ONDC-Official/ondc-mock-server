@@ -10,6 +10,7 @@ import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import {
 	ORDER_CACELLED_BY,
 	ORDER_STATUS,
+	SERVICES_DOMAINS,
 } from "../../../lib/utils/apiConstants";
 
 export const cancelController = async (
@@ -63,15 +64,16 @@ const cancelRequest = async (
 ) => {
 	try {
 		const { context } = req.body;
-		const updatedFulfillments = updateFulfillments(
+		let updatedFulfillments = updateFulfillments(
 			transaction.message.order.fulfillments,
 			ON_ACTION_KEY?.ON_CANCEL
+			,"",context.domain
 		);
 
 		const responseMessage = {
 			order: {
 				id: req.body.message.order_id,
-				status: ORDER_STATUS.CANCELLED.toUpperCase(),
+				status: (context.domain===SERVICES_DOMAINS.SERVICES)?ORDER_STATUS.CANCELLED.toUpperCase():ORDER_STATUS.CANCELLED,
 				cancellation: {
 					cancelled_by: ORDER_CACELLED_BY.CONSUMER,
 					reason: {
@@ -84,7 +86,6 @@ const cancelRequest = async (
 					...transaction.message.order.provider,
 					rateable: undefined,
 				},
-
 				items: transaction.message.order.items.map((itm: any) => ({
 					...itm,
 					quantity: {

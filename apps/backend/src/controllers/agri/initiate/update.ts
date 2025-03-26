@@ -14,6 +14,8 @@ import {
 	send_response,
 	AGRI_EXAMPLES_PATH,
 	AGRI_BPP_MOCKSERVER_URL,
+	AGRI_OUTPUT_EXAMPLES_PATH,
+	quoteCreatorAgriOutput,
 } from "../../../lib/utils";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
 import {
@@ -21,7 +23,7 @@ import {
 	ON_ACTION_KEY,
 } from "../../../lib/utils/actionOnActionKeys";
 
-export const initiateUpdateController = async (
+export const initiateUpdateController =async (
 	req: Request,
 	res: Response,
 	next: NextFunction
@@ -53,6 +55,12 @@ export const initiateUpdateController = async (
 			case "liquidate":
 				responseMessage = updateliquidateController(message, update_target);
 				break;
+			case "re-negotiate":
+				responseMessage = updaterenegotiateController(message, update_target);
+				break;
+			case "increase-bids-price":
+					responseMessage = updaterincreasebidController(message, update_target);
+					break;
 			default:
 				responseMessage = updateReject(message, update_target);
 				break;
@@ -62,7 +70,6 @@ export const initiateUpdateController = async (
 			context,
 			message: responseMessage,
 		};
-
 		const header = await createAuthHeader(update);
 		await send_response(
 			res,
@@ -87,7 +94,7 @@ function updateReject(message: any, update_target: string) {
 	const response = YAML.parse(file.toString());
 
 	const responseMessage = {
-		update_target:"items",
+		update_target: "items",
 		order: {
 			...response.value.message.order
 		},
@@ -105,7 +112,7 @@ function updateliquidateController(message: any, update_target: string) {
 	const response = YAML.parse(file.toString());
 
 	const responseMessage = {
-		update_target:"items",
+		update_target: "items",
 		order: {
 			...response.value.message.order
 		},
@@ -113,4 +120,39 @@ function updateliquidateController(message: any, update_target: string) {
 	return responseMessage;
 }
 
+function updaterenegotiateController(message: any, update_target: string) {
+	const file = fs.readFileSync(
+		path.join(
+			AGRI_OUTPUT_EXAMPLES_PATH,
+			"update/update_requote_lower.yaml"
+		)
+	);
+	const response = YAML.parse(file.toString());
 
+	const responseMessage = {
+		update_target: "payments",
+		order: {
+			...response.value.message.order
+		},
+	};
+	return responseMessage;
+}
+
+function updaterincreasebidController(message: any, update_target: string) {
+	const file = fs.readFileSync(
+		path.join(
+			AGRI_OUTPUT_EXAMPLES_PATH,
+			"update/update_requote.yaml"
+		)
+	);
+	const response = YAML.parse(file.toString());
+
+	const responseMessage = {
+		update_target: "items",
+		order: {
+			...response.value.message.order,
+			// quote:quoteCreatorAgriOutput()
+		},
+	};
+	return responseMessage;
+}

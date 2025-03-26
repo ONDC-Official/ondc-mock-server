@@ -18,7 +18,7 @@ export const Sandbox = () => {
 
 	return (
 		<SandboxProvider>
-			<Container sx={{ py: 2 }}>
+			<Container sx={{ py: 2 ,width:"80%" }}>
 				<Outlet />
 				<Grid container spacing={2}>
 					<Grid item xs={12} lg={8}>

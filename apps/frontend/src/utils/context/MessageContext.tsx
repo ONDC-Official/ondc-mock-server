@@ -5,6 +5,8 @@ type MessageProviderType = {
 };
 
 type MessageContextType = {
+	transaction_id:string | undefined,
+	setTransaction_Id:(m:string)=>void,
 	message: string | undefined;
 	messageType: "info" | "error" | "success";
 	setMessageType: (m: "info" | "error" | "success") => void;
@@ -16,6 +18,8 @@ type MessageContextType = {
 };
 
 export const MessageContext = createContext<MessageContextType>({
+	transaction_id:"",
+	setTransaction_Id:()=>{},
 	message: "",
 	messageType: "info",
 	setMessageType: () => {},
@@ -27,6 +31,7 @@ export const MessageContext = createContext<MessageContextType>({
 });
 
 export const MessageProvider = ({ children }: MessageProviderType) => {
+	const[transaction_id,setTransaction_Id]=useState<string>();
 	const [message, setMessage] = useState<string>();
 	const [messageType, setMessageType] = useState<"info" | "error" | "success">(
 		"info"
@@ -49,6 +54,8 @@ export const MessageProvider = ({ children }: MessageProviderType) => {
 	return (
 		<MessageContext.Provider
 			value={{
+				transaction_id,
+				setTransaction_Id,
 				message,
 				messageType,
 				setMessageType,

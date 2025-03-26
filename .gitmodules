@@ -1,13 +1,3 @@
-[submodule "packages/openapi/domain-repos/@services/draft-services"]
-	path = packages/openapi/domain-repos/@services/draft-services
-	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
-	branch = draft-services
-
-[submodule "apps/backend/domain-repos/@services/draft-services"]
-	path = apps/backend/domain-repos/@services/draft-services
-	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
-	branch = draft-services
-
 [submodule "apps/backend/domain-repos/@retail-b2b/release-2.0.2"]
 	path = apps/backend/domain-repos/@retail-b2b/release-2.0.2
 	url = https://github.com/ONDC-Official/ONDC-RET-Specifications.git
@@ -33,7 +23,6 @@
 	path = apps/backend/domain-repos/@services/draft-agri_equipment
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-agri_equipment
-
 
 
 [submodule "packages/openapi/domain-repos/@services/draft-agri_equipment"]
@@ -106,3 +95,19 @@
 	path = apps/backend/domain-repos/@services/draft-astro
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-astro
+[submodule "apps/backend/domain-repos/@agri/draft-agri_output"]
+	path = apps/backend/domain-repos/@agri/draft-agri_output
+	url = https://github.com/ONDC-Official/ONDC-AGR-Specifications
+	branch = draft-agri_output
+[submodule "apps/backend/domain-repos/@services/draft-weighment"]
+	path = apps/backend/domain-repos/@services/draft-weighment
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-weighment
+[submodule "apps/backend/domain-repos/@mec/draft-audio_video"]
+	path = apps/backend/domain-repos/@mec/draft-audio_video
+	url = https://github.com/ONDC-Official/ONDC-MEC-Specifications
+	branch = draft-audio_video
+[submodule "apps/backend/domain-repos/@services/draft-services"]
+	path = apps/backend/domain-repos/@services/draft-services
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-services

@@ -10,9 +10,10 @@ import { _getNodesAndEdges, actionComparator } from "../utils";
 import axios from "axios";
 import * as _ from "lodash";
 import { useAnalyse, useMessage } from "../utils/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { VITE_SERVER_URL } from "../utils/env";
+import { useLocation } from "react-router-dom";
 
 export const TransactionSearch = () => {
 	const theme = useTheme();
@@ -20,6 +21,15 @@ export const TransactionSearch = () => {
 	const [requested, setRequested] = useState(false);
 	const { handleMessageToggle, setMessageType } = useMessage();
 	const [transactionId, setTransactionId] = useState("");
+
+	const {search}=useLocation()
+	useEffect(()=>{
+		if(search!=="" || search != undefined){	
+			setTransactionId( search.split("=").pop()||"")
+		}
+	},[])
+	
+		
 
 	const fetchTransaction = async (transaction: string) => {
 		console.log('API URL:', VITE_SERVER_URL);
@@ -107,6 +117,12 @@ export const TransactionSearch = () => {
 		500
 	);
 
+	const handlechange=(event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setTransactionId(value); // Update state to reflect input change
+    requestTransaction(event); // Debounced API call
+  };
+
 	const handleFetch = async () => {
 		await fetchTransaction(transactionId);
 	};
@@ -138,9 +154,10 @@ export const TransactionSearch = () => {
 				>
 					<InputBase
 						sx={{ ml: 1, flex: 1, p: 0 }}
-						placeholder="Enter your Transaction ID"
+						placeholder={"Enter your Transaction ID"}
+						value={transactionId}
 						inputProps={{ "aria-label": "Enter your Transaction ID" }}
-						onChange={requestTransaction}
+						onChange={handlechange}
 					/>
 
 					<IconButton
