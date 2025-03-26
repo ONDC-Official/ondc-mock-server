@@ -77,7 +77,7 @@ const selectConsultationConfirmController = (
 				var updatedFulfillments = updateFulfillments(
 					message?.order?.fulfillments,
 					ON_ACTION_KEY?.ON_SELECT,
-					"",
+					scenario as string || '',
 					"subscription"
 				);
 			}
@@ -92,7 +92,14 @@ const selectConsultationConfirmController = (
 					message?.order?.fulfillments[0]
 				);
 				break;
-
+			case "subscription-with-full-payments":
+				quoteData = quoteSubscription(
+					message?.order?.items,
+					providersItems?.items,
+					"full-payment",
+					message?.order?.fulfillments[0]
+				);
+				break;
 			//EQUIPMENT HIRING SCENARIOS
 			case "single-order-online-without-subscription":
 				quoteData = quoteSubscription(
@@ -204,34 +211,34 @@ const selectConsultationConfirmController = (
 				},
 			];
 			delete responseMessage.order.items[0].tags , delete responseMessage.order.items[0].price , delete responseMessage.order.items[0].quantity ,delete responseMessage.order.items[0].title
-			responseMessage.order.fulfillments[0].tags = [
-				{
-					"descriptor": {
-						"code": "SELECTION"
-					},
-					"list": [
-						{
-							"descriptor": {
-								"code": "ITEM_IDS"
-							},
-							"value": "I1"
-						}
-					]
-				},
-				{
-						"descriptor": {
-								"code": "INFO"
-						},
-						"list": [
-								{
-										"descriptor": {
-												"code": "PARENT_ID"
-										},
-										"value": "F1"
-								}
-						]
-				}
-		]
+		// 	responseMessage.order.fulfillments[0].tags = [
+		// 		{
+		// 			"descriptor": {
+		// 				"code": "SELECTION"
+		// 			},
+		// 			"list": [
+		// 				{
+		// 					"descriptor": {
+		// 						"code": "ITEM_IDS"
+		// 					},
+		// 					"value": "I1"
+		// 				}
+		// 			]
+		// 		},
+		// 		{
+		// 				"descriptor": {
+		// 						"code": "INFO"
+		// 				},
+		// 				"list": [
+		// 						{
+		// 								"descriptor": {
+		// 										"code": "PARENT_ID"
+		// 								},
+		// 								"value": "F1"
+		// 						}
+		// 				]
+		// 		}
+		// ]
 		// delete responseMessage.order.items[0].tags , delete responseMessage.order.items[0].price , delete responseMessage.order.items[0].quantity ,delete responseMessage.order.items[0].title
 		}
 		if(scenario === 'single-order-offline-without-subscription'){
@@ -242,6 +249,9 @@ const selectConsultationConfirmController = (
 			// 	value:responseMessage.order.items[0].price.value
 			// }
 			delete responseMessage.order.payments
+		}
+		if(scenario === 'subscription-with-full-payments'){
+			delete responseMessage.order.fulfillments[0].stops[0].time.duration
 		}
 		console.log("====>",JSON.stringify(responseMessage))
 		return responseBuilder(

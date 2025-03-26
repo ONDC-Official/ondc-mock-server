@@ -446,7 +446,7 @@ export const confirmSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id"
+                      // "transaction_id"
                     ],
                   },
                   status: {

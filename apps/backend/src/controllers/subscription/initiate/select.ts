@@ -175,7 +175,7 @@ const intializeRequest = async (
 		delete select.message.order.fulfillments[0].stops[0].time.days
 		delete select.message.order.payments
 		}
-		if(scenario === "subscription-with-eMandate"){
+		if(scenario === "subscription-with-eMandate" ){
 			select.message.order.fulfillments[0].tags=[...select.message.order.fulfillments[0].tags, {
 				"descriptor": {
 					"code": "SELECTION"
@@ -192,7 +192,26 @@ const intializeRequest = async (
 			// delete select.message.order.fulfillments[0].stops[0].time.schedule
 			delete select.message.order.payments
 		}
-		console.log("Context.domain",context.domain)
+		if(scenario === 'subscription-with-full-payments'){
+			select.message.order.fulfillments[0].tags=[...select.message.order.fulfillments[0].tags, {
+				"descriptor": {
+					"code": "SELECTION"
+				},
+				"list": [
+					{
+						"descriptor": {
+							"code": "ITEM_IDS"
+						},
+						"value": "I1"
+					}
+				]
+			}]
+			delete select.message.order.fulfillments[0].id
+			delete select.message.order.fulfillments[0].stops[0].time.schedule
+			delete select.message.order.payments
+		}
+
+		console.log("Context.domain",JSON.stringify(select))
 		await send_response(res, next, select, transaction_id, "select",scenario);
 	} catch (error) {
 		return next(error);

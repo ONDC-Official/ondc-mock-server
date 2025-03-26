@@ -66,7 +66,7 @@ export const confirmConsultationController = async (
 		const responseMessage = {
 			order: {
 				...order,
-				status: ORDER_STATUS.ACCEPTED.toUpperCase(),
+				status: ORDER_STATUS.ACCEPTED,
 				fulfillments:(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO)?[{...order.fulfillments[0],"tags": [
                         {
                             "descriptor": {
@@ -122,6 +122,69 @@ export const confirmConsultationController = async (
 			);
 		}
 		else{
+			
+
+			responseMessage.order.cancellation_terms=[
+				{
+						"cancellation_fee": {
+								"amount": {
+										"currency": "INR",
+										"value": "0.00"
+								},
+								"percentage": "0.00"
+						},
+						"fulfillment_state": {
+								"descriptor": {
+										"code": "PENDING",
+										"short_desc": "002"
+								}
+						}
+				}
+		]
+		responseMessage.order.items[0].tags=[
+			{
+					"descriptor": {
+							"code": "RESCHEDULE_TERMS"
+					},
+					"list": [
+							{
+									"descriptor": {
+											"code": "FULFILLMENT_STATE"
+									},
+									"value": "Pending"
+							},
+							{
+									"descriptor": {
+											"code": "RESCHEDULE_ELIGIBLE"
+									},
+									"value": "true"
+							},
+							{
+									"descriptor": {
+											"code": "RESCHEDULE_FEE"
+									},
+									"value": "0.00"
+							},
+							{
+									"descriptor": {
+											"code": "RESCHEDULE_WITHIN"
+									},
+									"value": "PT1D"
+							}
+					]
+			},
+			{
+					"descriptor": {
+							"code": "TNC_LINK",
+							"name": "Terms & Conditions",
+							"short_desc": "Terms and Conditions"
+					},
+					"value": "https://abc.com/tnc.html"
+			}
+	]
+	responseMessage.order.payments[0].tags = responseMessage.order.payments[0].tags.filter(
+		(tag:any, index:any) => index !==2)
+		console.log("on_confirmmm",JSON.stringify(responseMessage))
 		responseBuilder(
 			res,
 			next,
@@ -142,8 +205,8 @@ export const confirmConsultationController = async (
 		) {
 			//get range for confirm calls
 			const range = getRangeUsingDurationFrequency(
-				fulfillments[0]?.stops[0]?.time?.duration,
-				fulfillments[0]?.stops[0]?.time?.schedule?.frequency
+				fulfillments[0]?.stops[0]?.duration,
+				fulfillments[0]?.stops[0]?.schedule?.frequency
 			);
 
 			/********************CHILD ORDER RESPONSE */
@@ -446,15 +509,15 @@ export const childOrderResponseBuilder = async (
 				JSON.stringify(log)
 			);
 
-			if (error instanceof AxiosError && id === 0 && action === "on_confirm") {
-				res.status(error.status || 500).json(error);
-			}
+			// if (error instanceof AxiosError && id === 0 && action === "on_confirm") {
+			// 	res.status(error.status || 500).json(error);
+			// }
 
-			if (error instanceof AxiosError) {
-				console.log(error.response?.data);
-			}
+			// if (error instanceof AxiosError) {
+			// 	console.log(error.response?.data);
+			// }
 
-			throw error;
+			// throw error;
 		}
 
 		logger.info({

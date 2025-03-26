@@ -563,7 +563,7 @@ paths:
                                               type: array
                                               items:
                                                 type: string
-                                          required: ["frequency","times"]
+                                          required: ["frequency","holidays","times"]
                                       required: ["label", "range", "days", "schedule"]
                                     matched: 
                                       type: boolean

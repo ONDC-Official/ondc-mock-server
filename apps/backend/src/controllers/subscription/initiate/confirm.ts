@@ -88,9 +88,9 @@ const intializeRequest = async (
 							...payments[0],
 							params: {
 								...payments[0].params,
-								transaction_id: uuidv4(),
+								// transaction_id: uuidv4(),
 							},
-							status: PAYMENT_STATUS.NON_PAID,
+							status: (scenario === 'subscription-with-full-payments')?"PAID":PAYMENT_STATUS.NON_PAID,
 						},
 					],
 					created_at: timestamp,
@@ -98,43 +98,71 @@ const intializeRequest = async (
 				},
 			},
 		};
+		console.log("====>>>>>>>",scenario)
 		if(context.domain===SUBSCRIPTION_DOMAINS.AUDIO_VIDEO ){confirm.message.order.payments[0].status="PAID";
 			delete confirm.message.order.payments[0].url}
 			if(context.domain === SUBSCRIPTION_DOMAINS.PRINT_MEDIA){
-				confirm.message.order.fulfillments=[
-					{...confirm.message.order.fulfillments[0],
-					"customer": {
-                        "person": {
-                            "name": "Ramu"
-                        }
-                    },
-					stops:[{
-						...confirm.message.order.fulfillments[0].stops[0],
-						"location": {
-                                "address": "My House #, My buildin",
-                                "area_code": "560001",
-                                "city": {
-                                    "name": "Bengaluru"
-                                },
-                                "country": {
-                                    "code": "IND"
-                                },
-                                "gps": "12.974002,77.613458",
-                                "state": {
-                                    "name": "Karnataka"
-                                }
-                            },
-														"instructions": {
-															"name": "Special Instructions",
-															"short_desc": "Customer Special Instructions"
-													},}
+				// confirm.message.order.fulfillments=[
+				// 	{...confirm.message.order.fulfillments[0],
+				// 	"customer": {
+        //                 "person": {
+        //                     "name": "Ramu"
+        //                 }
+        //             },
+				// 	stops:[{
+				// 		...confirm.message.order.fulfillments[0].stops[0],
+				// 		"location": {
+        //                         "address": "My House #, My buildin",
+        //                         "area_code": "560001",
+        //                         "city": {
+        //                             "name": "Bengaluru"
+        //                         },
+        //                         "country": {
+        //                             "code": "IND"
+        //                         },
+        //                         "gps": "12.974002,77.613458",
+        //                         "state": {
+        //                             "name": "Karnataka"
+        //                         }
+        //                     },
+				// 										"instructions": {
+				// 											"name": "Special Instructions",
+				// 											"short_desc": "Customer Special Instructions"
+				// 									},}
 
-					]}
-				]
+				// 	]}
+				// ]
+				delete confirm.message.order.items[0].price
+				delete confirm.message.order.items[0].tags
+				confirm.message.order.fulfillments[0].stops[0]={
+					...confirm.message.order.fulfillments[0].stops[0],
+					"duration": "P8W",
+                            "schedule": {
+                                "frequency": "P1W"
+                            }
+				}
+
 				delete confirm.message.order.fulfillments[0].stops[0].time.days
-				delete confirm.message.order.fulfillments[0].tags
+				delete confirm.message.order.fulfillments[0].stops[0].contact
+				 confirm.message.order.payments[0].tags.push({
+					"descriptor": {
+							"code": "INFO"
+					},
+					"display": false,
+					"list": [
+							{
+									"descriptor": {
+											"code": "TOTAL_PAYMENTS"
+									},
+									"value": "8"
+							}
+					]
 			}
-
+)
+			}
+			if(scenario === 'subcription-with-manual-payments'){
+				confirm.message.order.payments[0].collected_by="BPP"
+			}
 		console.log("scenariooooooooooooooo",JSON.stringify(confirm))
 		await send_response(res, next, confirm, transaction_id, "confirm", (scenario = scenario));
 	}catch(error){
