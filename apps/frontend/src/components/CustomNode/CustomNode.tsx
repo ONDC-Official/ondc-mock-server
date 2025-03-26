@@ -25,7 +25,7 @@ export const CustomNode = ({
 						{(log || toBeSent) && (
 							<IconButton
 								onClick={() => {
-									setLogToShow({...log, toBeSent} || {});
+									setLogToShow({...log, toBeSent});
 									setOpenLogDialog(true);
 								}}
 							>
