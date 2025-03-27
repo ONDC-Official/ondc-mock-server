@@ -420,7 +420,8 @@ export const onStatusSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",

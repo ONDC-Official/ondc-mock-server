@@ -48,6 +48,7 @@ const intializeRequest = async (
 			},
 		} = transaction;
 
+		
 		const { scenario } = req?.query || "";
 		const { transaction_id } = context;
 		const { id, fulfillments } = providers?.[0];
@@ -65,6 +66,24 @@ const intializeRequest = async (
 				}) => ({ id, fulfillment_ids: [fulfillment_ids?.[1]] })
 			)?.[0],
 		];
+
+		
+			let type;
+			switch(scenario){
+				case 'single-order-offline-without-subscription':
+					type="OFFLINE"
+					break;
+				case 'single-order-online-without-subscription':
+					type="ONLINE"
+					break;
+				default:
+					type="SUBSCRIPTION"
+			}
+			let fulfillment_ids= transaction.message.catalog.providers[0].fulfillments.filter((obj:any)=>{
+				if(obj.type===type){
+					return obj.id
+				}
+			})
 
 		let fulfillment: any = [
 			{
@@ -121,7 +140,6 @@ const intializeRequest = async (
 				fulfillment = fulfillment;
 		}
 
-		console.log("scenariosssssssssssss",scenario,fulfillment)
 
 		const select = {
 			context: {
@@ -140,9 +158,7 @@ const intializeRequest = async (
 					},
 					items: items.map((itm: Item) => ({
 						...itm,
-						fulfillment_ids: itm.fulfillment_ids
-							? itm.fulfillment_ids?.map((id: string) => String(id))
-							: undefined,
+						fulfillment_ids:[fulfillment_ids[0].id],
 						quantity: {
 							selected: {
 								count: 1,
@@ -155,7 +171,6 @@ const intializeRequest = async (
 				},
 			},
 		};
-
 		if(scenario === "single-order-offline-without-subscription" || scenario ==="single-order-online-without-subscription" ){
 			select.message.order.fulfillments[0].tags=[
 				{
@@ -167,7 +182,7 @@ const intializeRequest = async (
 										"descriptor": {
 												"code": "ITEM_IDS"
 										},
-										"value": "I1"
+										"value": select.message.order.items[0].id
 								}
 						]
 				}
@@ -185,7 +200,7 @@ const intializeRequest = async (
 						"descriptor": {
 							"code": "ITEM_IDS"
 						},
-						"value": "I1"
+						"value": select.message.order.items[0].id
 					}
 				]
 			}]
@@ -202,7 +217,7 @@ const intializeRequest = async (
 						"descriptor": {
 							"code": "ITEM_IDS"
 						},
-						"value": "I1"
+						"value": select.message.order.items[0].id
 					}
 				]
 			}]
