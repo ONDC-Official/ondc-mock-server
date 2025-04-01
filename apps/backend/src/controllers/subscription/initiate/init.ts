@@ -32,7 +32,7 @@ export const initiateInitController = async (
 	try {
 		const { transactionId } = req.body;
 		const {scenario} = req.query;
-		const on_search = await redisFetchFromServer(
+		const on_search = await redisFetchToServer(
 			ON_ACTION_KEY.ON_SEARCH,
 			transactionId
 		);
@@ -127,7 +127,6 @@ const intializeRequest = async (
 		// }
 
 		// const response = YAML.parse(file.toString());
-console.log('fullfillmenst',JSON.stringify(transaction.message.order.fulfillments),"Scenariioo",scenario)
 		init = {
 			context: {
 				...context,
@@ -148,12 +147,28 @@ console.log('fullfillmenst',JSON.stringify(transaction.message.order.fulfillment
 					fulfillments:transaction.message.order.fulfillments,
 					payments: [
 						{
-							// ...response?.value?.message?.order?.payments[0],
-							...payments[0],
-							params: {
-								amount: (quoteData?.price?.value).toString(),
-								currency: "INR",
-							},
+							"collected_by": "BAP",
+           "type": "PRE-FULFILLMENT",
+					params: (scenario === 'subscription-with-full-payments')?{
+							amount: (quoteData?.price?.value)?.toString(),
+							currency: "INR",
+					} : undefined,
+					tags:(scenario === 'subscription-with-full-payments')? [
+						{
+								"descriptor": {
+										"code": "PAYMENT_METHOD",
+										"name": "Payment Method"
+								},
+								"list": [
+										{
+												"descriptor": {
+														"code": "MODE"
+												},
+												"value": "FULL_PAYMENT"
+										}
+								]
+						}
+				] : undefined
 						},
 					],
 				},
@@ -166,8 +181,8 @@ console.log('fullfillmenst',JSON.stringify(transaction.message.order.fulfillment
 			}
 		}
 		if(scenario === 'single-order-offline-without-subscription' || scenario ==="single-order-online-without-subscription"){	
-			delete init.message.order.items[0].tags ; delete init.message.order.items[0]?.price ; delete init.message.order.items[0]?.title
-			delete init.message.order.payments[0].params
+			delete init.message.order.items[0].tags ; delete init.message.order.items[0]?.price ; delete init.message.order.items[0]?.title;
+			// delete init.message.order.payments[0].params
 			init.message.order.fulfillments[0].stops[0]={
 				...init.message.order.fulfillments[0].stops[0],
 				location:{
@@ -192,13 +207,30 @@ console.log('fullfillmenst',JSON.stringify(transaction.message.order.fulfillment
 			delete init.message.order.provider.locations
 		}
 		if(scenario === 'subscription-with-full-payments'){
-			init.message.order.payments[0].tags=payments[0].tags[2]
+			// init.message.order.payments[0].tags=payments[0].tags[2]
+		// 	init.message.order.payments[0].tags= [
+		// 		{
+		// 				"descriptor": {
+		// 						"code": "PAYMENT_METHOD",
+		// 						"name": "Payment Method"
+		// 				},
+		// 				"list": [
+		// 						{
+		// 								"descriptor": {
+		// 										"code": "MODE"
+		// 								},
+		// 								"value": "FULL_PAYMENT"
+		// 						}
+		// 				]
+		// 		}
+		// ],
 			init.message.order.fulfillments[0].stops[0].time.days='4'
 			init.message.order.fulfillments[0].stops[0].contact={
 				"phone": "9886098860"
 			}
-			delete init.message.order.fulfillments[0].stops[0].duration
-			delete init.message.order.fulfillments[0].stops[0].schedule
+			// delete init.message.order.fulfillments[0].tags[1]
+			// delete init.message.order.fulfillments[0].stops[0].duration
+			// delete init.message.order.fulfillments[0].stops[0].schedule
 		}
 
 	}
