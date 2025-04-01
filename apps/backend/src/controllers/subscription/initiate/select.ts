@@ -110,6 +110,7 @@ const intializeRequest = async (
 				tags: fulfillments?.[2]?.tags,
 			},
 		];
+		
 		switch (scenario) {
 			case "subscription-with-eMandate":
 				file = fs.readFileSync(
@@ -222,10 +223,8 @@ const intializeRequest = async (
 				]
 			}]
 			delete select.message.order.fulfillments[0].id
-			delete select.message.order.fulfillments[0].stops[0].time.schedule
 			delete select.message.order.payments
 		}
-
 		console.log("Context.domain",JSON.stringify(select))
 		await send_response(res, next, select, transaction_id, "select",scenario);
 	} catch (error) {
