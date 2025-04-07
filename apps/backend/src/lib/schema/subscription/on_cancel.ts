@@ -148,7 +148,8 @@ export const onCancelSchema = {
                   },
                 },
               },
-              required: ["id", "locations"],
+              // required: ["id", "locations"],
+              required:["id"]
             },
             items: {
               type: "array",
@@ -380,7 +381,8 @@ export const onCancelSchema = {
                       },
                       if: { properties: { type: { const: "end" } } },
                       then: {
-                        required: ["type", "location", "contact", "time"]
+                        // required: ["type", "location", "contact", "time"]
+                        required:["type","time"]
                       },
                       else: {
                         required: ["type"],
@@ -459,7 +461,8 @@ export const onCancelSchema = {
                             required: ["currency", "value"],
                           },
                         },
-                        required: ["id", "quantity", "price"],
+                        // required: ["id", "quantity", "price"],
+                        required:["id"]
                       },
                       tags: {
                         type: "array",
@@ -543,7 +546,7 @@ export const onCancelSchema = {
                     required: [
                       "amount",
                       "currency",
-                      "transaction_id"
+                      // "transaction_id"
                     ],
                   },
                   status: {

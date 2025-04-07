@@ -104,7 +104,7 @@ export const onStatusSchema = {
             },
             status: {
               type: "string",
-              enum: SRV_ORDER_STATE,
+              enum: ["Created","Accepted","In-progress","Cancelled","Completed","Pending"],
             },
             provider: {
               type: "object",
