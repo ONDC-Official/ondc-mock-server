@@ -81,50 +81,54 @@ const intializeRequest = async (
 			}
 			let fulfillment_ids= transaction.message.catalog.providers[0].fulfillments.filter((obj:any)=>{
 				if(obj.type===type){
-					return obj.id
+					return obj
 				}
 			})
 
-		let fulfillment: any = [
-			{
-				...fulfillments?.[2],
-				// type: "subscription",
-				// stops:fulfillments?.[2]?.stops,
-				stops: [
-					{
-						type: "start",
-						time: {
-							label: "selected",
-							range: {
-								start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
-							},
-							duration: fulfillments?.[2]?.stops?.time?.duration
-								? fulfillments?.[2]?.stops?.time?.duration
-								: "P6M",
-							schedule: {
-								frequency: fulfillments?.[2]?.stops[0]?.time?.schedule?.frequency,
-							},
-						},
-					},
-				],
-				tags: fulfillments?.[2]?.tags,
-			},
-		];
-		
+			
+console.log("------,.",JSON.stringify(fulfillment_ids))
+		// let fulfillment: any = [
+		// 	{
+		// 		...fulfillments?.[2],
+		// 		// type: "subscription",
+		// 		// stops:fulfillments?.[2]?.stops,
+		// 		stops: [
+		// 			{
+		// 				type: "start",
+		// 				time: {
+		// 					label: "selected",
+		// 					range: {
+		// 						start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
+		// 					},
+		// 					duration: fulfillments?.[2]?.stops?.time?.duration
+		// 						? fulfillments?.[2]?.stops?.time?.duration
+		// 						: "P6M",
+		// 					schedule: {
+		// 						frequency: fulfillments?.[2]?.stops[0]?.time?.schedule?.frequency,
+		// 					},
+		// 				},
+		// 			},
+		// 		],
+		// 		tags: fulfillments?.[2]?.tags,
+		// 	},
+		// ];
+	
+		let fulfillment = fulfillment_ids
+
 		switch (scenario) {
 			case "subscription-with-eMandate":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_mandate.yaml")
 				);
 				response = YAML.parse(file.toString());
-				fulfillment = fulfillment;
+				// fulfillment = fulfillment;
 				break;
 			case "single-order-offline-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single.yaml")
 				);
 				response = YAML.parse(file.toString());
-				fulfillment = response?.value?.message?.order?.fulfillments;
+				// fulfillment = response?.value?.message?.order?.fulfillments;
 
 				break;
 			case "single-order-online-without-subscription":
@@ -135,7 +139,7 @@ const intializeRequest = async (
 					)
 				);
 				response = YAML.parse(file.toString());
-				fulfillment = response?.value?.message?.order?.fulfillments;
+				// fulfillment = response?.value?.message?.order?.fulfillments;
 				break;
 			default:
 				fulfillment = fulfillment;
