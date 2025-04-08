@@ -87,33 +87,33 @@ const intializeRequest = async (
 
 			
 console.log("------,.",JSON.stringify(fulfillment_ids))
-		// let fulfillment: any = [
-		// 	{
-		// 		...fulfillments?.[2],
-		// 		// type: "subscription",
-		// 		// stops:fulfillments?.[2]?.stops,
-		// 		stops: [
-		// 			{
-		// 				type: "start",
-		// 				time: {
-		// 					label: "selected",
-		// 					range: {
-		// 						start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
-		// 					},
-		// 					duration: fulfillments?.[2]?.stops?.time?.duration
-		// 						? fulfillments?.[2]?.stops?.time?.duration
-		// 						: "P6M",
-		// 					schedule: {
-		// 						frequency: fulfillments?.[2]?.stops[0]?.time?.schedule?.frequency,
-		// 					},
-		// 				},
-		// 			},
-		// 		],
-		// 		tags: fulfillments?.[2]?.tags,
-		// 	},
-		// ];
+		let fulfillment: any = [
+			{
+				...fulfillment_ids?.[0],
+				// type: "subscription",
+				// stops:fulfillments?.[2]?.stops,
+				stops: [
+					{
+						type: "start",
+						time: {
+							label: "selected",
+							range: {
+								start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
+							},
+							duration: fulfillment_ids?.[0]?.stops?.time?.duration
+								? fulfillments?.[2]?.stops?.time?.duration
+								: "P6M",
+							schedule: {
+								frequency: fulfillment_ids?.[0]?.stops[0]?.time?.schedule?.frequency,
+							},
+						},
+					},
+				],
+				tags: fulfillment_ids?.[0]?.tags,
+			},
+		];
 	
-		let fulfillment = fulfillment_ids
+		// let fulfillment = fulfillment_ids
 
 		switch (scenario) {
 			case "subscription-with-eMandate":

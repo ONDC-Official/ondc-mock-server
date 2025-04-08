@@ -2675,9 +2675,11 @@ export const updateFulfillments = (
 				id: fulfillments[0]?.id ? fulfillments[0].id : "F1",
 				stops: fulfillments[0]?.stops.map((ele: any) => {
 					ele.time.label = FULFILLMENT_LABELS.CONFIRMED;
+					// ele.time.duration= "P"
 					if (scenario === "subscription-with-full-payments") {
-						ele.duration = "P8W";
-						ele.schedule= {
+						ele.time.duration = "P8W";
+						
+						ele.time.schedule= {
 							"frequency": "P1W"
 					}
 					}
