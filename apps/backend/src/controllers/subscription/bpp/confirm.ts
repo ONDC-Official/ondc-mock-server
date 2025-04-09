@@ -204,6 +204,7 @@ export const confirmConsultationController = async (
 			scenario !== "single-order-online-without-subscription"
 		) {
 			//get range for confirm calls
+			console.log('fulfillments[0]?.stops[0]',fulfillments[0]?.stops[0])
 			const range = getRangeUsingDurationFrequency(
 				fulfillments[0]?.stops[0]?.duration,
 				fulfillments[0]?.stops[0]?.schedule?.frequency

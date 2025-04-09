@@ -101,7 +101,7 @@ console.log("------,.",JSON.stringify(fulfillment_ids))
 								start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
 							},
 							duration: fulfillment_ids?.[0]?.stops?.time?.duration
-								? fulfillments?.[2]?.stops?.time?.duration
+								? fulfillment_ids?.[0]?.stops?.time?.duration
 								: "P6M",
 							schedule: {
 								frequency: fulfillment_ids?.[0]?.stops[0]?.time?.schedule?.frequency,

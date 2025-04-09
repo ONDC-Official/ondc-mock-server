@@ -53,7 +53,7 @@ const intializeRequest = async (
 				},
 			},
 		} = transaction;
-		console.log("items in confirm",items)
+		console.log("fulfillments in confirm",JSON.stringify(fulfillments))
 
 		const { transaction_id } = context;
 		const { stops, ...remainingfulfillments } = fulfillments[0];
@@ -134,9 +134,9 @@ const intializeRequest = async (
 				// ]
 				delete confirm.message.order.items[0].price
 				delete confirm.message.order.items[0].tags
-				confirm.message.order.fulfillments[0].stops[0]={
+				confirm.message.order.fulfillments[0].stops[0].time=confirm.message.order.fulfillments[0].stops[0].time.duration ? undefined:{
 					...confirm.message.order.fulfillments[0].stops[0],
-					"duration": "P8W",
+					duration: "P8W",
                             "schedule": {
                                 "frequency": "P1W"
                             }
