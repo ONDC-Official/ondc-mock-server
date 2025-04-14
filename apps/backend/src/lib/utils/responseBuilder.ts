@@ -2618,15 +2618,18 @@ export const checkSelectedItems = async (data: any) => {
 			providersItem = providersItems[0]?.items;
 		}
 		let matchingItem: any = null;
-		console.log("providersItem", JSON.stringify(providersItems), JSON.stringify(providersItem), "items", JSON.stringify(items))
+		console.log("providersItem======<.,.,.,.,.,.>",JSON.stringify(providersItem), "items======------,.,.,.,,.,<>", JSON.stringify(items))
 		items.forEach((item: any) => {
 			if (item) {
 				const selectedItem = item?.id;
 				// Find the corresponding item in the second array
 				if (providersItem) {
+					console.log("selectedITems inchceck",selectedItem)
+					console.log("providersItem inchceck",providersItem)
 					matchingItem = providersItem?.find(
 						(secondItem: { id: string }) => secondItem.id === selectedItem
 					);
+					console.log("matchingItem",matchingItem)
 				}
 			}
 		});

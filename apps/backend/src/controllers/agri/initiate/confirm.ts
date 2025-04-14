@@ -244,6 +244,7 @@ const agriOutputIntializeRequest = async (res: Response,
 			default:
 				delete confirm.message.order.cancellation_terms
 				delete confirm.message.order.items[0].tags
+				delete confirm.message.order.locations
 		}
 
 		await send_response(

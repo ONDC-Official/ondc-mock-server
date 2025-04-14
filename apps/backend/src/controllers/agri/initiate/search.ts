@@ -59,7 +59,7 @@ export const initiateSearchController = async (
 			context: {
 				...search.context,
 				timestamp,
-				city: city,
+				// city: city,
 				transaction_id,
 				domain,
 				bap_id: MOCKSERVER_ID,

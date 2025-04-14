@@ -668,7 +668,7 @@ paths:
                                           example: "abc@xyz.com"
                                       required: ["phone", "email"]
                                   required: ["contact"]
-                            required: ["id", "descriptor", "ttl", "locations", "tags", "items", "fulfillments"]
+                            required: ["id", "descriptor", "ttl", "locations", "tags", "items"]
                       required: ["fulfillments", "payments", "descriptor", "providers"]
                   required: ["catalog"]
               required: ["context", "message"]

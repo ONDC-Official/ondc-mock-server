@@ -58,6 +58,7 @@ export const selectController = async (
 				break;
 			default:
 				if (checkIfCustomized(req.body.message?.order?.items)) {
+					console.log("cutomized in on_select")
 					return selectServiceCustomizationConfirmedController(req, res, next);
 				}
 				return selectConsultationConfirmController(req, res, next);
@@ -186,6 +187,23 @@ const selectConsultationConfirmController = (
 					}
 				]
 			}
+		}
+		if(domain === "ONDC:SRV17"){
+			responseMessage.order.items[0].tags= [
+            {
+              "descriptor": {
+                "code": "ATTRIBUTE"
+              },
+              "list": [
+                {
+                  "descriptor": {
+                    "code": "TYPE"
+                  },
+                  "value": "item"
+                }
+              ]
+            }
+          ]
 		}
 
 		console.log("response Message onSelect",JSON.stringify(responseMessage))

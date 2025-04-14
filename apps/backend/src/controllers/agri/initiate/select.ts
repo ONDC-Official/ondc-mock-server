@@ -149,16 +149,16 @@ const intializeRequest = async (
 								id: each.id,
 								location_ids: [each.location_ids[0]],
 								category_ids: [each.category_ids[0]],
-								quantity: {
-									selected: {
-										count: 100
-									}
-								}
+								// quantity: {
+								// 	selected: {
+								// 		count: 100
+								// 	}
+								// }
 							}
 						)),
 						fulfillments: [
 							{
-								id:"F1",
+								// id:"F1",
 								stops: [
 									{
 										"type": "end",

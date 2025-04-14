@@ -31,10 +31,12 @@ export const initiateSelectController = async (
 			return send_nack(res, "On Search doesn't exist");
 		}
 		// selecting the senarios
+		console.log("on_search.message.catalog?.providers?.[0]?.items",JSON.stringify(on_search.message.catalog?.providers?.[0]?.items))
 		let scenario = "selection";
 		if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
 			scenario = "customization";
 		}
+		console.log("scenaruooooo",scenario)
 		return intializeRequest(req, res, next, on_search, scenario);
 	} catch (error) {
 		return next(error);
@@ -75,9 +77,8 @@ const intializeRequest = async (
 				parent_obj=providerItems.filter((itm:any)=>itm.id===item.parent_item_id)
 			})
 			console.log("parent_obj===>",parent_obj)
-			let startTime = parent_obj.time?.schedule?.times?.[0]?.split("T")[1];
-			// console.log("Start Time from parent_item::", startTime);
-
+			let startTime = parent_obj?.time?.schedule?.times?.[0]?.split("T")[1] || "";
+			console.log("Start Time from parent_item::", startTime);
 			// getting the required categories ids to look  for
 			const { cat_ids, child_selected } = processCategories(
 				providers?.[0]?.categories
@@ -174,6 +175,7 @@ const intializeRequest = async (
 
 
 			const { id, parent_item_id, location_ids } = parent_item;
+			console.log("parent_item",parent_item)
 			items = [
 				{
 					id,
@@ -206,6 +208,7 @@ const intializeRequest = async (
 								count: 1,
 							},
 						},
+						fulfillment_ids:item?.fulfillment_ids,
 						category_ids: item?.category_ids,
 						location_ids: location_ids,
 						tags: item.tags?.map((tag: Tag) => {
@@ -244,15 +247,20 @@ const intializeRequest = async (
 						id,
 						parent_item_id,
 						location_ids,
+						fulfillment_ids,
+						category_ids
 					}: {
 						id: string;
 						parent_item_id: string;
 						location_ids: string[];
-					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]] })
+						fulfillment_ids:string[];
+						category_ids:string[];
+					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]],category_ids,fulfillment_ids })
 				)?.[0],
 			];
 		}
 
+		console.log("itemsssssss",items)
 		let select = {
 			context: {
 				...context,
@@ -277,8 +285,13 @@ const intializeRequest = async (
 						location_ids: itm.location_ids
 							? itm.location_ids?.map((id: string) => String(id))
 							: undefined,
+						fulfillment_ids:itm.fulfillment_ids,
+						category_ids:itm.category_ids,
 						quantity: {
-							selected: {
+							selected:(context.domain === "ONDC:SRV17")?{measure:{
+								unit:"hours",
+								value:"24"
+							}}:{
 								count: 1,
 							},
 						},
@@ -370,82 +383,6 @@ const intializeRequest = async (
 			]
 		}
 
-		(select.message as any)={ "order": {
-			"provider": {
-				"id": "P1",
-				"locations": [
-					{
-						"id": "L1"
-					}
-				]
-			},
-			"items": [
-				{
-					"id": "I1",
-					"fulfillment_ids": [
-						"F2"
-					],
-					"location_ids": [
-						"L1"
-					],
-					"category_ids": [
-						"SRV17-1035"
-					],
-					"quantity": {
-						"selected": {
-							"measure": {
-								"unit": "hours",
-								"value": "4"
-							}
-						}
-					},
-					"tags": [
-						{
-							"descriptor": {
-								"code": "ATTRIBUTE"
-							},
-							"list": [
-								{
-									"descriptor": {
-										"code": "TYPE"
-									},
-									"value": "item"
-								}
-							]
-						}
-					]
-				}
-			],
-			"fulfillments": [
-				{
-					"type": "Seller-Fulfilled",
-					"stops": [
-						{
-							"type": "end",
-							"time": {
-								"label": "selected",
-								"range": {
-									"start": "2024-06-09T22:00:00.000Z",
-									"end": "2024-06-10T02:00:00.000Z"
-								}
-							},
-							"location": {
-								"gps": "12.974002,77.613458",
-								"area_code": "560001"
-							}
-						}
-					]
-				}
-			],
-			"payments": [
-				{
-					"type": "PRE-FULFILLMENT"
-				},
-				{
-					"type": "ON-FULFILLMENT"
-				}
-			]
-		}}
 		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");
