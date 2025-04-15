@@ -24,26 +24,22 @@ export const initiateSearchController = async (
 		const { bpp_uri, city, domain } = req.body;
 		const { scenario } = req.query
 		let onSearch, file;
-		// const scenario="incremental"
 		switch (domain) {
 			case SERVICES_DOMAINS.AGRI_INPUT:
 				file = fs.readFileSync(
 					path.join(AGRI_EXAMPLES_PATH, "search/search.yaml")
 				);
-				// onSearch = YAML.parse(file.toString());
 				break;
 			case SERVICES_DOMAINS.AGRI_OUTPUT:
 
 				file = fs.readFileSync(
 					path.join(AGRI_OUTPUT_EXAMPLES_PATH, "search/search_by_category.yaml")
 				);
-				// onSearch = YAML.parse(file.toString());
 				break;
 			default:
 				file = fs.readFileSync(
 					path.join(AGRI_EXAMPLES_PATH, "search/search.yaml")
 				);
-				// onSearch = YAML.parse(file.toString());
 				break;
 		}
 		let search = YAML.parse(file.toString());
@@ -59,7 +55,6 @@ export const initiateSearchController = async (
 			context: {
 				...search.context,
 				timestamp,
-				// city: city,
 				transaction_id,
 				domain,
 				bap_id: MOCKSERVER_ID,
@@ -67,7 +62,6 @@ export const initiateSearchController = async (
 				message_id: uuidv4(),
 			},
 		};
-		// logger.info(`scenario is ${scenario}`)
 		switch (scenario) {
 			case "interval-pull":
 				search = {
@@ -148,7 +142,6 @@ export const initiateSearchController = async (
 				break;
 		}
 		search.bpp_uri = bpp_uri;
-		console.log("----->", JSON.stringify(search.message.intent))
 		await send_response(res, next, search, transaction_id, ACTTION_KEY.SEARCH, scenario);
 	} catch (error) {
 		return next(error);

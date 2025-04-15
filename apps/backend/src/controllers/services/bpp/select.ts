@@ -56,9 +56,8 @@ export const selectController = async (
 			case "no_equipment_avaliable":
 				onSelectNoEquipmentAvaliable(req, res, next);
 				break;
-			default:
+			default: 
 				if (checkIfCustomized(req.body.message?.order?.items)) {
-					console.log("cutomized in on_select")
 					return selectServiceCustomizationConfirmedController(req, res, next);
 				}
 				return selectConsultationConfirmController(req, res, next);
@@ -74,12 +73,9 @@ const selectConsultationConfirmController = (
 	next: NextFunction
 ) => {
 	try {
-		console.log("confirmation")
 		const { context, message, providersItems } = req.body;
 		const { locations, ...provider } = message.order.provider;
-		console.log("message.order.provider")
 		const domain = context?.domain;
-		console.log("provider",provider)
 		const updatedFulfillments =
 			domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
 				? updateFulfillments(
@@ -95,26 +91,25 @@ const selectConsultationConfirmController = (
 						"",
 						"astroService"
 					)
-					:domain===SERVICES_DOMAINS.WEIGHMENT? updateFulfillments(
+					: domain === SERVICES_DOMAINS.WEIGHMENT ? updateFulfillments(
 						message?.order?.fulfillments,
 						ON_ACTION_KEY?.ON_SELECT,
 						"",
 						"weightment"
-					):
-					updateFulfillments(
-						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT,
-						""
-					);
+					) :
+						updateFulfillments(
+							message?.order?.fulfillments,
+							ON_ACTION_KEY?.ON_SELECT,
+							""
+						);
 
 
-		console.log("updatefulfillment", updatedFulfillments)
 		const responseMessage = {
 			order: {
-				provider:{
+				provider: {
 					...provider,
-					locations:[{
-						id:"L1"
+					locations: [{
+						id: "L1"
 					}]
 				},
 				payments: message.order.payments.map(({ type }: { type: string }) => ({
@@ -149,28 +144,28 @@ const selectConsultationConfirmController = (
 									message?.order?.fulfillments[0]?.type,
 									"astro_service"
 								) :
-								domain===SERVICES_DOMAINS.WEIGHMENT?
-								quoteCreatorWeightment(
-									message?.order?.items,
-									providersItems?.items,
-									"",
-									message?.order?.fulfillments[0]?.type,
-									"weightment"
-								)
-								:domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
-									? quoteCreatorHealthCareService(
+								domain === SERVICES_DOMAINS.WEIGHMENT ?
+									quoteCreatorWeightment(
 										message?.order?.items,
 										providersItems?.items,
 										"",
 										message?.order?.fulfillments[0]?.type,
-										"agri-equipment-hiring"
+										"weightment"
 									)
-									: quoteCreatorHealthCareService(
-										message?.order?.items,
-										providersItems?.items,
-										"",
-										message?.order?.fulfillments[0]?.type
-									),
+									: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
+										? quoteCreatorHealthCareService(
+											message?.order?.items,
+											providersItems?.items,
+											"",
+											message?.order?.fulfillments[0]?.type,
+											"agri-equipment-hiring"
+										)
+										: quoteCreatorHealthCareService(
+											message?.order?.items,
+											providersItems?.items,
+											"",
+											message?.order?.fulfillments[0]?.type
+										),
 
 			},
 		};
@@ -188,25 +183,23 @@ const selectConsultationConfirmController = (
 				]
 			}
 		}
-		if(domain === "ONDC:SRV17"){
-			responseMessage.order.items[0].tags= [
-            {
-              "descriptor": {
-                "code": "ATTRIBUTE"
-              },
-              "list": [
-                {
-                  "descriptor": {
-                    "code": "TYPE"
-                  },
-                  "value": "item"
-                }
-              ]
-            }
-          ]
+		if (domain === "ONDC:SRV17") {
+			responseMessage.order.items[0].tags = [
+				{
+					"descriptor": {
+						"code": "ATTRIBUTE"
+					},
+					"list": [
+						{
+							"descriptor": {
+								"code": "TYPE"
+							},
+							"value": "item"
+						}
+					]
+				}
+			]
 		}
-
-		console.log("response Message onSelect",JSON.stringify(responseMessage))
 
 		return responseBuilder(
 			res,
@@ -501,19 +494,6 @@ const selectServiceCustomizationConfirmedController = async (
 						),
 				],
 				fulfillments:
-					// message.order.fulfillments.map(
-					// 	({ stops, type, ...each }: any) => ({
-					// 		id: fulfillment_id,
-					// 		type,
-					// 		tracking: false,
-					// 		state: {
-					// 			descriptor: {
-					// 				code: "Serviceable",
-					// 			},
-					// 		},
-					// 		stops,
-					// 	})
-					// )
 					[
 						{
 							...fulfillment,

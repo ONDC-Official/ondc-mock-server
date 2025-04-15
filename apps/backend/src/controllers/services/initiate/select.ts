@@ -31,12 +31,10 @@ export const initiateSelectController = async (
 			return send_nack(res, "On Search doesn't exist");
 		}
 		// selecting the senarios
-		console.log("on_search.message.catalog?.providers?.[0]?.items",JSON.stringify(on_search.message.catalog?.providers?.[0]?.items))
 		let scenario = "selection";
 		if (checkIfCustomized(on_search.message.catalog?.providers?.[0]?.items)) {
 			scenario = "customization";
 		}
-		console.log("scenaruooooo",scenario)
 		return intializeRequest(req, res, next, on_search, scenario);
 	} catch (error) {
 		return next(error);
@@ -67,7 +65,6 @@ const intializeRequest = async (
 			//getting parent item
 			let parent_obj;
 			let providerItems=providers?.[0]?.items
-			console.log("providerItems",providerItems)
 			for(let i=1;i<providerItems.length;i++){
 				if(providerItems[i]?.parent_item_id===providerItems[i-1].id){
 					parent_obj=providerItems[i-1]
@@ -76,9 +73,9 @@ const intializeRequest = async (
 			providerItems.forEach((item:any)=>{
 				parent_obj=providerItems.filter((itm:any)=>itm.id===item.parent_item_id)
 			})
-			console.log("parent_obj===>",parent_obj)
+
 			let startTime = parent_obj?.time?.schedule?.times?.[0]?.split("T")[1] || "";
-			console.log("Start Time from parent_item::", startTime);
+			
 			// getting the required categories ids to look  for
 			const { cat_ids, child_selected } = processCategories(
 				providers?.[0]?.categories
@@ -139,15 +136,6 @@ const intializeRequest = async (
 
 			//get the parent item in customization
 			items = [...providers?.[0].items];
-			console.log("items",JSON.stringify(items))
-			// const parent_item = items.find((itm: Item,index:number) =>{
-			// 	// _.isEmpty(itm.parent_item_id)
-			
-			// 	_.isEmpty(itm.parent_item_id)
-			// 	if(itm.parent_item_id===itm.id){
-			// 		return itm
-			// 	}
-			// });
 			let parent_item:any;
 			items.forEach((item:any)=>{
 				parent_item=providerItems.find((itm:any)=>itm.id===item.parent_item_id)
@@ -175,7 +163,6 @@ const intializeRequest = async (
 
 
 			const { id, parent_item_id, location_ids } = parent_item;
-			console.log("parent_item",parent_item)
 			items = [
 				{
 					id,
@@ -188,19 +175,7 @@ const intializeRequest = async (
 					},
 				},
 				...items.map((item: Item) => {
-					// let selectedQuantity: any = {};
-					// const isQuantitySpecified = item?.tags?.map((tag) => {
-					// 	if (tag?.descriptor?.code == "quantity_selection") {
-					// 		selectedQuantity = { ...tag, list: [tag.list[0]] };
-					// 		return (tag = selectedQuantity);
-					// 	}
-					// });
-					// console.log(
-					// 	"🚀 ~ ...items.map ~ isQuantitySpecified:",
-					// 	selectedQuantity
-					// );
 					return {
-						// ...item,
 						id: item?.id,
 						parent_item_id: item?.parent_item_id,
 						quantity: {
@@ -238,9 +213,7 @@ const intializeRequest = async (
 					};
 				}),
 			];
-			console.log("🚀 ~ items:", JSON.stringify(items));
 		} else {
-			console.log("providers[0].items",providers[0].items)
 			items = providers[0].items = [
 				providers?.[0]?.items.map(
 					({
@@ -260,7 +233,6 @@ const intializeRequest = async (
 			];
 		}
 
-		console.log("itemsssssss",items)
 		let select = {
 			context: {
 				...context,
@@ -298,7 +270,6 @@ const intializeRequest = async (
 					})),
 					fulfillments: [
 						{
-							// ...fulfillments?.[0],
 							type: fulfillments?.[0].type,
 							stops: [
 								{
@@ -308,7 +279,6 @@ const intializeRequest = async (
 										area_code: "560001",
 									},
 									time: {
-										// days:"4",
 										label: "selected",
 										range: {
 											// should be dynamic on the basis of scehdule
@@ -321,8 +291,6 @@ const intializeRequest = async (
 										},
 									},
 									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHMENT) ? "4" : undefined,
-									// 	? fulfillments[0].stops[0].time.days.split(",")[0]
-									// 	: undefined,
 								},
 							],
 						},
@@ -331,7 +299,7 @@ const intializeRequest = async (
 				},
 			},
 		};
-		// console.log("Final start and end time ::", start, endDate);
+
 		if (eq(scenario, "customization")) {
 			set(
 				select,
@@ -386,40 +354,6 @@ const intializeRequest = async (
 		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");
-		// const header = await createAuthHeader(select);
-		// try {
-		//   await redis.set(
-		//     `${transaction_id}-select-from-server`,
-		//     JSON.stringify({ request: { ...select } })
-		//   );
-		//   const response = await axios.post(`${context.bpp_uri}/select`, select, {
-		//     headers: {
-		//       "X-Gateway-Authorization": header,
-		//       authorization: header,
-		//     },
-		//   });
-		//   await redis.set(
-		//     `${transaction_id}-select-from-server`,
-		//     JSON.stringify({
-		//       request: { ...select },
-		//       response: {
-		//         response: response.data,
-		//         timestamp: new Date().toISOString(),
-		//       },
-		//     })
-		//   );
-		//   return res.json({
-		//     message: {
-		//       ack: {
-		//         status: "ACK",
-		//       },
-		//     },
-		//     transaction_id,
-		//   });
-		// } catch (error) {
-		//   console.log("ERROR :::::::::::::", (error as any).response.data.error);
-		//   return next(error);
-		// }
 	} catch (error) {
 		return next(error);
 	}

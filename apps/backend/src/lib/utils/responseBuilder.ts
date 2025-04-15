@@ -129,11 +129,9 @@ export const responseBuilder = async (
 			},
 		};
 	} else {
-		// const { bpp_uri, bpp_id, ...remainingContext } = reqContext as any;
 		async = {
 			...async,
 			context: {
-				// ...remainingContext,
 				...reqContext,
 				bap_id: MOCKSERVER_ID,
 				bap_uri: bppURI,
@@ -193,12 +191,10 @@ export const responseBuilder = async (
 						authorization: header,
 					},
 				});
-				// console.log("response at response builder",response.data)
 				log.response = {
 					timestamp: new Date().toISOString(),
 					response: response.data,
 				};
-				// console.log(`Storing redis ${action} from Server in Response Builder`)
 				await redis.set(
 					`${(async.context! as any).transaction_id
 					}-${action}-from-server-${id}-${ts.toISOString()}`,
@@ -256,7 +252,6 @@ export const responseBuilder = async (
 			transaction_id: (reqContext as any).transaction_id,
 			message: { sync: { message: { ack: { status: "ACK" } } } },
 		});
-		console.log("at ResponseBuilder ")
 		return res.json({
 			sync: {
 				message: {
@@ -266,7 +261,6 @@ export const responseBuilder = async (
 				},
 			},
 			error,
-			// async,
 		});
 	}
 };
@@ -607,7 +601,6 @@ export const quoteCreatorB2c = (items: Item[], providersItems?: any) => {
 
 //AGRI DOMAIN QUOTE CREATORS
 export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
-	console.log("itemssssssssssss", providersItems);
 	//get price from on_search
 	let breakup: any[] = [];
 	const chargesOnFulfillment = [
@@ -640,7 +633,6 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 		},
 	];
 
-	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
 		if (providersItems) {
@@ -663,8 +655,6 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 		}
 	});
 	items.forEach((item) => {
-		// console.log("itemsbreakup",item)
-		// console.log("itemmsmsss",item)
 		breakup = [...breakup,
 		{
 			title: item.title,
@@ -707,7 +697,6 @@ export const quoteCreatorAgri = (items: Item[], providersItems?: any) => {
 		];
 
 	});
-	console.log("breakuppp", breakup)
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
@@ -745,44 +734,13 @@ function ensureArray(item: any) {
 }
 
 export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scenario?: string) => {
-	console.log("itemssssssssssss", items, JSON.stringify(providersItems));
 	if (!Array.isArray(items)) {
 		items = ensureArray(items)
 	}
 	const providersItem = [providersItems[0].items[0]]
 	//get price from on_search
 	let breakup: any[] = [];
-	// const chargesOnFulfillment = [
-	// 	{
-	// 		"@ondc/org/item_id": "5009-Delivery",
-	// 		"@ondc/org/title_type": "delivery",
-	// 		price: {
-	// 			currency: "INR",
-	// 			value: "10",
-	// 		},
-	// 		title: "Delivery charges",
-	// 	},
-	// 	{
-	// 		"@ondc/org/item_id": "5009-Delivery",
-	// 		"@ondc/org/title_type": "packing",
-	// 		price: {
-	// 			currency: "INR",
-	// 			value: "0",
-	// 		},
-	// 		title: "Packing charges",
-	// 	},
-	// 	{
-	// 		"@ondc/org/item_id": "5009-Delivery",
-	// 		"@ondc/org/title_type": "misc",
-	// 		price: {
-	// 			currency: "INR",
-	// 			value: "0",
-	// 		},
-	// 		title: "Convenience Fee",
-	// 	},
-	// ];
 
-	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
 		if (providersItems) {
@@ -790,7 +748,6 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 				(secondItem: { id: string }) => secondItem?.id === item?.id
 			);
 			// If a matching item is found, update the price in the items array
-			console.log("matchhing", matchingItem)
 			if (matchingItem) {
 				item.title = matchingItem?.descriptor?.name;
 				// item.price = matchingItem?.price;
@@ -806,8 +763,6 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 		}
 	});
 	items.forEach((item) => {
-		// console.log("itemsbreakup",item)
-		// console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
 		breakup = [
 			{
 				title: item.title,
@@ -944,12 +899,10 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 			}
 		]
 	})
-	// console.log("breakuppp",breakup)
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
 	breakup.forEach((entry) => {
-		// console.log("entryyy",entry)
 		if (entry.title === "discount") {
 			const priceValue = parseFloat(entry.price.value);
 			if (!isNaN(priceValue)) {
@@ -963,18 +916,11 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 			}
 		}
 	});
-	// chargesOnFulfillment.forEach((entry) => {
-	// 	const priceValue = parseFloat(entry.price.value);
-	// 	if (!isNaN(priceValue)) {
-	// 		totalPrice += priceValue;
-	// 	}
-	// });
 
 
 	const result = {
 		breakup: [
 			...breakup,
-			// ...chargesOnFulfillment
 		],
 		price: {
 			currency: "INR",
@@ -983,17 +929,14 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 		ttl: "P1D",
 	};
 
-	// console.log("resultttttttttt", JSON.stringify(result));
 	return result;
 };
 
 export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?: any) => {
-	// console.log("itemssssssssssss", items, JSON.stringify(providersItems));
 	const providersItem = [providersItems[0].items[0]]
 	//get price from on_search
 	let breakup: any[] = [];
 
-	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
 		if (providersItems) {
@@ -1001,10 +944,8 @@ export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?
 				(secondItem: { id: string }) => secondItem?.id === item?.id
 			);
 			// If a matching item is found, update the price in the items array
-			//  console.log("matchhing",matchingItem)
 			if (matchingItem) {
 				item.title = matchingItem?.descriptor?.name;
-				// item.price = matchingItem?.price;
 				item.available_quantity = {
 					available: matchingItem?.quantity?.available,
 					maximum: matchingItem?.quantity?.maximum
@@ -1017,8 +958,6 @@ export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?
 		}
 	});
 	items.forEach((item) => {
-		// console.log("itemsbreakup",item)
-		// console.log("itemmsmsss",item)
 		breakup = [
 			{
 				title: item.title,
@@ -1126,12 +1065,10 @@ export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?
 			}
 		]
 	})
-	//  console.log("breakuppp",breakup)
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
 	breakup.forEach((entry) => {
-		//  console.log("entryyy",entry)
 		if (entry.title === "discount") {
 			const priceValue = parseFloat(entry.price.value);
 			if (!isNaN(priceValue)) {
@@ -1145,18 +1082,12 @@ export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?
 			}
 		}
 	});
-	// chargesOnFulfillment.forEach((entry) => {
-	// 	const priceValue = parseFloat(entry.price.value);
-	// 	if (!isNaN(priceValue)) {
-	// 		totalPrice += priceValue;
-	// 	}
-	// });
+
 
 
 	const result = {
 		breakup: [
 			...breakup,
-			// ...chargesOnFulfillment
 		],
 		price: {
 			currency: "INR",
@@ -1165,7 +1096,6 @@ export const quoteCreatorNegotiationAgriOutput = (items: Item[], providersItems?
 		ttl: "P1D",
 	};
 
-	// console.log("resultttttttttt", JSON.stringify(result));
 	return result;
 };
 
@@ -1565,8 +1495,7 @@ export const quoteCreatorAstroService = (
 	scenario?: string
 ) => {
 	try {
-		console.log("items", items, "proovidersITems", providersItems)
-		//GET PACKAGE ITEMS
+				//GET PACKAGE ITEMS
 		//get price from on_search
 		items.forEach((item) => {
 			if (
@@ -1792,120 +1721,6 @@ export const quoteCreatorAstroService = (
 			}
 		);
 
-		// if (
-		// 	(fulfillment_type && fulfillment_type === "Seller-Fulfilled") ||
-		// 	service_name === "agri-equipment-hiring" ||
-		// 	service_name !== "bid_auction_service"
-		// ) {
-		// 	breakup?.push({
-		// 		title: "pickup_charge",
-		// 		price: {
-		// 			currency: "INR",
-		// 			value: "149",
-		// 		},
-		// 		item: items[0],
-		// 		tags: [
-		// 			{
-		// 				descriptor: {
-		// 					code: "title",
-		// 				},
-		// 				list: [
-		// 					{
-		// 						descriptor: {
-		// 							code: "type",
-		// 						},
-		// 						value: "misc",
-		// 					},
-		// 				],
-		// 			},
-		// 		],
-		// 	});
-		// }
-
-		// if (service_name === "agri-equipment-hiring") {
-		// 	breakup?.push({
-		// 		title: "refundable_security",
-		// 		price: {
-		// 			currency: "INR",
-		// 			value: "5000",
-		// 		},
-		// 		item: items[0],
-		// 		tags: [
-		// 			{
-		// 				descriptor: {
-		// 					code: "title",
-		// 				},
-		// 				list: [
-		// 					{
-		// 						descriptor: {
-		// 							code: "type",
-		// 						},
-		// 						value: "refundable_security",
-		// 					},
-		// 				],
-		// 			},
-		// 		],
-		// 	});
-		// }
-
-		// if (
-		// 	service_name === "bid_auction_service" &&
-		// 	scenario === "participation_fee"
-		// ) {
-		// 	breakup = [
-		// 		{
-		// 			title: "earnest_money_deposit",
-		// 			price: {
-		// 				currency: "INR",
-		// 				value: "5000.00",
-		// 			},
-		// 			item: items[0],
-		// 			tags: [
-		// 				{
-		// 					descriptor: {
-		// 						code: "TITLE",
-		// 					},
-		// 					list: [
-		// 						{
-		// 							descriptor: {
-		// 								code: "type",
-		// 							},
-		// 							value: "earnest_money_deposit",
-		// 						},
-		// 					],
-		// 				},
-		// 			],
-		// 		},
-		// 	];
-		// } else if (
-		// 	service_name === "bid_auction_service" &&
-		// 	scenario === "bid_placement"
-		// ) {
-		// 	breakup?.push({
-		// 		title: "earnest_money_deposit",
-		// 		price: {
-		// 			currency: "INR",
-		// 			value: "5000.00",
-		// 		},
-		// 		item: items[0],
-		// 		tags: [
-		// 			{
-		// 				descriptor: {
-		// 					code: "TITLE",
-		// 				},
-		// 				list: [
-		// 					{
-		// 						descriptor: {
-		// 							code: "type",
-		// 						},
-		// 						value: "earnest_money_deposit",
-		// 					},
-		// 				],
-		// 			},
-		// 		],
-		// 	});
-		// }
-
 		let totalPrice = 0;
 		breakup.forEach((entry) => {
 			const priceValue = parseFloat(entry?.price?.value);
@@ -1940,7 +1755,6 @@ export const quoteCreatorWeightment = (items: Item[],
 	fulfillment_type?: string,
 	service_name?: string,
 	scenario?: string) => {
-	console.log("itemssssssssssss", items, JSON.stringify(providersItems));
 	if (!Array.isArray(items)) {
 		items = ensureArray(items)
 	}
@@ -1948,7 +1762,6 @@ export const quoteCreatorWeightment = (items: Item[],
 	//get price from on_search
 	let breakup: any[] = [];
 
-	// console.log("itemssssssssssssEachhhhhhhhhhhh", items);
 	items.forEach((item) => {
 		// Find the corresponding item in the second array
 		if (providersItems) {
@@ -1956,10 +1769,8 @@ export const quoteCreatorWeightment = (items: Item[],
 				(secondItem: { id: string }) => secondItem?.id === item?.id
 			);
 			// If a matching item is found, update the price in the items array
-			console.log("matchhing", matchingItem)
 			if (matchingItem) {
 				item.title = matchingItem?.descriptor?.name;
-				// item.price = matchingItem?.price;
 				item.available_quantity = {
 					available: matchingItem?.quantity?.available,
 					maximum: matchingItem?.quantity?.maximum
@@ -1972,8 +1783,6 @@ export const quoteCreatorWeightment = (items: Item[],
 		}
 	});
 	items.forEach((item) => {
-		// console.log("itemsbreakup",item)
-		// console.log("itemmsmsss",item,item?.price?.value,item?.quantity?.selected?.count)
 		breakup = [
 			{
 				title: item.title,
@@ -2032,12 +1841,10 @@ export const quoteCreatorWeightment = (items: Item[],
 			}
 		]
 	})
-	// console.log("breakuppp",breakup)
 
 	//MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
 	let totalPrice = 0;
 	breakup.forEach((entry) => {
-		// console.log("entryyy",entry)
 		if (entry.title === "discount") {
 			const priceValue = parseFloat(entry.price.value);
 			if (!isNaN(priceValue)) {
@@ -2056,7 +1863,6 @@ export const quoteCreatorWeightment = (items: Item[],
 	const result = {
 		breakup: [
 			...breakup,
-			// ...chargesOnFulfillment
 		],
 		price: {
 			currency: "INR",
@@ -2065,7 +1871,6 @@ export const quoteCreatorWeightment = (items: Item[],
 		ttl: "P1D",
 	};
 
-	// console.log("resultttttttttt", JSON.stringify(result));
 	return result;
 }
 
@@ -2316,8 +2121,6 @@ export const quoteCommon = (tempItems: Item[], providersItems?: any) => {
 
 	const itemtobe = {
 		id: items[0].id,
-		// price: price,
-		// quantity: items[0].quantity,
 	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
@@ -2429,8 +2232,6 @@ export const quoteOTT = (tempItems: Item[], providersItems?: any) => {
 
 	const itemtobe = {
 		id: items[0].id,
-		// price: price,
-		// quantity: items[0].quantity,
 	};
 	//ADD STATIC TAX IN BREAKUP QUOTE
 	breakup.push({
@@ -2618,18 +2419,14 @@ export const checkSelectedItems = async (data: any) => {
 			providersItem = providersItems[0]?.items;
 		}
 		let matchingItem: any = null;
-		console.log("providersItem======<.,.,.,.,.,.>",JSON.stringify(providersItem), "items======------,.,.,.,,.,<>", JSON.stringify(items))
 		items.forEach((item: any) => {
 			if (item) {
 				const selectedItem = item?.id;
 				// Find the corresponding item in the second array
 				if (providersItem) {
-					console.log("selectedITems inchceck",selectedItem)
-					console.log("providersItem inchceck",providersItem)
 					matchingItem = providersItem?.find(
 						(secondItem: { id: string }) => secondItem.id === selectedItem
 					);
-					console.log("matchingItem",matchingItem)
 				}
 			}
 		});
@@ -2648,8 +2445,6 @@ export const updateFulfillments = (
 ) => {
 	try {
 		// Update fulfillments according to actions
-		// const rangeStart = new Date().setHours(new Date().getHours() + 2).toString();
-		// const rangeEnd = new Date().setHours(new Date().getHours() + 3).toString();
 
 		const rangeStart = new Date();
 		rangeStart.setHours(rangeStart.getHours() + 2);
@@ -2658,7 +2453,6 @@ export const updateFulfillments = (
 		rangeEnd.setHours(rangeEnd.getHours() + 3);
 
 		let updatedFulfillments: any = [];
-		// logger.info(`daomain ${JSON.stringify(fulfillments)}`)
 		if (!fulfillments || fulfillments.length === 0) {
 			return updatedFulfillments; // Return empty if fulfillments is not provided or empty
 		}
@@ -2801,7 +2595,6 @@ export const updateFulfillments = (
 
 		switch (action) {
 			case ON_ACTION_KEY.ON_SELECT:
-				console.log("fulllfilmentssss", fulfillmentObj)
 				// Always push the initial fulfillmentObj
 				updatedFulfillments.push(fulfillmentObj);
 				if (scenario === SCENARIO.MULTI_COLLECTION) {
@@ -2843,10 +2636,6 @@ export const updateFulfillments = (
 								type: "start",
 								...FULFILLMENT_START,
 								time: {
-									// range: {
-									// 	start: new Date(rangeStart).toISOString(),
-									// 	end: new Date(rangeEnd).toISOString(),
-									// },
 									range: {
 										start: rangeStart.toISOString(),
 										end: rangeEnd.toISOString(),
@@ -2919,10 +2708,6 @@ export const updateFulfillments = (
 								type: "start",
 								...FULFILLMENT_START,
 								time: {
-									// range: {
-									// 	start: new Date(rangeStart).toISOString(),
-									// 	end: new Date(rangeEnd).toISOString(),
-									// },
 									range: {
 										start: rangeStart.toISOString(),
 										end: rangeEnd.toISOString(),
