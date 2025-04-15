@@ -125,7 +125,7 @@ export const onCancelSchema = {
                   type: "string",
                 },
               },
-              required: [ "cancelled_by"],
+              required: [ "reason","cancelled_by"],
             },
             provider: {
               type: "object",
