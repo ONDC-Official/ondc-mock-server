@@ -775,11 +775,7 @@ export const quoteCreatorAgriOutput = (items: Item[], providersItems?: any, scen
 				item: {
 					id: item.id,
 					price: item.price,
-					quantity: {
-						selected: {
-							count: 100
-						}
-					}
+					quantity:item.quantity
 				},
 				tags: [
 					{

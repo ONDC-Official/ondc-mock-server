@@ -270,7 +270,7 @@ const initAgriOutputController=(
 						cancellation_terms: response?.value?.message?.order?.cancellation_terms,
 						payments: [{
 							...response?.value?.message?.order?.payments[0],
-							status:"NOT PAID",
+							status:"NOT-PAID",
 							params:{
 								...response?.value?.message?.order?.payments[0].params,
 								amount:"5000",
@@ -278,7 +278,7 @@ const initAgriOutputController=(
 						},{
 							...response?.value?.message?.order?.payments[0],
 							id:'PY2',
-							status:"NOT PAID",
+							status:"NOT-PAID",
 							params:{
 								...response?.value?.message?.order?.payments[0].params,
 								amount:Number(quoteData.price.value)-5000,
