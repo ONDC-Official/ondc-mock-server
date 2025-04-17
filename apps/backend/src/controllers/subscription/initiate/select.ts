@@ -48,14 +48,14 @@ const intializeRequest = async (
 			},
 		} = transaction;
 
-		const { scenario } = req?.query || "";
+		const { scenario } = req.query || "";
 		const { transaction_id } = context;
 		const { id, fulfillments } = providers?.[0];
 		let items = [];
 		let file: any;
 		let response: any;
 		items = providers[0].items = [
-			providers?.[0]?.items.map(
+			providers[0].items.map(
 				({
 					id,
 					fulfillment_ids,

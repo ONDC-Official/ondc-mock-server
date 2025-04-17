@@ -42,21 +42,15 @@ export const initController = async (
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
-		// const providersItems =
-		// 	on_search?.message?.catalog["bpp/providers"][0]?.items;
-		// req.body.providersItems = providersItems;
 
-
-		
-		if(req.body.context.domain===SERVICES_DOMAINS.AGRI_INPUT){
-			const providersItems = on_search?.message?.catalog["bpp/providers"][0]?.items;
+		if (req.body.context.domain === SERVICES_DOMAINS.AGRI_INPUT) {
+			const providersItems =
+				on_search.message.catalog["bpp/providers"][0].items;
+			req.body.providersItems = providersItems;
+		} else {
+			const providersItems = on_search.message.catalog.providers;
 			req.body.providersItems = providersItems;
 		}
-		else{
-			const providersItems = on_search?.message?.catalog?.providers;
-			req.body.providersItems = providersItems;
-		}
-
 
 		const on_select = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_SELECT,
@@ -66,20 +60,18 @@ export const initController = async (
 		if (on_select && on_select?.error) {
 			return send_nack(
 				res,
-				on_select?.error?.message
-					? on_select?.error?.message
+				on_select.error.messag
+					? on_select.error.message
 					: ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED
 			);
 		}
 		if (!on_select) {
 			return send_nack(res, ERROR_MESSAGES.ON_SELECT_DOES_NOT_EXISTED);
 		}
-		if(req.body.context.domain===SERVICES_DOMAINS.AGRI_INPUT)
-			{
-		return initConsultationController(req, res, next)
-		}
-		else{
-		return	initAgriOutputController(req,res,next)
+		if (req.body.context.domain === SERVICES_DOMAINS.AGRI_INPUT) {
+			return initConsultationController(req, res, next);
+		} else {
+			return initAgriOutputController(req, res, next);
 		}
 	} catch (error) {
 		return next(error);
@@ -107,7 +99,7 @@ const initConsultationController = (
 
 		const updatedFulfillments = updateFulfillments(
 			fulfillments,
-			ON_ACTION_KEY?.ON_INIT,
+			ON_ACTION_KEY.ON_INIT,
 			"",
 			"agri_input"
 		);
@@ -153,9 +145,10 @@ const initConsultationController = (
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
-				? ON_ACTION_KEY.ON_INIT
-				: `/${ON_ACTION_KEY.ON_INIT}`
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_INIT
+					: `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
 			`${ON_ACTION_KEY.ON_INIT}`,
 			"agri"
@@ -165,11 +158,11 @@ const initConsultationController = (
 	}
 };
 
-const initAgriOutputController=(
+const initAgriOutputController = (
 	req: Request,
 	res: Response,
 	next: NextFunction
-)=>{
+) => {
 	try {
 		const {
 			context,
@@ -186,14 +179,14 @@ const initAgriOutputController=(
 
 		const updatedFulfillments = updateFulfillments(
 			fulfillments,
-			ON_ACTION_KEY?.ON_INIT,
+			ON_ACTION_KEY.ON_INIT,
 			"",
 			"agri_output"
 		);
 
 		const response = YAML.parse(file.toString());
-		
-		let  quoteData = quoteCreatorAgriOutput(items, providersItems);
+
+		let quoteData = quoteCreatorAgriOutput(items, providersItems);
 		let responseMessage = {
 			order: {
 				provider,
@@ -202,97 +195,125 @@ const initAgriOutputController=(
 				billing,
 				fulfillments: updatedFulfillments,
 				quote: quoteData,
-				cancellation_terms: response?.value?.message?.order?.cancellation_terms,
-				payments: [{
-					...response?.value?.message?.order?.payments[0]
-				}]
+				cancellation_terms: response.value.message.order.cancellation_terms,
+				payments: [
+					{
+						...response.value.message.order.payments[0],
+					},
+				],
 			},
 		};
 		delete req.body?.providersItems;
-		const {scenario}=req.query
-		switch(scenario){
+		const { scenario } = req.query;
+		switch (scenario) {
 			case "participation-fee":
-				responseMessage={
-					order:{
+				responseMessage = {
+					order: {
 						...responseMessage.order,
-						items:items.map(({ available_quantity, price,quantity, title, ...rest }: { available_quantity: any; price: number; quantity:any;title: string; [key: string]: any }) => ({
-							...rest, 
-						})),
-						quote:{
-							"breakup": [
-									{
-											"item": {
-													"id": "I1"
+						items: items.map(
+							({
+								available_quantity,
+								price,
+								quantity,
+								title,
+								...rest
+							}: {
+								available_quantity: any;
+								price: number;
+								quantity: any;
+								title: string;
+								[key: string]: any;
+							}) => ({
+								...rest,
+							})
+						),
+						quote: {
+							breakup: [
+								{
+									item: {
+										id: "I1",
+									},
+									price: {
+										currency: "INR",
+										value: "5000.00",
+									},
+									tags: [
+										{
+											descriptor: {
+												code: "TITLE",
 											},
-											"price": {
-													"currency": "INR",
-													"value": "5000.00"
-											},
-											"tags": [
-													{
-															"descriptor": {
-																	"code": "TITLE"
-															},
-															"list": [
-																	{
-																			"descriptor": {
-																					"code": "type"
-																			},
-																			"value": "earnest_money_deposit"
-																	}
-															]
-													}
+											list: [
+												{
+													descriptor: {
+														code: "type",
+													},
+													value: "earnest_money_deposit",
+												},
 											],
-											"title": "earnest_money_deposit"
-									}
+										},
+									],
+									title: "earnest_money_deposit",
+								},
 							],
-							"price": {
-									"currency": "INR",
-									"value": "5000.00"
+							price: {
+								currency: "INR",
+								value: "5000.00",
 							},
-							"ttl": "P1D"
-					}
-					}
-				}
+							ttl: "P1D",
+						},
+					},
+				};
 				break;
 			case "bid-placement":
-				quoteData=quoteCreatorAgriOutput(items,providersItems,scenario)
+				quoteData = quoteCreatorAgriOutput(items, providersItems, scenario);
 				responseMessage = {
 					order: {
 						provider,
 						locations,
-						items:items.map(({ available_quantity,  title, ...rest }: { available_quantity: any;  title: string; [key: string]: any }) => ({
-							...rest, 
-						})),
+						items: items.map(
+							({
+								available_quantity,
+								title,
+								...rest
+							}: {
+								available_quantity: any;
+								title: string;
+								[key: string]: any;
+							}) => ({
+								...rest,
+							})
+						),
 						billing,
 						fulfillments: updatedFulfillments,
 						quote: quoteData,
-						cancellation_terms: response?.value?.message?.order?.cancellation_terms,
-						payments: [{
-							...response?.value?.message?.order?.payments[0],
-							status:"NOT-PAID",
-							params:{
-								...response?.value?.message?.order?.payments[0].params,
-								amount:"5000",
-							}
-						},{
-							...response?.value?.message?.order?.payments[0],
-							id:'PY2',
-							status:"NOT-PAID",
-							params:{
-								...response?.value?.message?.order?.payments[0].params,
-								amount:Number(quoteData.price.value)-5000,
+						cancellation_terms: response.value.message.order.cancellation_terms,
+						payments: [
+							{
+								...response.value.message.order.payments[0],
+								status: "NOT-PAID",
+								params: {
+									...response.value.message.order.payments[0].params,
+									amount: "5000",
+								},
 							},
-							type:"ON-FULFILLMENT",
-							url:undefined
-						}
-					]
+							{
+								...response.value.message.order.payments[0],
+								id: "PY2",
+								status: "NOT-PAID",
+								params: {
+									...response.value.message.order.payments[0].params,
+									amount: Number(quoteData.price.value) - 5000,
+								},
+								type: "ON-FULFILLMENT",
+								url: undefined,
+							},
+						],
 					},
 				};
 				break;
 			default:
-				quoteData=quoteCreatorNegotiationAgriOutput(items,providersItems)
-				 responseMessage = {
+				quoteData = quoteCreatorNegotiationAgriOutput(items, providersItems);
+				responseMessage = {
 					order: {
 						provider,
 						locations,
@@ -300,103 +321,111 @@ const initAgriOutputController=(
 						billing,
 						fulfillments: updatedFulfillments,
 						quote: quoteData,
-						cancellation_terms: response?.value?.message?.order?.cancellation_terms,
-						payments: [{
-							...response?.value?.message?.order?.payments[0],
-							params:{
-								...response?.value?.message?.order?.payments[0].params,
-								amount:quoteData.price.value,
-							}
-						}]
+						cancellation_terms: response.value.message.order.cancellation_terms,
+						payments: [
+							{
+								...response.value.message.order.payments[0],
+								params: {
+									...response.value.message.order.payments[0].params,
+									amount: quoteData.price.value,
+								},
+							},
+						],
 					},
 				};
-				 delete responseMessage.order.cancellation_terms
+				delete responseMessage.order.cancellation_terms;
 				break;
 		}
 
-		if(scenario==="participation-fee"){
-			 responseBuilder(
+		if (scenario === "participation-fee") {
+			responseBuilder(
 				res,
 				next,
 				context,
 				responseMessage,
-				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
-					? ON_ACTION_KEY.ON_INIT
-					: `/${ON_ACTION_KEY.ON_INIT}`
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/")
+						? ON_ACTION_KEY.ON_INIT
+						: `/${ON_ACTION_KEY.ON_INIT}`
 				}`,
 				`${ON_ACTION_KEY.ON_INIT}`,
 				"agri"
 			);
 
-			context.action="on_status"
-			const onstatus={
-				order:{
+			context.action = "on_status";
+			const onstatus = {
+				order: {
 					...responseMessage.order,
-					fulfillments:[{
-						id:"F1"
-					}],
-					provider:{
-						id:"P1"
-					},
-					locations:[{
-						id:"L1"
-					}],
-					"quote": {
-						"breakup": [
-								{
-										"item": {
-												"id": "I1"
-										},
-										"price": {
-												"currency": "INR",
-												"value": "5000.00"
-										},
-										"tags": [
-												{
-														"descriptor": {
-																"code": "TITLE"
-														},
-														"list": [
-																{
-																		"descriptor": {
-																				"code": "type"
-																		},
-																		"value": "earnest_money_deposit"
-																}
-														]
-												}
-										],
-										"title": "earnest_money_deposit"
-								}
-						],
-						"price": {
-								"currency": "INR",
-								"value": "5000.00"
+					fulfillments: [
+						{
+							id: "F1",
 						},
-						"ttl": "P1D"
-				}
-				}
-			}
-			onstatus.order.payments[0].status="PAID"
+					],
+					provider: {
+						id: "P1",
+					},
+					locations: [
+						{
+							id: "L1",
+						},
+					],
+					quote: {
+						breakup: [
+							{
+								item: {
+									id: "I1",
+								},
+								price: {
+									currency: "INR",
+									value: "5000.00",
+								},
+								tags: [
+									{
+										descriptor: {
+											code: "TITLE",
+										},
+										list: [
+											{
+												descriptor: {
+													code: "type",
+												},
+												value: "earnest_money_deposit",
+											},
+										],
+									},
+								],
+								title: "earnest_money_deposit",
+							},
+						],
+						price: {
+							currency: "INR",
+							value: "5000.00",
+						},
+						ttl: "P1D",
+					},
+				},
+			};
+			onstatus.order.payments[0].status = "PAID";
 			return childOrderResponseBuilder(
 				0,
 				res,
 				context,
 				onstatus,
-				`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
 				}`,
 				"on_status"
 			);
-
 		}
 		return responseBuilder(
 			res,
 			next,
 			context,
 			responseMessage,
-			`${req.body.context.bap_uri}${req.body.context.bap_uri.endsWith("/")
-				? ON_ACTION_KEY.ON_INIT
-				: `/${ON_ACTION_KEY.ON_INIT}`
+			`${req.body.context.bap_uri}${
+				req.body.context.bap_uri.endsWith("/")
+					? ON_ACTION_KEY.ON_INIT
+					: `/${ON_ACTION_KEY.ON_INIT}`
 			}`,
 			`${ON_ACTION_KEY.ON_INIT}`,
 			"agri"
@@ -404,8 +433,7 @@ const initAgriOutputController=(
 	} catch (error) {
 		next(error);
 	}
-}
-
+};
 
 export const childOrderResponseBuilder = async (
 	id: number,
@@ -445,9 +473,11 @@ export const childOrderResponseBuilder = async (
 		var log: TransactionType = {
 			request: async,
 		};
-		console.log("urI sent at on_status", uri)
+		console.log("urI sent at on_status", uri);
 		try {
-			const response = await axios.post(uri + "?mode=mock", async,
+			const response = await axios.post(
+				uri + "?mode=mock",
+				async
 				// 	{
 				// 	headers: {
 				// 		authorization: header,
@@ -461,7 +491,9 @@ export const childOrderResponseBuilder = async (
 			};
 
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`, // saving ID with on_status child process (duplicate keys are not allowed)
+				`${
+					(async.context! as any).transaction_id
+				}-${action}-from-server-${id}-${ts.toISOString()}`, // saving ID with on_status child process (duplicate keys are not allowed)
 				JSON.stringify(log)
 			);
 		} catch (error) {
@@ -469,21 +501,23 @@ export const childOrderResponseBuilder = async (
 				error instanceof AxiosError
 					? error?.response?.data
 					: {
-						message: {
-							ack: {
-								status: "NACK",
+							message: {
+								ack: {
+									status: "NACK",
+								},
 							},
-						},
-						error: {
-							message: error,
-						},
-					};
+							error: {
+								message: error,
+							},
+					  };
 			log.response = {
 				timestamp: new Date().toISOString(),
 				response: response,
 			};
 			await redis.set(
-				`${(async.context! as any).transaction_id}-${action}-from-server-${id}-${ts.toISOString()}`,
+				`${
+					(async.context! as any).transaction_id
+				}-${action}-from-server-${id}-${ts.toISOString()}`,
 				JSON.stringify(log)
 			);
 

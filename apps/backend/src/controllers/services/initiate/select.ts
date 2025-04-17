@@ -248,14 +248,14 @@ const intializeRequest = async (
 						id,
 						locations: [
 							{
-								id: locations?.[0]?.id,
+								id: locations[0].id,
 							},
 						],
 					},
 					items: items.map((itm: Item) => ({
 						...itm,
 						location_ids: itm.location_ids
-							? itm.location_ids?.map((id: string) => String(id))
+							? itm.location_ids.map((id: string) => String(id))
 							: undefined,
 						fulfillment_ids:itm.fulfillment_ids,
 						category_ids:itm.category_ids,
@@ -270,7 +270,7 @@ const intializeRequest = async (
 					})),
 					fulfillments: [
 						{
-							type: fulfillments?.[0].type,
+							type: fulfillments[0].type,
 							stops: [
 								{
 									type: "end",

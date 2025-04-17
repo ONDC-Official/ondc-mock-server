@@ -79,27 +79,27 @@ const selectConsultationConfirmController = (
 		const updatedFulfillments =
 			domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
 				? updateFulfillments(
-					message?.order?.fulfillments,
-					ON_ACTION_KEY?.ON_SELECT,
+					message.order.fulfillments,
+					ON_ACTION_KEY.ON_SELECT,
 					"",
 					"bid_auction_service"
 				)
 				: domain === SERVICES_DOMAINS.ASTRO_SERVICE
 					? updateFulfillments(
-						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT,
+						message.order.fulfillments,
+						ON_ACTION_KEY.ON_SELECT,
 						"",
 						"astroService"
 					)
 					: domain === SERVICES_DOMAINS.WEIGHMENT ? updateFulfillments(
-						message?.order?.fulfillments,
-						ON_ACTION_KEY?.ON_SELECT,
+						message.order.fulfillments,
+						ON_ACTION_KEY.ON_SELECT,
 						"",
 						"weightment"
 					) :
 						updateFulfillments(
-							message?.order?.fulfillments,
-							ON_ACTION_KEY?.ON_SELECT,
+							message.order.fulfillments,
+							ON_ACTION_KEY.ON_SELECT,
 							""
 						);
 
@@ -130,41 +130,41 @@ const selectConsultationConfirmController = (
 						? quoteCreatorService(message?.order?.items, providersItems?.items)
 						: domain === SERVICES_DOMAINS.BID_ACTION_SERVICES
 							? quoteCreatorHealthCareService(
-								message?.order?.items,
-								providersItems?.items,
+								message.order.items,
+								providersItems.items,
 								"",
-								message?.order?.fulfillments[0]?.type,
+								message.order.fulfillments[0].type,
 								"bid_auction_service"
 							)
 							: domain === SERVICES_DOMAINS.ASTRO_SERVICE ?
 								quoteCreatorAstroService(
-									message?.order?.items,
-									providersItems?.items,
+									message.order.items,
+									providersItems.items,
 									"",
-									message?.order?.fulfillments[0]?.type,
+									message.order.fulfillments[0].type,
 									"astro_service"
 								) :
 								domain === SERVICES_DOMAINS.WEIGHMENT ?
 									quoteCreatorWeightment(
-										message?.order?.items,
-										providersItems?.items,
+										message.order.items,
+										providersItems.items,
 										"",
-										message?.order?.fulfillments[0]?.type,
+										message.order.fulfillments[0].type,
 										"weightment"
 									)
 									: domain === SERVICES_DOMAINS.AGRI_EQUIPMENT
 										? quoteCreatorHealthCareService(
-											message?.order?.items,
-											providersItems?.items,
+											message.order.items,
+											providersItems.items,
 											"",
-											message?.order?.fulfillments[0]?.type,
+											message.order.fulfillments[0].type,
 											"agri-equipment-hiring"
 										)
 										: quoteCreatorHealthCareService(
-											message?.order?.items,
-											providersItems?.items,
+											message.order.items,
+											providersItems.items,
 											"",
-											message?.order?.fulfillments[0]?.type
+											message.order.fulfillments[0].type
 										),
 
 			},
@@ -227,7 +227,7 @@ const onSelectNoEquipmentAvaliable = (
 		const { context, message, providersItems } = req.body;
 
 		//Set available schedule time of items
-		message?.order?.items.forEach((item: any) => {
+		message.order.items.forEach((item: any) => {
 			// Find the corresponding item in the second array
 			if (providersItems?.items) {
 				const matchingItem = providersItems?.items.find(
@@ -241,16 +241,15 @@ const onSelectNoEquipmentAvaliable = (
 		});
 
 		const updatedFulfillments = updateFulfillments(
-			req.body?.message?.order?.fulfillments,
-			ON_ACTION_KEY?.ON_SELECT
+			req.body.message.order.fulfillments,
+			ON_ACTION_KEY.ON_SELECT
 		);
-
 		const { locations, ...provider } = message.order.provider;
 
 		const responseMessage = {
 			order: {
 				provider,
-				payments: message?.order?.payments.map(
+				payments: message.order.payments.map(
 					({ type }: { type: string }) => ({
 						type,
 						collected_by: "BAP",
@@ -322,10 +321,10 @@ const selectMultiCollectionController = (
 
 				quote: quoteCreatorHealthCareService(
 					message.order.items,
-					providersItems?.items,
-					providersItems?.offers,
-					message?.order?.fulfillments[0]?.type
-				),
+					providersItems.items,
+					providersItems.offers,
+					message.order.fulfillments[0].type
+				)
 			},
 		};
 
@@ -399,12 +398,12 @@ const selectConsultationRejectController = (
 
 				quote:
 					domain === SERVICES_DOMAINS.SERVICES
-						? quoteCreatorService(message?.order?.items, providersItems?.items)
+						? quoteCreatorService(message.order.items, providersItems.items)
 						: quoteCreatorHealthCareService(
-							message?.order?.items,
-							providersItems?.items,
+							message.order.items,
+							providersItems.items,
 							"",
-							message?.order?.fulfillments[0]?.type
+							message.order.fulfillments[0].type
 						),
 				error: {
 					code: 90001,
@@ -453,13 +452,12 @@ const selectServiceCustomizationConfirmedController = async (
 			return JSON.parse(ele as string);
 		})[0].request;
 
-		const fulfillment = message?.order?.fulfillments[0];
+		const fulfillment = message.order.fulfillments[0];
 
 		const fulfillment_id =
-			onSearchHistory.message?.catalog?.fulfillments.filter(
+			onSearchHistory.message.catalog.fulfillments.filter(
 				(e: { type: string }) => e.type === fulfillment?.type
-			)[0]?.id;
-
+			)[0].id;
 		const responseMessage = {
 			order: {
 				provider,
@@ -504,7 +502,7 @@ const selectServiceCustomizationConfirmedController = async (
 									code: "Serviceable",
 								},
 							},
-							stops: fulfillment?.stops?.map((e: { time: Time }) => ({
+							stops: fulfillment.stops.map((e: { time: Time }) => ({
 								...e,
 								time: { ...e.time, label: "confirmed" },
 							})),

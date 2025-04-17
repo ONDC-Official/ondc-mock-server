@@ -30,7 +30,7 @@ export const initiateConfirmController = async (
 			ON_ACTION_KEY.ON_SEARCH,
 			transactionId
 		);
-		const providersItems = on_search?.message?.catalog?.providers[0]?.items;
+		const providersItems = on_search.message.catalog.providers[0].items;
 		const on_init = await redisFetchToServer(
 			ON_ACTION_KEY.ON_INIT,
 			transactionId
