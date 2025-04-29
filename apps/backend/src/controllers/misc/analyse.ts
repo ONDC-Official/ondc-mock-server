@@ -2,7 +2,7 @@
 import { Request, Response } from "express";
 import { redis } from "../../lib/utils";
 
-const Dummy=["search","on_search","select","on_select","init","on_init","confirm","on_confirm","status","cancel","on_cancel","update","on_update"]
+const allowedDuplicateCalls=["select","on_select","init","on_init","on_status"]
 
 export const analyseController = async (req: Request, res: Response) => {
 	var storedTransaction: object[] = [];
@@ -74,7 +74,7 @@ export const analyseController = async (req: Request, res: Response) => {
 			for (const action in grouped) {
 				const group = grouped[action];
 
-				if (action === 'on_status' || action === 'init' || action === 'on_init' || action === "select" || action === "on_select") {
+				if (allowedDuplicateCalls.includes(action)) {
 						// Keep all sorted objects for these actions
 						const withResponse = group.filter((obj: any) => obj.response);
 						const withRequest = group.filter((obj: any) => obj.request);
