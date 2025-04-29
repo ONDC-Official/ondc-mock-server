@@ -37,7 +37,6 @@ export const cancelController = async (
 			transaction_id
 		);
 
-		// console.log("------<>",JSON.stringify(on_search_data.message.catalog.providers[0]))
 
 
 		const item_measure_ids =
@@ -70,11 +69,10 @@ const cancelRequest = async (
 			transaction.message.order.fulfillments,
 			ON_ACTION_KEY?.ON_CANCEL,'',"agri_input"
 		);
-		console.log("transaction",JSON.stringify(transaction.message.order))
 		const responseMessage = {
 			order: {
 				id: req.body.message.order_id,
-				status: ORDER_STATUS.CANCELLED.toUpperCase(),
+				state: ORDER_STATUS.CANCELLED,
 				cancellation: {
 					cancelled_by: ORDER_CACELLED_BY.CONSUMER,
 					reason: {
@@ -99,12 +97,6 @@ const cancelRequest = async (
 				quote: transaction.message.order.quote,
 				fulfillments: updatedFulfillments,
 				billing: transaction.message.order.billing,
-				// payments: transaction.message.order.payment.map((itm: any) => ({
-				// 	...itm,
-				// 	tags: itm.tags.filter(
-				// 		(tag: any) => tag.descriptor.code !== "Settlement_Counterparty"
-				// 	),
-				// })),
 				payments:transaction.message.order.payments || transaction.message.order.payment,
 				updated_at: new Date().toISOString(),
 			},

@@ -307,7 +307,7 @@ export const onInitSchema={
                       }
                     }
                   },
-                  required: ["id", "collected_by", "url", "params", "status", "type", "tags"]
+                  required: ["id", "collected_by", "params", "status", "type", "tags"]
                 }
               },
               cancellation_terms: {

@@ -184,7 +184,6 @@ export const confirmConsultationController = async (
 	]
 	responseMessage.order.payments[0].tags = responseMessage.order.payments[0].tags.filter(
 		(tag:any, index:any) => index !==2)
-		console.log("on_confirmmm",JSON.stringify(responseMessage))
 		responseBuilder(
 			res,
 			next,
@@ -300,8 +299,6 @@ export const confirmConsultationController = async (
 			/**********ON UPDATE RESPONSE */
 
 			// let responseMessage1 = responseMessage;
-			// responseMessage.order.id = uuidv4(); // static ID for child process on_confirm
-			// responseMessage.order.status = "Active"; // static ID for child process on_confirm
 
 			let responseMessage2 = structuredClone({
 				order: {
@@ -388,7 +385,6 @@ export const confirmConsultationController = async (
 				if (i >= 2) {
 					clearInterval(interval);
 				}
-				// context.message_id = uuidv4();
 				childOrderResponseBuilder(
 					i,
 					res,
@@ -509,15 +505,6 @@ export const childOrderResponseBuilder = async (
 				JSON.stringify(log)
 			);
 
-			// if (error instanceof AxiosError && id === 0 && action === "on_confirm") {
-			// 	res.status(error.status || 500).json(error);
-			// }
-
-			// if (error instanceof AxiosError) {
-			// 	console.log(error.response?.data);
-			// }
-
-			// throw error;
 		}
 
 		logger.info({
