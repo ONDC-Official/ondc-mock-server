@@ -2,6 +2,7 @@ import axios from "axios";
 import { SubscriberDetail } from "../../interfaces";
 import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL } from "./constants";
 import { redis } from "./redis";
+import { createAuthHeader } from "./responseAuth";
 
 export async function getSubscriberDetails(
   subscriber_id: string,
@@ -18,16 +19,24 @@ export async function getSubscriberDetails(
 
   if (subscribers.length === 0) {
     try {
+      const body = {
+        subscriber_id,
+        ukId: unique_key_id,
+      }
+      const headers = await createAuthHeader(body);
       // Fetch data from both endpoints
       const [stagingResponse, prepodResponse] = await Promise.all([
-        axios.post(STAGING_REGISTRY_URL, {
-          subscriber_id,
-          ukId: unique_key_id,
+        axios.post(STAGING_REGISTRY_URL, body,{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: headers
+          },
         }),
-        axios.post(PREPOD_REGISTRY_URL, {
-          subscriber_id,
-          ukId: unique_key_id,
-        }),
+        axios.post(PREPOD_REGISTRY_URL, body,{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: headers
+    }}),
       ]);
 
       // Process and concatenate data from both responses

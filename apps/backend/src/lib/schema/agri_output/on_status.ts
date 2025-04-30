@@ -402,7 +402,7 @@ export const onStatusSchema={
                       }
                     }
                   },
-                  required: ["id", "collected_by", "url", "params", "status", "type", "tags"]
+                  required: ["id", "collected_by", "params", "status", "type", "tags"]
                 }
               },
               documents: {

@@ -65,7 +65,6 @@ const intializeRequest = async (
 			//getting parent item
 			let parent_obj;
 			let providerItems=providers?.[0]?.items
-			console.log("providerItems",providerItems)
 			for(let i=1;i<providerItems.length;i++){
 				if(providerItems[i]?.parent_item_id===providerItems[i-1].id){
 					parent_obj=providerItems[i-1]
@@ -74,10 +73,9 @@ const intializeRequest = async (
 			providerItems.forEach((item:any)=>{
 				parent_obj=providerItems.filter((itm:any)=>itm.id===item.parent_item_id)
 			})
-			console.log("parent_obj===>",parent_obj)
-			let startTime = parent_obj.time?.schedule?.times?.[0]?.split("T")[1];
-			// console.log("Start Time from parent_item::", startTime);
 
+			let startTime = parent_obj?.time?.schedule?.times?.[0]?.split("T")[1] || "";
+			
 			// getting the required categories ids to look  for
 			const { cat_ids, child_selected } = processCategories(
 				providers?.[0]?.categories
@@ -138,15 +136,6 @@ const intializeRequest = async (
 
 			//get the parent item in customization
 			items = [...providers?.[0].items];
-			console.log("items",JSON.stringify(items))
-			// const parent_item = items.find((itm: Item,index:number) =>{
-			// 	// _.isEmpty(itm.parent_item_id)
-			
-			// 	_.isEmpty(itm.parent_item_id)
-			// 	if(itm.parent_item_id===itm.id){
-			// 		return itm
-			// 	}
-			// });
 			let parent_item:any;
 			items.forEach((item:any)=>{
 				parent_item=providerItems.find((itm:any)=>itm.id===item.parent_item_id)
@@ -186,19 +175,7 @@ const intializeRequest = async (
 					},
 				},
 				...items.map((item: Item) => {
-					// let selectedQuantity: any = {};
-					// const isQuantitySpecified = item?.tags?.map((tag) => {
-					// 	if (tag?.descriptor?.code == "quantity_selection") {
-					// 		selectedQuantity = { ...tag, list: [tag.list[0]] };
-					// 		return (tag = selectedQuantity);
-					// 	}
-					// });
-					// console.log(
-					// 	"🚀 ~ ...items.map ~ isQuantitySpecified:",
-					// 	selectedQuantity
-					// );
 					return {
-						// ...item,
 						id: item?.id,
 						parent_item_id: item?.parent_item_id,
 						quantity: {
@@ -206,6 +183,7 @@ const intializeRequest = async (
 								count: 1,
 							},
 						},
+						fulfillment_ids:item?.fulfillment_ids,
 						category_ids: item?.category_ids,
 						location_ids: location_ids,
 						tags: item.tags?.map((tag: Tag) => {
@@ -235,20 +213,22 @@ const intializeRequest = async (
 					};
 				}),
 			];
-			console.log("🚀 ~ items:", JSON.stringify(items));
 		} else {
-			console.log("providers[0].items",providers[0].items)
 			items = providers[0].items = [
 				providers?.[0]?.items.map(
 					({
 						id,
 						parent_item_id,
 						location_ids,
+						fulfillment_ids,
+						category_ids
 					}: {
 						id: string;
 						parent_item_id: string;
 						location_ids: string[];
-					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]] })
+						fulfillment_ids:string[];
+						category_ids:string[];
+					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]],category_ids,fulfillment_ids })
 				)?.[0],
 			];
 		}
@@ -268,25 +248,29 @@ const intializeRequest = async (
 						id,
 						locations: [
 							{
-								id: locations?.[0]?.id,
+								id: locations[0].id,
 							},
 						],
 					},
 					items: items.map((itm: Item) => ({
 						...itm,
 						location_ids: itm.location_ids
-							? itm.location_ids?.map((id: string) => String(id))
+							? itm.location_ids.map((id: string) => String(id))
 							: undefined,
+						fulfillment_ids:itm.fulfillment_ids,
+						category_ids:itm.category_ids,
 						quantity: {
-							selected: {
+							selected:(context.domain === "ONDC:SRV17")?{measure:{
+								unit:"hours",
+								value:"24"
+							}}:{
 								count: 1,
 							},
 						},
 					})),
 					fulfillments: [
 						{
-							// ...fulfillments?.[0],
-							type: fulfillments?.[0].type,
+							type: fulfillments[0].type,
 							stops: [
 								{
 									type: "end",
@@ -295,7 +279,6 @@ const intializeRequest = async (
 										area_code: "560001",
 									},
 									time: {
-										// days:"4",
 										label: "selected",
 										range: {
 											// should be dynamic on the basis of scehdule
@@ -308,8 +291,6 @@ const intializeRequest = async (
 										},
 									},
 									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHMENT) ? "4" : undefined,
-									// 	? fulfillments[0].stops[0].time.days.split(",")[0]
-									// 	: undefined,
 								},
 							],
 						},
@@ -318,7 +299,7 @@ const intializeRequest = async (
 				},
 			},
 		};
-		// console.log("Final start and end time ::", start, endDate);
+
 		if (eq(scenario, "customization")) {
 			set(
 				select,
@@ -370,119 +351,9 @@ const intializeRequest = async (
 			]
 		}
 
-		(select.message as any)={ "order": {
-			"provider": {
-				"id": "P1",
-				"locations": [
-					{
-						"id": "L1"
-					}
-				]
-			},
-			"items": [
-				{
-					"id": "I1",
-					"fulfillment_ids": [
-						"F2"
-					],
-					"location_ids": [
-						"L1"
-					],
-					"category_ids": [
-						"SRV17-1035"
-					],
-					"quantity": {
-						"selected": {
-							"measure": {
-								"unit": "hours",
-								"value": "4"
-							}
-						}
-					},
-					"tags": [
-						{
-							"descriptor": {
-								"code": "ATTRIBUTE"
-							},
-							"list": [
-								{
-									"descriptor": {
-										"code": "TYPE"
-									},
-									"value": "item"
-								}
-							]
-						}
-					]
-				}
-			],
-			"fulfillments": [
-				{
-					"type": "Seller-Fulfilled",
-					"stops": [
-						{
-							"type": "end",
-							"time": {
-								"label": "selected",
-								"range": {
-									"start": "2024-06-09T22:00:00.000Z",
-									"end": "2024-06-10T02:00:00.000Z"
-								}
-							},
-							"location": {
-								"gps": "12.974002,77.613458",
-								"area_code": "560001"
-							}
-						}
-					]
-				}
-			],
-			"payments": [
-				{
-					"type": "PRE-FULFILLMENT"
-				},
-				{
-					"type": "ON-FULFILLMENT"
-				}
-			]
-		}}
 		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");
-		// const header = await createAuthHeader(select);
-		// try {
-		//   await redis.set(
-		//     `${transaction_id}-select-from-server`,
-		//     JSON.stringify({ request: { ...select } })
-		//   );
-		//   const response = await axios.post(`${context.bpp_uri}/select`, select, {
-		//     headers: {
-		//       "X-Gateway-Authorization": header,
-		//       authorization: header,
-		//     },
-		//   });
-		//   await redis.set(
-		//     `${transaction_id}-select-from-server`,
-		//     JSON.stringify({
-		//       request: { ...select },
-		//       response: {
-		//         response: response.data,
-		//         timestamp: new Date().toISOString(),
-		//       },
-		//     })
-		//   );
-		//   return res.json({
-		//     message: {
-		//       ack: {
-		//         status: "ACK",
-		//       },
-		//     },
-		//     transaction_id,
-		//   });
-		// } catch (error) {
-		//   console.log("ERROR :::::::::::::", (error as any).response.data.error);
-		//   return next(error);
-		// }
 	} catch (error) {
 		return next(error);
 	}

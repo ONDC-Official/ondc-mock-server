@@ -100,9 +100,9 @@ export const onCancelSchema = {
             id: {
               type: "string",
             },
-            status: {
+            state: {
               type: "string",
-              enum: ["CANCELLED"],
+              enum: ["Cancelled"],
             },
             cancellation: {
               type: "object",
@@ -125,7 +125,7 @@ export const onCancelSchema = {
                   type: "string",
                 },
               },
-              required: ["reason", "cancelled_by"],
+              required: [ "reason","cancelled_by"],
             },
             provider: {
               type: "object",
@@ -156,9 +156,6 @@ export const onCancelSchema = {
                   id: {
                     type: "string",
                   },
-                  // parent_item_id: {
-                  //   type: "string",
-                  // },
                   fulfillment_id: {
                     type: "string",
                   },
@@ -166,26 +163,8 @@ export const onCancelSchema = {
                     type: "object",
                     properties: {
                       count: {
-                        type: "integer",
-                        // properties: {
-                        //   count: {
-                        //     type: "integer",
-                        //   },
-                        // },
-                        // required: ["count"],
+                        type: "integer"
                       },
-                      // measure: {
-                      //   type: "object",
-                      //   properties: {
-                      //     unit: {
-                      //       type: "string",
-                      //     },
-                      //     value: {
-                      //       type: "string",
-                      //     },
-                      //   },
-                      //   required: ["unit", "value"],
-                      // },
                     },
                     required: ["count"],
                   },
@@ -456,80 +435,6 @@ export const onCancelSchema = {
                         },
                         required: ["currency", "value"],
                       },
-                      // item: {
-                      //   type: "object",
-                      //   properties: {
-                      //     id: {
-                      //       type: "string",
-                      //     },
-                      //     quantity: {
-                      //       type: "object",
-                      //       properties: {
-                      //         selected: {
-                      //           type: "object",
-                      //           properties: {
-                      //             count: {
-                      //               type: "integer",
-                      //             },
-                      //           },
-                      //           required: ["count"],
-                      //         },
-                      //       },
-                      //     },
-                      //     price: {
-                      //       type: "object",
-                      //       properties: {
-                      //         currency: {
-                      //           type: "string",
-                      //         },
-                      //         value: {
-                      //           type: "string",
-                      //         },
-                      //       },
-                      //       required: ["currency", "value"],
-                      //     },
-                      //   },
-                      //   required: ["id", "quantity", "price"],
-                      // },
-                      // tags: {
-                      //   type: "array",
-                      //   items: {
-                      //     type: "object",
-                      //     properties: {
-                      //       descriptor: {
-                      //         type: "object",
-                      //         properties: {
-                      //           code: {
-                      //             type: "string",
-                      //           },
-                      //         },
-                      //         required: ["code"],
-                      //       },
-                      //       list: {
-                      //         type: "array",
-                      //         items: {
-                      //           type: "object",
-                      //           properties: {
-                      //             descriptor: {
-                      //               type: "object",
-                      //               properties: {
-                      //                 code: {
-                      //                   type: "string",
-                      //                 },
-                      //               },
-                      //               required: ["code"],
-                      //             },
-                      //             value: {
-                      //               type: "string",
-                      //             },
-                      //           },
-                      //           required: ["descriptor"],
-                      //         },
-                      //       },
-                      //     },
-                      //     required: ["descriptor", "list"],
-                      //   },
-                      // },
                     },
                     required: ["title", "price"],
                   },
@@ -611,7 +516,7 @@ export const onCancelSchema = {
           },
           required: [
             "id",
-            "status",
+            "state",
             "provider",
             "items",
             "billing",

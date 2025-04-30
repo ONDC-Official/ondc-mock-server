@@ -48,15 +48,14 @@ const intializeRequest = async (
 			},
 		} = transaction;
 
-		
-		const { scenario } = req?.query || "";
+		const { scenario } = req.query || "";
 		const { transaction_id } = context;
 		const { id, fulfillments } = providers?.[0];
 		let items = [];
 		let file: any;
 		let response: any;
 		items = providers[0].items = [
-			providers?.[0]?.items.map(
+			providers[0].items.map(
 				({
 					id,
 					fulfillment_ids,
@@ -67,53 +66,49 @@ const intializeRequest = async (
 			)?.[0],
 		];
 
-		
-			let type;
-			switch(scenario){
-				case 'single-order-offline-without-subscription':
-					type="OFFLINE"
-					break;
-				case 'single-order-online-without-subscription':
-					type="ONLINE"
-					break;
-				default:
-					type="SUBSCRIPTION"
-			}
-			let fulfillment_ids= transaction.message.catalog.providers[0].fulfillments.filter((obj:any)=>{
-				if(obj.type===type){
-					return obj
+		let type;
+		switch (scenario) {
+			case "single-order-offline-without-subscription":
+				type = "OFFLINE";
+				break;
+			case "single-order-online-without-subscription":
+				type = "ONLINE";
+				break;
+			default:
+				type = "SUBSCRIPTION";
+		}
+		let fulfillment_ids =
+			transaction.message.catalog.providers[0].fulfillments.filter(
+				(obj: any) => {
+					if (obj.type === type) {
+						return obj;
+					}
 				}
-			})
+			);
 
-			
-console.log("------,.",JSON.stringify(fulfillment_ids))
 		let fulfillment: any = [
 			{
-				...fulfillment_ids?.[0],
-				// type: "subscription",
-				// stops:fulfillments?.[2]?.stops,
+				...fulfillment_ids[0],
 				stops: [
 					{
 						type: "start",
 						time: {
 							label: "selected",
 							range: {
-								start: providers?.[0]?.time?.schedule?.times?.[0] ?? new Date(),
+								start: providers[0].time.schedule.times[0] ?? new Date(),
 							},
-							duration: fulfillment_ids?.[0]?.stops?.time?.duration
-								? fulfillments?.[2]?.stops?.time?.duration
+							duration: fulfillment_ids[0].stops.time.duration
+								? fulfillment_ids[0].stop.time.duration
 								: "P6M",
 							schedule: {
-								frequency: fulfillment_ids?.[0]?.stops[0]?.time?.schedule?.frequency,
+								frequency: fulfillment_ids[0].stops[0].time.schedule.frequency,
 							},
 						},
 					},
 				],
-				tags: fulfillment_ids?.[0]?.tags,
+				tags: fulfillment_ids[0].tags,
 			},
 		];
-	
-		// let fulfillment = fulfillment_ids
 
 		switch (scenario) {
 			case "subscription-with-eMandate":
@@ -121,14 +116,12 @@ console.log("------,.",JSON.stringify(fulfillment_ids))
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_mandate.yaml")
 				);
 				response = YAML.parse(file.toString());
-				// fulfillment = fulfillment;
 				break;
 			case "single-order-offline-without-subscription":
 				file = fs.readFileSync(
 					path.join(SUBSCRIPTION_EXAMPLES_PATH, "select/select_single.yaml")
 				);
 				response = YAML.parse(file.toString());
-				// fulfillment = response?.value?.message?.order?.fulfillments;
 
 				break;
 			case "single-order-online-without-subscription":
@@ -139,12 +132,10 @@ console.log("------,.",JSON.stringify(fulfillment_ids))
 					)
 				);
 				response = YAML.parse(file.toString());
-				// fulfillment = response?.value?.message?.order?.fulfillments;
 				break;
 			default:
 				fulfillment = fulfillment;
 		}
-
 
 		const select = {
 			context: {
@@ -163,7 +154,7 @@ console.log("------,.",JSON.stringify(fulfillment_ids))
 					},
 					items: items.map((itm: Item) => ({
 						...itm,
-						fulfillment_ids:[fulfillment_ids[0].id],
+						fulfillment_ids: [fulfillment_ids[0].id],
 						quantity: {
 							selected: {
 								count: 1,
@@ -171,66 +162,79 @@ console.log("------,.",JSON.stringify(fulfillment_ids))
 						},
 					})),
 
-					fulfillments: (context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)?fulfillment:[{type:"ONLINE"}],
-					payments:(context.domain===SUBSCRIPTION_DOMAINS.PRINT_MEDIA)? [{ type: payments?.[0].type }]:undefined,
+					fulfillments:
+						context.domain === SUBSCRIPTION_DOMAINS.PRINT_MEDIA
+							? fulfillment
+							: [{ type: "ONLINE" }],
+					payments:
+						context.domain === SUBSCRIPTION_DOMAINS.PRINT_MEDIA
+							? [{ type: payments?.[0].type }]
+							: undefined,
 				},
 			},
 		};
-		if(scenario === "single-order-offline-without-subscription" || scenario ==="single-order-online-without-subscription" ){
-			select.message.order.fulfillments[0].tags=[
+		if (
+			scenario === "single-order-offline-without-subscription" ||
+			scenario === "single-order-online-without-subscription"
+		) {
+			select.message.order.fulfillments[0].tags = [
 				{
-						"descriptor": {
-								"code": "SELECTION"
+					descriptor: {
+						code: "SELECTION",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "ITEM_IDS",
+							},
+							value: select.message.order.items[0].id,
 						},
-						"list": [
-								{
-										"descriptor": {
-												"code": "ITEM_IDS"
-										},
-										"value": select.message.order.items[0].id
-								}
-						]
-				}
-		]
-		delete select.message.order.fulfillments[0].stops[0].time.days
-		delete select.message.order.payments
-		}
-		if(scenario === "subscription-with-eMandate" ){
-			select.message.order.fulfillments[0].tags=[...select.message.order.fulfillments[0].tags, {
-				"descriptor": {
-					"code": "SELECTION"
+					],
 				},
-				"list": [
-					{
-						"descriptor": {
-							"code": "ITEM_IDS"
-						},
-						"value": select.message.order.items[0].id
-					}
-				]
-			}]
-			// delete select.message.order.fulfillments[0].stops[0].time.schedule
-			delete select.message.order.payments
+			];
+			delete select.message.order.fulfillments[0].stops[0].time.days;
+			delete select.message.order.payments;
 		}
-		if(scenario === 'subscription-with-full-payments'){
-			select.message.order.fulfillments[0].tags=[...select.message.order.fulfillments[0].tags, {
-				"descriptor": {
-					"code": "SELECTION"
+		if (scenario === "subscription-with-eMandate") {
+			select.message.order.fulfillments[0].tags = [
+				...select.message.order.fulfillments[0].tags,
+				{
+					descriptor: {
+						code: "SELECTION",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "ITEM_IDS",
+							},
+							value: select.message.order.items[0].id,
+						},
+					],
 				},
-				"list": [
-					{
-						"descriptor": {
-							"code": "ITEM_IDS"
-						},
-						"value": select.message.order.items[0].id
-					}
-				]
-			}]
-			delete select.message.order.fulfillments[0].id
-			delete select.message.order.payments
+			];
+			delete select.message.order.payments;
 		}
-		console.log("Context.domain",JSON.stringify(select))
-		await send_response(res, next, select, transaction_id, "select",scenario);
+		if (scenario === "subscription-with-full-payments") {
+			select.message.order.fulfillments[0].tags = [
+				...select.message.order.fulfillments[0].tags,
+				{
+					descriptor: {
+						code: "SELECTION",
+					},
+					list: [
+						{
+							descriptor: {
+								code: "ITEM_IDS",
+							},
+							value: select.message.order.items[0].id,
+						},
+					],
+				},
+			];
+			delete select.message.order.fulfillments[0].id;
+			delete select.message.order.payments;
+		}
+		await send_response(res, next, select, transaction_id, "select", scenario);
 	} catch (error) {
 		return next(error);
 	}
