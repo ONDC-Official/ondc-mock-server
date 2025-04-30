@@ -7,8 +7,6 @@ export const STAGING_REGISTRY_URL = "https://staging.registry.ondc.org/v2.0/look
 
 export const PREPOD_REGISTRY_URL = "https://preprod.registry.ondc.org/v2.0/lookup";
 
-export const payload={"subscriber_id":"mock.ondc.org/api","type":"BAP"}
-
 export const SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-services/api/components/Examples/Services_home_service_yaml";
 

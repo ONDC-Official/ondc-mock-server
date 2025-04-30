@@ -1,13 +1,13 @@
 import axios from "axios";
 import { SubscriberDetail } from "../../interfaces";
-import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL, payload } from "./constants";
+import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL } from "./constants";
 import { redis } from "./redis";
 
 export async function getSubscriberDetails(
   subscriber_id: string,
   unique_key_id: string,
-  env: string,
-  header: string
+  payload: {subscriber_id:string,domain:String},
+  header: string,
 ) {
   const cachedData = await redis.get(
     `subscriber_data-${subscriber_id}-${unique_key_id}`
@@ -24,8 +24,8 @@ export async function getSubscriberDetails(
     try {
       // Fetch data from both endpoints
       const [stagingResponse, prepodResponse] = await Promise.all([
-        axios.post(STAGING_REGISTRY_URL, payload, config),
-        axios.post(PREPOD_REGISTRY_URL, payload, config),
+        axios.post(STAGING_REGISTRY_URL,payload,config),
+        axios.post(PREPOD_REGISTRY_URL,payload,config),
       ]);
       // Process and concatenate data from both responses
       [stagingResponse.data, prepodResponse.data].forEach((responseData) => {

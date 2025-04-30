@@ -2,7 +2,6 @@ import _sodium from "libsodium-wrappers";
 import { getSubscriberDetails } from "./lookup";
 import { createSigningString, verifyMessage } from "./crypto";
 import { createAuthorizationHeader } from "ondc-crypto-sdk-nodejs"
-import { payload } from "./constants";
 
 
 const remove_quotes = (value: string) => {
@@ -41,6 +40,8 @@ export async function verifyHeader(
 		}
 		const subscriber_id = parts["keyId"].split("|")[0];
 		const unique_key_id = parts["keyId"].split("|")[1];
+
+		const payload={"subscriber_id":process.env.SUBSCRIBER_ID|| "","domain":JSON.parse(rawBody).context.domain}
 		
 
 		const authorizationHeader = await createAuthorizationHeader({
@@ -53,7 +54,7 @@ export async function verifyHeader(
 		const subscribers_details = await getSubscriberDetails(
 			subscriber_id,
 			unique_key_id,
-			env,
+			payload ,
 			authorizationHeader
 		);
 		
