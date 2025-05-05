@@ -11,6 +11,7 @@ export const authValidatorMiddleware = async (
 	try {
 		// console.log("====>",req.headers)
 		const mode = req.query.mode as string;
+		logger.info(`mode is ${mode}`)
 		res.setHeader("mode", mode ? mode : "sandbox");
 		if (
 			mode === "mock" 
