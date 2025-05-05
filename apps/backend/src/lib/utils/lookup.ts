@@ -3,6 +3,7 @@ import { SubscriberDetail } from "../../interfaces";
 import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL } from "./constants";
 import { redis } from "./redis";
 import { createAuthHeader } from "./responseAuth";
+import { logger } from "./logger";
 
 export async function getSubscriberDetails(
   subscriber_id: string,
@@ -14,6 +15,7 @@ export async function getSubscriberDetails(
   );
   let subscribers = cachedData ? JSON.parse(cachedData) : [];
 
+  logger.info(`subcribers is ${subscribers}`)
   // Determine the appropriate URL based on the environment
   // const url = env === "prepod" ? PREPOD_REGISTRY_URL : STAGING_REGISTRY_URL;
 
@@ -25,6 +27,8 @@ export async function getSubscriberDetails(
       }
       const headers = await createAuthHeader(body);
       // Fetch data from both endpoints
+
+      logger.info(`header is ${headers}`)
       const [stagingResponse, prepodResponse] = await Promise.all([
         axios.post(STAGING_REGISTRY_URL, body,{
           headers: {
@@ -38,9 +42,9 @@ export async function getSubscriberDetails(
             Authorization: headers
     }}),
       ]);
-
       // Process and concatenate data from both responses
       [stagingResponse.data, prepodResponse.data].forEach((responseData) => {
+        logger.info(`response data from ${JSON.stringify(responseData)}`)
         responseData
           .map((data: object) => {
             const { subscriber_url, ...subscriberData } = data as SubscriberDetail;
@@ -66,6 +70,7 @@ export async function getSubscriberDetails(
 
       // Cache the combined data in Redis
       try {
+        logger.info(`subscribers[] ${JSON.stringify(subscribers)}`)
         await redis.set(
           `subscriber_data-${subscribers[0].subscriber_id}-${subscribers[0].unique_key_id}`,
           JSON.stringify(subscribers),
