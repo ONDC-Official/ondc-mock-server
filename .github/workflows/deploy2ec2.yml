@@ -67,6 +67,11 @@ jobs:
             MOCKSERVER_ID=${{ secrets.MOCKSERVER_ID }}
             EOL
 
+            # Create frontend .env file for build
+            cat > ./apps/frontend/.env.production << EOL
+            VITE_SERVER_URL=${{ secrets.VITE_SERVER_URL }}
+            EOL
+
             cat .env
             
             echo "HERE"
