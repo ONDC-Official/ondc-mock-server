@@ -6,6 +6,9 @@ import { rateLimiter } from "../../middlewares/rateLimiter";
 import { initiateRouter } from "./initiate";
 
 export const retailRouter = Router();
+retailRouter.get("/ping", (req, res) => {
+	res.status(200).send("Retail OK");
+});
 retailRouter.use(authValidatorMiddleware);
 retailRouter.use(rateLimiter);
 retailRouter.use("/bap", bapRouter);

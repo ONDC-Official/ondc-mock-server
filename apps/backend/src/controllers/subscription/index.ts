@@ -6,6 +6,9 @@ import { rateLimiter } from "../../middlewares/rateLimiter";
 import { initiateRouter } from "./initiate";
 
 export const subscriptionRouter = Router();
+subscriptionRouter.get("/ping", (req, res) => {
+	res.status(200).send("Subscription OK");
+});
 subscriptionRouter.use(authValidatorMiddleware);
 subscriptionRouter.use(rateLimiter);
 subscriptionRouter.use("/bap", bapRouter);

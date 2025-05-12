@@ -25,8 +25,9 @@ import {
 } from "./middlewares";
 import { retailRouter } from "./controllers/retail";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
-import { loadConfig } from "./lib/utils";
+import { loadConfig, logger } from "./lib/utils";
 import 'dotenv/config'
+import { checkAgriHealth, checkLogisticsHealth, checkRedis, checkRetailHealth, checkServicesHealth } from './lib/utils/health';
 
 
 export const app: Express = express();
@@ -72,6 +73,34 @@ app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
 app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/agri", errorHandlingWrapper(agriRouter));
+app.get("/health", async (req, res) => {
+	try {
+		const [redis, agri, retail, services, logistics] = await Promise.all([
+			checkRedis(),
+			checkAgriHealth(),
+			checkRetailHealth(),
+			checkServicesHealth(),
+			checkLogisticsHealth(),
+		]);
+
+		const allOk = [redis, agri, retail, services, logistics].every(s => s === "ok");
+
+		res.status(allOk ? 200 : 500).json({
+			status: allOk ? "ok" : "fail",
+			services: {
+				redis,
+				agri,
+				retail,
+				services,
+				logistics,
+			},
+			timestamp: new Date().toISOString(),
+		});
+	} catch (error) {
+		logger.error("Health check failed", error);
+		res.status(500).json({ status: "fail", error: "Unhandled exception in health check" });
+	}
+})
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({
