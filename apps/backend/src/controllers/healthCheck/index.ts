@@ -1,18 +1,18 @@
-import { Router } from "express";
-import { checkAgriHealth, checkLogisticsHealth, checkRedis, checkRetailHealth, checkServicesHealth } from "../../lib/utils/health";
+import { checkAgriHealth, checkFrontendHealth, checkLogisticsHealth, checkRedis, checkRetailHealth, checkServicesHealth } from "../../lib/utils/health";
 import { logger } from "../../lib/utils";
 
 export const healthController = async (req: Request, res: any) => {
 	try {
-		const [redis, agri, retail, services, logistics] = await Promise.all([
+		const [redis, agri, retail, services, logistics ,frontend] = await Promise.all([
 			checkRedis(),
 			checkAgriHealth(),
 			checkRetailHealth(),
 			checkServicesHealth(),
 			checkLogisticsHealth(),
+			checkFrontendHealth()
 		]);
 
-		const healthResults = { redis, agri, retail, services, logistics };
+		const healthResults = { redis, agri, retail, services, logistics, frontend };
 		const allOk = Object.values(healthResults).every(status => status === "ok");
 
 		res.status(allOk ? 200 : 500).json({

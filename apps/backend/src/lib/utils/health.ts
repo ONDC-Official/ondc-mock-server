@@ -20,10 +20,29 @@ export async function checkRedis(): Promise<"ok" | "fail"> {
 	}
 }
 
-const BASE_URL = process.env.MOCK_API_BASE_URL || "https://mock.ondc.org/api";
-
+const BASE_URL = process.env.MOCK_API_BASE_URL || "https://mock.ondc.org/api/";
 export const checkAgriHealth = () => ping(`${BASE_URL}/agri/ping`);
 export const checkRetailHealth = () => ping(`${BASE_URL}/retail/ping`);
 export const checkServicesHealth = () => ping(`${BASE_URL}/services/ping`);
 export const checkLogisticsHealth = () => ping(`${BASE_URL}/logistics/ping`);
 
+const FRONTEND_URL = process.env.FRONTEND_URL || "https://mock.ondc.org";
+
+export async function checkFrontendHealth(): Promise<"ok" | "fail"> {
+  try {
+    const res = await axios.get(`${FRONTEND_URL}/vite.svg`, {
+      timeout: 2000,
+      responseType: "arraybuffer",
+      validateStatus: status => status === 200,
+    });
+
+    const contentType = res.headers["content-type"];
+    if (contentType?.includes("image")) {
+      return "ok";
+    }
+
+    return "fail";
+  } catch (error) {
+    return "fail";
+  }
+}
