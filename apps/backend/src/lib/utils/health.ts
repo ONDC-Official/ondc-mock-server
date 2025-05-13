@@ -30,19 +30,14 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "https://mock.ondc.org";
 
 export async function checkFrontendHealth(): Promise<"ok" | "fail"> {
   try {
-    const res = await axios.get(`${FRONTEND_URL}/vite.svg`, {
-      timeout: 2000,
-      responseType: "arraybuffer",
-      validateStatus: status => status === 200,
-    });
+    const res = await axios.get(`${FRONTEND_URL}/`, { timeout: 2000 });
 
-    const contentType = res.headers["content-type"];
-    if (contentType?.includes("image")) {
+    if (res.status === 200 && res.data.includes("<html")) {
       return "ok";
     }
 
     return "fail";
-  } catch (error) {
+  } catch {
     return "fail";
   }
 }
