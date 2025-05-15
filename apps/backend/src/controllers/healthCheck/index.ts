@@ -1,31 +1,9 @@
-import { checkAgriHealth, checkFrontendHealth, checkLogisticsHealth, checkRedis, checkRetailHealth, checkServicesHealth } from "../../lib/utils/health";
-import { logger } from "../../lib/utils";
+import { Router } from "express";
+import { healthInfoDetailed } from "./healthInfoDetailed";
+import { health } from "./health";
 
-export const healthController = async (req: Request, res: any) => {
-	try {
-		const [redis, agri, retail, services, logistics ,frontend] = await Promise.all([
-			checkRedis(),
-			checkAgriHealth(),
-			checkRetailHealth(),
-			checkServicesHealth(),
-			checkLogisticsHealth(),
-			checkFrontendHealth()
-		]);
 
-		const healthResults = { redis, agri, retail, services, logistics, frontend };
-		const allOk = Object.values(healthResults).every(status => status === "ok");
+export const healthRouter = Router()
 
-		res.status(allOk ? 200 : 500).json({
-			status: allOk ? "ok" : "fail",
-			services: healthResults,
-			timestamp: new Date().toISOString(),
-		});
-	} catch (error) {
-		logger.error("Health check failed", error);
-		res.status(500).json({
-			status: "fail",
-			error: "Unhandled exception in health check",
-			timestamp: new Date().toISOString(),
-		});
-	}
-};
+healthRouter.get("/",health)
+healthRouter.get("/info",healthInfoDetailed)

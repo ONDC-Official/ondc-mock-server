@@ -27,9 +27,7 @@ import { retailRouter } from "./controllers/retail";
 import { sendUpsolicieatedOnStatus } from "./lib/utils/sendUpsolicieatedOnStatus";
 import { loadConfig, logger } from "./lib/utils";
 import 'dotenv/config'
-import { checkAgriHealth, checkLogisticsHealth, checkRedis, checkRetailHealth, checkServicesHealth } from './lib/utils/health';
-import { healthController } from './controllers/healthCheck';
-
+import { healthRouter } from './controllers/healthCheck';
 
 export const app: Express = express();
 const port = process.env.PORT || 3000;
@@ -74,7 +72,7 @@ app.use("/services", errorHandlingWrapper(servicesRouter));
 app.use("/subscription", errorHandlingWrapper(subscriptionRouter));
 app.use("/logistics", errorHandlingWrapper(logisticsRouter));
 app.use("/agri", errorHandlingWrapper(agriRouter));
-app.get("/health",healthController)
+app.use("/health",healthRouter)
 app.use("/detect_app_installation", (req: Request, res: Response) => {
 	const headers = req.headers;
 	return res.json({

@@ -2,21 +2,21 @@
 import axios from "axios";
 import { redis } from "./redis";
 
-async function ping(url: string): Promise<"ok" | "fail"> {
+async function ping(url: string): Promise<"Server is Up" | "Server is Down"> {
 	try {
 		const res = await axios.get(url, { timeout: 2000 });
-		return res.status === 200 ? "ok" : "fail";
+		return res.status === 200 ? "Server is Up" : "Server is Down";
 	} catch {
-		return "fail";
+		return "Server is Down";
 	}
 }
 
-export async function checkRedis(): Promise<"ok" | "fail"> {
+export async function checkRedis(): Promise<"Redis is Up" | "Redis is down"> {
 	try {
 		await redis.ping();
-		return "ok";
+		return "Redis is Up";
 	} catch {
-		return "fail";
+		return "Redis is down";
 	}
 }
 
@@ -28,16 +28,16 @@ export const checkLogisticsHealth = () => ping(`${BASE_URL}/logistics/ping`);
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "https://mock.ondc.org";
 
-export async function checkFrontendHealth(): Promise<"ok" | "fail"> {
+export async function checkFrontendHealth(): Promise<"Server is Up" | "Server is Down"> {
   try {
     const res = await axios.get(`${FRONTEND_URL}/`, { timeout: 2000 });
 
     if (res.status === 200 && res.data.includes("<html")) {
-      return "ok";
+      return "Server is Up";
     }
 
-    return "fail";
+    return "Server is Down";
   } catch {
-    return "fail";
+    return "Server is Down";
   }
 }
