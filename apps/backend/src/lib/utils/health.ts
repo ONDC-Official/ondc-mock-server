@@ -11,12 +11,12 @@ async function ping(url: string): Promise<"Server is Up" | "Server is Down"> {
 	}
 }
 
-export async function checkRedis(): Promise<"Redis is Up" | "Redis is down"> {
+export async function checkRedis(): Promise<"Server is Up" | "Server is Down"> {
 	try {
 		await redis.ping();
-		return "Redis is Up";
+		return "Server is Up";
 	} catch {
-		return "Redis is down";
+		return "Server is Down";
 	}
 }
 

@@ -5,7 +5,7 @@ export const health = async (req: Request, res: any) => {
 		const payload = {
 			msg: "the health api is working fine"
 		};
-		return res.status(200).json(JSON.stringify(payload));
+		return res.status(200).send("the health api is working fine");
 	} catch (error) {
 		logger.error("Health check failed", error);
 		res.status(299).json({
