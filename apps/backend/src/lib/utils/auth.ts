@@ -40,16 +40,12 @@ export async function verifyHeader(
 		const subscriber_id = parts["keyId"].split("|")[0];
 		const unique_key_id = parts["keyId"].split("|")[1];
 		
-		logger.info(`subscriber id is ${subscriber_id} and unique_key_id ${unique_key_id}`)
-
 		const subscribers_details = await getSubscriberDetails(
 			subscriber_id,
 			unique_key_id,
 			env
 		);
 		
-		logger.info(`subscribers_details is ${JSON.stringify(subscribers_details)}`)
-
 		for (const each of subscribers_details) {
 			const public_key = each.signing_public_key;
 			const { signing_string } = await createSigningString(
@@ -57,7 +53,6 @@ export async function verifyHeader(
 				parts["created"],
 				parts["expires"]
 			);
-			logger.info(`signing_string is ${JSON.stringify(signing_string)}`)
 			const verified = await verifyMessage(
 				parts["signature"],
 				signing_string,

@@ -8,7 +8,7 @@ export const confirmSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -39,7 +39,7 @@ export const confirmSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -104,7 +104,7 @@ export const confirmSchema = {
             },
             status: {
               type: "string",
-              enum: ["Created"]
+              enum: ["Created"],
             },
             provider: {
               type: "object",
@@ -151,9 +151,9 @@ export const confirmSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV17"]
-                            }
-                          }
+                              enum: ["SRV17"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -164,19 +164,19 @@ export const confirmSchema = {
                                   type: "object",
                                   properties: {
                                     unit: {
-                                      type: "string"
+                                      type: "string",
                                     },
                                     value: {
-                                      type: "number"
-                                    }
+                                      type: "number",
+                                    },
                                   },
-                                  required: ["unit", "value"]
-                                }
+                                  required: ["unit", "value"],
+                                },
                               },
-                              required: ["measure"]
-                            }
-                          }
-                        }
+                              required: ["measure"],
+                            },
+                          },
+                        },
                       },
                       {
                         else: {
@@ -185,15 +185,15 @@ export const confirmSchema = {
                               type: "object",
                               properties: {
                                 count: {
-                                  type: "number"
-                                }
+                                  type: "number",
+                                },
                               },
-                              required: ["count"]
-                            }
-                          }
-                        }
-                      }
-                    ]
+                              required: ["count"],
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                 },
                 required: [
@@ -268,9 +268,9 @@ export const confirmSchema = {
                         if: {
                           properties: {
                             doamin: {
-                              enum: ["SRV16"]
-                            }
-                          }
+                              enum: ["SRV16"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -323,7 +323,7 @@ export const confirmSchema = {
                                 // "state",
                               ],
                             },
-                          }
+                          },
                         },
                         else: {
                           properties: {
@@ -385,7 +385,7 @@ export const confirmSchema = {
                               },
                               required: ["phone"],
                             },
-                          }
+                          },
                         },
                         time: {
                           type: "object",
@@ -405,7 +405,6 @@ export const confirmSchema = {
                               },
                               required: ["start", "end"],
                             },
-
                           },
                           required: ["label", "range"],
                         },
@@ -432,9 +431,7 @@ export const confirmSchema = {
                       //   "time",
                       //   "customer",
                       // ],
-                      required: [
-                        "type",
-                      ],
+                      required: ["type"],
                     },
                   },
                 },
@@ -482,17 +479,50 @@ export const confirmSchema = {
                           id: {
                             type: "string",
                           },
-                          quantity: {
-                            type: "object",
+                          if: {
                             properties: {
-                              selected: {
-                                type: "object",
-                                properties: {
-                                  count: {
-                                    type: "integer",
+                              domain: {
+                                enum: ["SRV15"],
+                              },
+                            },
+                          },
+                          then: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string", enum: ["hours"] },
                                   },
                                 },
-                                required: ["count"],
+                                unitized: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string" },
+                                    value: { type: "integer" },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          else: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  properties: {
+                                    count: {
+                                      type: "integer",
+                                    },
+                                  },
+                                  required: ["count"],
+                                },
                               },
                             },
                           },
@@ -510,7 +540,7 @@ export const confirmSchema = {
                           },
                         },
                         // required: ["id", "quantity", "price"],
-                        required: ["id"]
+                        required: ["id"],
                       },
                     },
                     required: ["title", "price", "item"],
@@ -565,26 +595,30 @@ export const confirmSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV18"]
-                            }
-                          }
+                              enum: ["SRV18"],
+                            },
+                          },
                         },
                         then: {
-                          required: ["amount",
+                          required: [
+                            "amount",
                             "currency",
                             // "transaction_id",
                             "bank_account_number",
-                            "virtual_payment_address"]
+                            "virtual_payment_address",
+                          ],
                         },
                         else: {
-                          required: ["amount",
+                          required: [
+                            "amount",
                             "currency",
                             "transaction_id",
                             "bank_account_number",
-                            "virtual_payment_address"]
-                        }
-                      }
-                    ]
+                            "virtual_payment_address",
+                          ],
+                        },
+                      },
+                    ],
                   },
                   status: {
                     type: "string",
@@ -651,14 +685,12 @@ export const confirmSchema = {
             if: {
               properties: {
                 domain: {
-                  enum: ["SRV16"]
-                }
-              }
+                  enum: ["SRV16"],
+                },
+              },
             },
             then: {
-              properties: {
-
-              }
+              properties: {},
             },
             else: {
               properties: {
@@ -686,8 +718,8 @@ export const confirmSchema = {
                   },
                   required: ["form"],
                 },
-              }
-            }
+              },
+            },
           },
           required: [
             "id",
@@ -700,7 +732,6 @@ export const confirmSchema = {
             "payments",
             "created_at",
             "updated_at",
-
           ],
         },
       },
