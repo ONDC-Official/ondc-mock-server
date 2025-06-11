@@ -9,7 +9,7 @@ export const onInitSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const onInitSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -144,9 +144,9 @@ export const onInitSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV17"]
-                            }
-                          }
+                              enum: ["SRV17"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -157,19 +157,19 @@ export const onInitSchema = {
                                   type: "object",
                                   properties: {
                                     unit: {
-                                      type: "string"
+                                      type: "string",
                                     },
                                     value: {
-                                      type: "number"
-                                    }
+                                      type: "number",
+                                    },
                                   },
-                                  required: ["unit", "value"]
-                                }
+                                  required: ["unit", "value"],
+                                },
                               },
-                              required: ["measure"]
-                            }
-                          }
-                        }
+                              required: ["measure"],
+                            },
+                          },
+                        },
                       },
                       {
                         else: {
@@ -178,15 +178,15 @@ export const onInitSchema = {
                               type: "object",
                               properties: {
                                 count: {
-                                  type: "number"
-                                }
+                                  type: "number",
+                                },
                               },
-                              required: ["count"]
-                            }
-                          }
-                        }
-                      }
-                    ]
+                              required: ["count"],
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                 },
                 required: [
@@ -258,15 +258,15 @@ export const onInitSchema = {
                         type: {
                           type: "string",
                         },
-                        if:{
-                          properties:{
-                            domain:{
-                              enum:["SRV16"]
-                            }
-                          }
+                        if: {
+                          properties: {
+                            domain: {
+                              enum: ["SRV16"],
+                            },
+                          },
                         },
-                        then:{
-                          properties:{
+                        then: {
+                          properties: {
                             location: {
                               type: "object",
                               properties: {
@@ -316,10 +316,10 @@ export const onInitSchema = {
                                 // "state",
                               ],
                             },
-                          }
+                          },
                         },
-                        else:{
-                          properties:{
+                        else: {
+                          properties: {
                             location: {
                               type: "object",
                               properties: {
@@ -378,7 +378,7 @@ export const onInitSchema = {
                               },
                               required: ["phone"],
                             },
-                          }
+                          },
                         },
                         time: {
                           type: "object",
@@ -398,7 +398,6 @@ export const onInitSchema = {
                               },
                               required: ["start", "end"],
                             },
-
                           },
                           required: ["label", "range"],
                         },
@@ -443,11 +442,11 @@ export const onInitSchema = {
                       if: { properties: { type: { const: "end" } } },
                       then: {
                         // required: ["type", "location", "contact", "time"]
-                         required: ["type", "location", "time"]
+                        required: ["type", "location", "time"],
                       },
                       else: {
                         required: ["type"],
-                      }
+                      },
                     },
                   },
                 },
@@ -495,17 +494,50 @@ export const onInitSchema = {
                           id: {
                             type: "string",
                           },
-                          quantity: {
-                            type: "object",
+                          if: {
                             properties: {
-                              selected: {
-                                type: "object",
-                                properties: {
-                                  count: {
-                                    type: "integer",
+                              domain: {
+                                enum: ["SRV15"],
+                              },
+                            },
+                          },
+                          then: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string", enum: ["hours"] },
                                   },
                                 },
-                                required: ["count"],
+                                unitized: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string" },
+                                    value: { type: "integer" },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          else: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  properties: {
+                                    count: {
+                                      type: "integer",
+                                    },
+                                  },
+                                  required: ["count"],
+                                },
                               },
                             },
                           },
@@ -523,7 +555,7 @@ export const onInitSchema = {
                           },
                         },
                         // required: ["id", "price"],
-                        required:["id"]
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",
@@ -562,7 +594,7 @@ export const onInitSchema = {
                             },
                           },
                           // required: ["descriptor", "list"],
-                          required:["list"]
+                          required: ["list"],
                         },
                       },
                     },
@@ -685,7 +717,7 @@ export const onInitSchema = {
             "billing",
             "fulfillments",
             "quote",
-            "payments"
+            "payments",
           ],
         },
       },

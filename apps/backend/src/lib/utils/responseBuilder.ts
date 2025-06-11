@@ -44,10 +44,11 @@ interface TagList {
 }
 
 interface Quantity {
-	count: any;
-	selected: {
-		count: number;
-	};
+  count: any;
+  selected: {
+    count: number;
+  };
+  unitized?: any;
 }
 
 interface AddOn {
@@ -185,7 +186,6 @@ export const responseBuilder = async (
 				if (uri.endsWith("/")) {
 					uri = uri.substring(0, uri.length - 1)
 				}
-				console.log("URI BEING SENT :::", uri);
 				const response = await axios.post(`${uri}?mode=mock`, async, {
 					headers: {
 						authorization: header,
@@ -1870,6 +1870,129 @@ export const quoteCreatorWeightment = (items: Item[],
 	return result;
 }
 
+export const quoteCreatorWarehouse = (
+  items: Item[],
+  providersItems?: any,
+  offers?: any,
+  fulfillment_type?: string,
+  service_name?: string,
+  scenario?: string
+) => {
+  if (!Array.isArray(items)) {
+    items = ensureArray(items);
+  }
+  const providersItem = [providersItems[0]];
+  //get price from on_search
+  let breakup: any[] = [];
+
+  items.forEach((item) => {
+    // Find the corresponding item in the second array
+    if (providersItems) {
+      const matchingItem = providersItem.find(
+        (secondItem: { id: string }) => secondItem?.id === item?.id
+      );
+      // If a matching item is found, update the price in the items array
+      if (matchingItem) {
+        item.title = matchingItem?.descriptor?.name;
+        item.available_quantity = {
+          available: matchingItem?.quantity?.available,
+          maximum: matchingItem?.quantity?.maximum,
+        };
+        item.price = {
+          currency: matchingItem.price.currency,
+          value: matchingItem.price.value,
+        };
+      }
+    }
+  });
+  items.forEach((item) => {
+    breakup = [
+      {
+        title: item.title,
+        price: {
+          currency: "INR",
+          value: (
+            Number(item?.price?.value) * item?.quantity?.unitized.count
+          ).toString(),
+        },
+        item: {
+          id: item.id,
+          price: item.price,
+          quantity: item.quantity,
+        },
+        tags: [
+          {
+            descriptor: {
+              code: "TITLE",
+            },
+            list: [
+              {
+                descriptor: {
+                  code: "type",
+                },
+                value: "item",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+  });
+
+  breakup.push({
+    title: "tax",
+    price: {
+      currency: "INR",
+      value: "100",
+    },
+    item: {
+      id: "I1",
+    },
+    tags: [
+      {
+        descriptor: {
+          code: "title",
+        },
+        list: [
+          {
+            descriptor: {
+              code: "type",
+            },
+            value: "TAX",
+          },
+        ],
+      },
+    ],
+  });
+
+  //MAKE DYNAMIC BREACKUP USING THE DYANMIC ITEMS
+  let totalPrice = 0;
+  breakup.forEach((entry) => {
+    if (entry.title === "discount") {
+      const priceValue = parseFloat(entry.price.value);
+      if (!isNaN(priceValue)) {
+        totalPrice -= priceValue;
+      }
+    } else {
+      const priceValue = parseFloat(entry.price.value);
+      if (!isNaN(priceValue)) {
+        totalPrice += priceValue;
+      }
+    }
+  });
+
+  const result = {
+    breakup: [...breakup],
+    price: {
+      currency: "INR",
+      value: totalPrice.toFixed(2),
+    },
+    ttl: "P1D",
+  };
+
+  return result;
+};
+
 //QUOTE FOR SUBSCRIPTION PROCESS
 export const quoteSubscription = (
 	items: Item[],
@@ -2493,7 +2616,7 @@ export const updateFulfillments = (
 									}
 							]
 					}
-			]: {
+			]: (domain !== "warehouse")?{
 					descriptor: {
 						code: "schedule",
 					},
@@ -2505,10 +2628,10 @@ export const updateFulfillments = (
 							value: "PT1H",
 						},
 					],
-				},
+				}:undefined,
 			};
 		}
-		if (domain !== "subscription" && domain !== "agri_input") {
+		if (domain !== "subscription" && domain !== "agri_input" && domain!== "warehouse" ) {
 			fulfillmentObj.tracking = false;
 			fulfillmentObj.state = {
 				descriptor: {
@@ -2537,13 +2660,21 @@ export const updateFulfillments = (
 		if (
 			domain !== SERVICES_DOMAINS.BID_ACTION_SERVICES &&
 			domain !== "subscription" &&
-			domain !== "agri_input"
+			domain !== "agri_input" &&
+			domain !== "warehouse"
 		) {
 			fulfillmentObj = {
 				...fulfillmentObj,
 				type: FULFILLMENT_TYPES.SELLER_FULFILLED,
 			};
 		}
+		if (domain === "warehouse") {
+			fulfillmentObj = {
+        ...fulfillmentObj,
+        type: FULFILLMENT_TYPES.BUYER_FULFILLED,
+      };
+		}
+
 		if (domain === "agri_output") {
 			fulfillmentObj = {
 				id: fulfillments[0].id || "F1",
@@ -2690,6 +2821,14 @@ export const updateFulfillments = (
 							}
 						}
 					})
+				}
+				else if (domain === 'warehouse') {
+					updatedFulfillments.push({
+						...fulfillments[0], state: {
+							descriptor: {
+							code:"PENDING"
+						}
+					}})
 				}
 				else {
 					updatedFulfillments = fulfillments;

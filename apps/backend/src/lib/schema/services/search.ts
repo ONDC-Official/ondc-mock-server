@@ -9,7 +9,7 @@ export const searchSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const searchSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -61,8 +61,8 @@ export const searchSchema = {
         },
         ttl: {
           type: "string",
-          const: "PT30S"
-        }
+          enum: ["PT30S", "PT5S"],
+        },
       },
       required: [
         "domain",
@@ -74,7 +74,7 @@ export const searchSchema = {
         "transaction_id",
         "message_id",
         "timestamp",
-        "ttl"
+        "ttl",
       ],
     },
     message: {
@@ -108,77 +108,123 @@ export const searchSchema = {
             },
             fulfillment: {
               type: "object",
-              properties: {
-                type: {
-                  type: "string",
-                  enum: SRV_FULFILLMENT_TYPE
-                },
-                stops: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      type: {
-                        type: "string",
-                        const: "end"
-                      },
-                      location: {
-                        type: "object",
-                        properties: {
-                          gps: {
-                            type: "string",
-                            pattern: GPS_PATTERN,
-                            errorMessage: "Incorrect gps value (minimum of six decimal places are required)"
-                          },
-                          area_code: {
-                            type: "string",
-                          },
-                        },
-                        required: ["gps", "area_code"],
-                      },
-                      time: {
-                        type: "object",
-                        properties: {
-                          range: {
-                            type: "object",
-                            properties: {
-                              start: {
-                                type: "string",
-                                format: "date-time"
-                              },
-                              end: {
-                                type: "string",
-                                format: "date-time"
-                              },
-                            },
-                            required: ["start"],
-                          },
-                          days: {
-                            type: "array",
-                            items: {
-                              type: "string",
-                            },
-                          },
-                        },
-                        required: ["range"],
-                      },
-                    },
-                    required: ["type", "location"],
+              if: {
+                properties: {
+                  domain: {
+                    const: "SRV15",
                   },
                 },
               },
-              required: ["type", "stops"],
+              then: {
+                properties: {
+                  stop: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        time: {
+                          type: "object",
+                          properties: {
+                            label: {
+                              type: "string",
+                              const: "search",
+                            },
+                            range: {
+                              type: "object",
+                              properties: {
+                                start: {
+                                  type: "string",
+                                  format: "date-time",
+                                },
+                                end: {
+                                  type: "string",
+                                  format: "date-time",
+                                },
+                              },
+                              required: ["start"],
+                            },
+                          },
+                          required: ["range"],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              else: {
+                properties: {
+                  type: {
+                    type: "string",
+                    enum: SRV_FULFILLMENT_TYPE, // Should be an actual array
+                  },
+                  stops: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        type: {
+                          type: "string",
+                          const: "end",
+                        },
+                        location: {
+                          type: "object",
+                          properties: {
+                            gps: {
+                              type: "string",
+                              pattern: GPS_PATTERN, // Should be an actual regex
+                              errorMessage:
+                                "Incorrect gps value (minimum of six decimal places are required)",
+                            },
+                            area_code: {
+                              type: "string",
+                            },
+                          },
+                          required: ["gps", "area_code"],
+                        },
+                        time: {
+                          type: "object",
+                          properties: {
+                            range: {
+                              type: "object",
+                              properties: {
+                                start: {
+                                  type: "string",
+                                  format: "date-time",
+                                },
+                                end: {
+                                  type: "string",
+                                  format: "date-time",
+                                },
+                              },
+                              required: ["start"],
+                            },
+                            days: {
+                              type: "array",
+                              items: {
+                                type: "string",
+                              },
+                            },
+                          },
+                          required: ["range"],
+                        },
+                      },
+                      required: ["type", "location"],
+                    },
+                  },
+                },
+                required: ["type", "stops"],
+              },
             },
             payment: {
               type: "object",
               properties: {
                 type: {
                   type: "string",
-                  enum: SRV_PAYMENT_TYPE
+                  enum: SRV_PAYMENT_TYPE,
                 },
                 collected_by: {
                   type: "string",
-                  enum:  PAYMENT_COLLECTEDBY
+                  enum: PAYMENT_COLLECTEDBY,
                 },
               },
               required: ["type", "collected_by"],
@@ -194,7 +240,7 @@ export const searchSchema = {
                     properties: {
                       code: {
                         type: "string",
-                        enum: SRV_INTENT_TAGS
+                        enum: SRV_INTENT_TAGS,
                       },
                     },
                     required: ["code"],
@@ -210,7 +256,7 @@ export const searchSchema = {
                           properties: {
                             code: {
                               type: "string",
-                              enum:SRV_INTENT_TAGS
+                              enum: SRV_INTENT_TAGS,
                             },
                           },
                           required: ["code"],

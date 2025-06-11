@@ -38,13 +38,8 @@ export const confirmConsultationController = async (
 		if (!on_init) {
 			return send_nack(res, ERROR_MESSAGES.ON_INIT_DOES_NOT_EXISTED)
 		}
-
 		const { fulfillments } = order;
-    console.log("fulfillments",fulfillments)
-		let updatedFulfillments = updateFulfillments(
-			fulfillments,
-			ON_ACTION_KEY?.ON_CONFIRM,
-		);
+    let updatedFulfillments;
     if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE){
        updatedFulfillments = updateFulfillments(
         fulfillments,
@@ -53,27 +48,47 @@ export const confirmConsultationController = async (
         "astroService"
       );
     }
-    if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
+    else if(context.domain===SERVICES_DOMAINS.WEIGHMENT){
       updatedFulfillments = updateFulfillments(
        fulfillments,
        ON_ACTION_KEY?.ON_CONFIRM,
        "",
        "weightment"
-     );
-   }
+      );
+    }
+    else if (context.domain === SERVICES_DOMAINS.WAREHOUSE) {
+      updatedFulfillments = updateFulfillments(
+        fulfillments,
+        ON_ACTION_KEY?.ON_CONFIRM,
+        "",
+        "warehouse"
+      );
+    }
+    else {
+      updateFulfillments(
+        fulfillments,
+        ON_ACTION_KEY?.ON_CONFIRM,
+      );
+    }
 
 		const responseMessage = {
-			order: {
-				...order,
-				status: (context.domain===SERVICES_DOMAINS.SERVICES)?ORDER_STATUS.ACCEPTED.toUpperCase():ORDER_STATUS.ACCEPTED,
-				fulfillments: updatedFulfillments,
-				provider: {
-					...order.provider,
-					rateable: true,
-				},
-        payments:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?[order.payments[0]]:order.payments
-			},
-		};
+      order: {
+        ...order,
+        status:
+          context.domain === SERVICES_DOMAINS.SERVICES
+            ? ORDER_STATUS.ACCEPTED.toUpperCase()
+            : ORDER_STATUS.ACCEPTED,
+        fulfillments: updatedFulfillments,
+        provider: {
+          ...order.provider,
+          rateable: true,
+        },
+        payments:
+          context.domain === SERVICES_DOMAINS.WEIGHMENT
+            ? [order.payments[0]]
+            : order.payments,
+      },
+    };
     
     if(context.domain===SERVICES_DOMAINS.ASTRO_SERVICE||context.domain===SERVICES_DOMAINS.WEIGHMENT){
       delete responseMessage.order.payments[0].params.transaction_id
@@ -129,8 +144,6 @@ export const confirmConsultationController = async (
       ]
       responseMessage.order.fulfillments=[{...responseMessage.order.fulfillments[0],tracking:false}]
     }
-
-    console.log("responseMEssageatonconfm",JSON.stringify(responseMessage))
 
 		return responseBuilder(
 			res,

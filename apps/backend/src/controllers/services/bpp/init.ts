@@ -18,6 +18,8 @@ import {
 	ASTRO_SERVICES_EXAMPLES_PATH,
 	quoteCreatorWeightment,
 	WEIGHMENT_SERVICES_EXAMPLES_PATH,
+	WAREHOUSE_SERVICES_EXAMPLES_PATH,
+	quoteCreatorWarehouse,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -130,6 +132,14 @@ const initConsultationController = (
 				"weightment"
 			);
 		}
+		if (domain === SERVICES_DOMAINS.WAREHOUSE) {
+      updatedFulfillments = updateFulfillments(
+        fulfillments,
+        ON_ACTION_KEY?.ON_INIT,
+        " ",
+        "warehouse"
+      );
+    }
 
 		switch (domain) {
 			case SERVICES_DOMAINS.SERVICES:
@@ -165,6 +175,11 @@ const initConsultationController = (
 			case SERVICES_DOMAINS.WEIGHMENT:
 				file=	fs.readFileSync(
 					path.join(WEIGHMENT_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
+				);
+				break;
+			case SERVICES_DOMAINS.WAREHOUSE:
+				file=	fs.readFileSync(
+					path.join(WAREHOUSE_SERVICES_EXAMPLES_PATH, "on_init/on_init.yaml")
 				);
 				break;
 			default:
@@ -210,6 +225,14 @@ const initConsultationController = (
 					"",
 					fulfillments[0]?.type,
 					"weightment"
+								):
+								domain===SERVICES_DOMAINS.WAREHOUSE?
+				quoteCreatorWarehouse(
+					items,
+					providersItems,
+					"",
+					fulfillments[0]?.type,
+					"warehouse"
 				)
 				:quoteCreatorHealthCareService(
 						items,
@@ -217,14 +240,13 @@ const initConsultationController = (
 						"",
 						fulfillments[0]?.type
 				  );
-		console.log("quoteeeeeee", JSON.stringify(quoteData.price.value))
 		const responseMessage = {
 			order: {
 				provider: {...remainingProvider,
 					locations:[{id:"L1"}]
 				},
 				billing,
-				fulfillments: updatedFulfillments,
+				fulfillments: (context.domain === SERVICES_DOMAINS.WAREHOUSE)?response.value.message.order.fulfillments :updatedFulfillments,
 				quote: quoteData,
 				cancellation_terms: response?.value?.message?.order?.cancellation_terms,
 				//UPDATE PAYMENT OBJECT WITH REFUNDABLE SECURITY
@@ -313,7 +335,6 @@ const initConsultationController = (
 
 		delete req.body?.providersItems;
 
-		console.log("on_init",JSON.stringify(responseMessage))
 	return 	 responseBuilder(
 			res,
 			next,
@@ -621,7 +642,6 @@ const initParticipationFeeController = (
 		};
 		delete req.body?.providersItems;
 
-		// console.log("responseMessage=>>>>>>>>>",responseMessage)
 		return responseBuilder(
 			res,
 			next,
@@ -653,7 +673,6 @@ const initSellercollected=(req: Request,
 	
 		const Astroitems=items
 
-		console.log("ITEMS before :::::::", JSON.stringify(items))
 
 		let file: any = fs.readFileSync(
 			path.join(SERVICES_EXAMPLES_PATH, "on_init/on_init_consultation.yaml")
@@ -741,7 +760,6 @@ const initSellercollected=(req: Request,
 						"",
 						fulfillments[0]?.type
 				  );
-		console.log("quoteeeeeee", JSON.stringify(quoteData))
 		const responseMessage = {
 			order: {
 				provider: {...remainingProvider,
@@ -807,7 +825,6 @@ const initSellercollected=(req: Request,
 
 		delete req.body?.providersItems;
 
-		console.log("on_init",JSON.stringify(responseMessage))
 	 	 responseBuilder(
 			res,
 			next,

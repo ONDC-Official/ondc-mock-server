@@ -6,6 +6,7 @@ import {
 	send_nack,
 	redisFetchToServer,
 	SERVICES_BAP_MOCKSERVER_URL,
+	quoteCreatorWarehouse,
 } from "../../../lib/utils";
 import {
 	ACTTION_KEY,
@@ -71,7 +72,7 @@ const intializeRequest = async (
 				order: {
 					provider: {
 						...provider,
-						locations: [{ id: uuidv4() }],
+						// locations: [{ id: uuidv4() }],
 					},
 					items,
 					billing: BILLING_DETAILS,
@@ -82,7 +83,7 @@ const intializeRequest = async (
 							stops: [
 								{
 									...stops[0],
-									id: undefined,
+									// id: undefined,
 									location:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?{
 										gps: "12.974002,77.613458",
 										area_code: "560001",
@@ -100,8 +101,8 @@ const intializeRequest = async (
 											name: "Karnataka",
 										},
 									},
-									days:undefined,
-									contact:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?undefined: {
+									// days:undefined,
+									contact:(context.domain===SERVICES_DOMAINS.WEIGHMENT )?undefined: {
 										phone: "9886098860",
 									},
 									time: {...stops[0].time,
@@ -111,6 +112,7 @@ const intializeRequest = async (
 							],
 						},
 					],
+					quote:(context.domain === SERVICES_DOMAINS.WAREHOUSE)?quote:undefined,
 					payments,
 				},
 			},
@@ -127,8 +129,12 @@ const intializeRequest = async (
 		if(context.domain === SERVICES_DOMAINS.AGRI_EQUIPMENT){
 			init.message.order.items=[{...init.message.order.items[0],location_ids:["L1"]}]
 		}
-		console.log("init initiate response",JSON.stringify(init))
+		if (context.domain === SERVICES_DOMAINS.WAREHOUSE) {
+			delete init.message.order.fulfillments[0].stops[0].location
+			delete init.message.order.fulfillments[0].stops[0].contact
+			delete init.message.order.fulfillments[0].stops[0].time.days;
 
+		}
 		await send_response(
 			res,
 			next,

@@ -1,10 +1,25 @@
 export const VERSION = "2.0.0";
 
-export const DOMAIN = ["ONDC:SRV11","ONDC:SRV13","ONDC:SRV14","ONDC:SRV16","ONDC:SRV17","ONDC:SRV18","ONDC:SRV19"];
+export const DOMAIN = ["ONDC:SRV11","ONDC:SRV13","ONDC:SRV14","ONDC:SRV15","ONDC:SRV16","ONDC:SRV17","ONDC:SRV18","ONDC:SRV19"];
 
 export const SRV_FULFILLMENT_TYPE = ["Home-Service", "Store-Service","Seller-Fulfilled", "Buyer-Fulfilled","Online"];
 
-export const SRV_INTENT_TAGS = ["BUYER_FINDER_FEES","finder_fee_type","finder_fee_amount","FINDER_FEE_TYPE","FINDER_FEE_AMOUNT","BAP_TYPE","BAP_Terms","BAP_TERMS","BAP_DETAILS","BUYER_ID_CODE","BUYER_ID_NO","BUYER_ID"];
+export const SRV_INTENT_TAGS = [
+  "BUYER_FINDER_FEES",
+  "finder_fee_type",
+  "finder_fee_amount",
+  "FINDER_FEE_TYPE",
+  "FINDER_FEE_AMOUNT",
+  "BAP_TYPE",
+  "BAP_Terms",
+  "BAP_TERMS",
+  "BAP_DETAILS",
+  "BUYER_ID_CODE",
+  "BUYER_ID_NO",
+  "BUYER_ID",
+  "SEARCH_CRITERIA",
+  "WAREHOUSE_STORAGE_TYPE",
+];
 
 export const SRV_PAYMENT_TYPE = [
 	"PRE-FULFILLMENT",

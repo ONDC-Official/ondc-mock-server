@@ -9,7 +9,7 @@ export const onSelectSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -41,7 +41,7 @@ export const onSelectSchema = {
         },
         version: {
           type: "string",
-          const: VERSION
+          const: VERSION,
         },
         bap_id: {
           type: "string",
@@ -138,9 +138,9 @@ export const onSelectSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV17"]
-                            }
-                          }
+                              enum: ["SRV17"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -151,19 +151,19 @@ export const onSelectSchema = {
                                   type: "object",
                                   properties: {
                                     unit: {
-                                      type: "string"
+                                      type: "string",
                                     },
                                     value: {
-                                      type: "number"
-                                    }
+                                      type: "number",
+                                    },
                                   },
-                                  required: ["unit", "value"]
-                                }
+                                  required: ["unit", "value"],
+                                },
                               },
-                              required: ["measure"]
-                            }
-                          }
-                        }
+                              required: ["measure"],
+                            },
+                          },
+                        },
                       },
                       {
                         else: {
@@ -172,15 +172,15 @@ export const onSelectSchema = {
                               type: "object",
                               properties: {
                                 count: {
-                                  type: "number"
-                                }
+                                  type: "number",
+                                },
                               },
-                              required: ["count"]
-                            }
-                          }
-                        }
-                      }
-                    ]
+                              required: ["count", "hours"],
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                   time: {
                     type: "object",
@@ -251,7 +251,7 @@ export const onSelectSchema = {
                         properties: {
                           code: {
                             type: "string",
-                            enum: ["Serviceable", "Non-serviceable"]
+                            enum: ["Serviceable", "Non-serviceable"],
                           },
                         },
                         required: ["code"],
@@ -259,88 +259,167 @@ export const onSelectSchema = {
                     },
                     required: ["descriptor"],
                   },
-                  stops: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        type: {
-                          type: "string",
-                        },
-                        location: {
-                          type: "object",
-                          properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            area_code: {
-                              type: "string",
-                            },
+                  if: {
+                    properties: {
+                      domain:{enum:["SRV15"]},
+                    },
+                  },
+                  then: {
+                    stops: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
                           },
-                          required: ["gps", "area_code"],
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            label: {
-                              type: "string",
-                              enum: ["confirmed", "rejected"]
-                            },
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
+                          time: {
+                            type: "object",
+                            properties: {
+                              label: {
+                                type: "string",
+                                enum: ["confirmed", "rejected"],
                               },
-                              required: ["start", "end"],
-                            },
-                          },
-                          required: ["label", "range"],
-                        },
-                        tags: {
-                          type: "object",
-                          properties: {
-                            descriptor: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            list: {
-                              type: "array",
-                              items: {
+                              range: {
                                 type: "object",
                                 properties: {
-                                  descriptor: {
-                                    type: "object",
-                                    properties: {
-                                      code: {
-                                        type: "string",
-                                      },
-                                    },
-                                    required: ["code"],
+                                  start: {
+                                    type: "string",
                                   },
-                                  value: {
+                                  end: {
                                     type: "string",
                                   },
                                 },
-                                required: ["descriptor", "value"],
+                                required: ["start", "end"],
                               },
                             },
+                            required: ["label", "range"],
                           },
-                          required: ["descriptor", "list"],
+                          tags: {
+                            type: "object",
+                            properties: {
+                              descriptor: {
+                                type: "object",
+                                properties: {
+                                  code: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["code"],
+                              },
+                              list: {
+                                type: "array",
+                                items: {
+                                  type: "object",
+                                  properties: {
+                                    descriptor: {
+                                      type: "object",
+                                      properties: {
+                                        code: {
+                                          type: "string",
+                                        },
+                                      },
+                                      required: ["code"],
+                                    },
+                                    value: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["descriptor", "value"],
+                                },
+                              },
+                            },
+                            required: ["descriptor", "list"],
+                          },
                         },
+                        required: ["type", "time"],
                       },
-                      required: ["type", "location", "time"],
                     },
                   },
+                  else: {
+                    stops: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
+                          },
+                          location: {
+                            type: "object",
+                            properties: {
+                              gps: {
+                                type: "string",
+                              },
+                              area_code: {
+                                type: "string",
+                              },
+                            },
+                            required: ["gps", "area_code"],
+                          },
+                          time: {
+                            type: "object",
+                            properties: {
+                              label: {
+                                type: "string",
+                                enum: ["confirmed", "rejected"],
+                              },
+                              range: {
+                                type: "object",
+                                properties: {
+                                  start: {
+                                    type: "string",
+                                  },
+                                  end: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["start", "end"],
+                              },
+                            },
+                            required: ["label", "range"],
+                          },
+                          tags: {
+                            type: "object",
+                            properties: {
+                              descriptor: {
+                                type: "object",
+                                properties: {
+                                  code: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["code"],
+                              },
+                              list: {
+                                type: "array",
+                                items: {
+                                  type: "object",
+                                  properties: {
+                                    descriptor: {
+                                      type: "object",
+                                      properties: {
+                                        code: {
+                                          type: "string",
+                                        },
+                                      },
+                                      required: ["code"],
+                                    },
+                                    value: {
+                                      type: "string",
+                                    },
+                                  },
+                                  required: ["descriptor", "value"],
+                                },
+                              },
+                            },
+                            required: ["descriptor", "list"],
+                          },
+                        },
+                        required: ["type", "location", "time"],
+                      },
+                    },
+                  }
                 },
                 // required: ["id", "state", "stops"],
                 required: ["id", "stops"],
@@ -397,7 +476,7 @@ export const onSelectSchema = {
                                     type: "integer",
                                   },
                                 },
-                                required: ["count"],
+                                // required: ["count"],
                               },
                             },
                           },
@@ -452,7 +531,7 @@ export const onSelectSchema = {
                               },
                             },
                           },
-                          required: [ "list"],
+                          required: ["list"],
                         },
                       },
                     },
@@ -476,16 +555,20 @@ export const onSelectSchema = {
                   },
                   collected_by: {
                     type: "string",
-                    enum: ["BAP", "BPP"]
+                    enum: ["BAP", "BPP"],
                   },
                 },
                 required: ["type", "collected_by"],
               },
             },
           },
-          required: ["provider", "items", "fulfillments", 
-            //"quote", 
-            "payments"],
+          required: [
+            "provider",
+            "items",
+            "fulfillments",
+            //"quote",
+            "payments",
+          ],
         },
       },
       required: ["order"],

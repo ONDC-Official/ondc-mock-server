@@ -16,7 +16,6 @@ import { set, eq, isEmpty } from "lodash";
 import _ from "lodash";
 import { isBefore, addDays } from "date-fns";
 import { SERVICES_DOMAINS } from "../../../lib/utils/apiConstants";
-import { log } from "console";
 
 export const initiateSelectController = async (
 	req: Request,
@@ -221,84 +220,138 @@ const intializeRequest = async (
 						parent_item_id,
 						location_ids,
 						fulfillment_ids,
-						category_ids
+						category_ids,
+						price,
+						quantity,
+						tags
 					}: {
 						id: string;
 						parent_item_id: string;
 						location_ids: string[];
 						fulfillment_ids:string[];
-						category_ids:string[];
-					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]],category_ids,fulfillment_ids })
+							category_ids: string[];
+							price: any,
+							quantity: any,
+							tags:string[]
+					}) => ({ id, parent_item_id, location_ids: [location_ids?.[0]],category_ids,fulfillment_ids,price,quantity,tags })
 				)?.[0],
 			];
 		}
 
 		let select = {
-			context: {
-				...context,
-				timestamp: new Date().toISOString(),
-				action: "select",
-				bap_id: MOCKSERVER_ID,
-				bap_uri: SERVICES_BAP_MOCKSERVER_URL,
-				message_id: uuidv4(),
-			},
-			message: {
-				order: {
-					provider: {
-						id,
-						locations: [
-							{
-								id: locations[0].id,
-							},
-						],
+      context: {
+        ...context,
+        timestamp: new Date().toISOString(),
+        action: "select",
+        bap_id: MOCKSERVER_ID,
+        bap_uri: SERVICES_BAP_MOCKSERVER_URL,
+        message_id: uuidv4(),
+      },
+      message: {
+        order: {
+          provider: {
+            id,
+          },
+          items: items.map((itm: Item) => ({
+            ...itm,
+            location_ids: itm.location_ids
+              ? itm.location_ids.map((id: string) => String(id))
+              : undefined,
+            fulfillment_ids: itm.fulfillment_ids,
+            category_ids: itm.category_ids,
+            quantity: context.domain === "ONDC:SRV15"
+			? {
+					selected: {
+					measure: {
+							unit:"hours"
+						}
 					},
-					items: items.map((itm: Item) => ({
-						...itm,
-						location_ids: itm.location_ids
-							? itm.location_ids.map((id: string) => String(id))
-							: undefined,
-						fulfillment_ids:itm.fulfillment_ids,
-						category_ids:itm.category_ids,
-						quantity: {
-							selected:(context.domain === "ONDC:SRV17")?{measure:{
-								unit:"hours",
-								value:"24"
-							}}:{
-								count: 1,
-							},
-						},
-					})),
-					fulfillments: [
-						{
-							type: fulfillments[0].type,
-							stops: [
-								{
-									type: "end",
-									location:(context.domain===SERVICES_DOMAINS.WEIGHMENT)?undefined: {
-										gps: "12.974002,77.613458",
-										area_code: "560001",
-									},
-									time: {
-										label: "selected",
-										range: {
-											// should be dynamic on the basis of scehdule
-											start:
-												providers?.[0]?.time?.schedule?.times?.[0] ??
-												new Date(),
-											end:
-												providers?.[0]?.time?.schedule?.times?.[1] ??
-												new Date(),
-										},
-									},
-									days: (scenario === "customization" || context.domain===SERVICES_DOMAINS.WEIGHMENT) ? "4" : undefined,
-								},
-							],
-						},
-					],
-					payments: [{ type: payments?.[0].type }],
+				unitized: {
+				  count: 100,
+				  measure: {
+					value: 100,
+					unit: "t",
+				  },
 				},
-			},
-		};
+			  }:{
+              selected:
+                context.domain === "ONDC:SRV17"
+                  ? {
+                      measure: {
+                        unit: "hours",
+                        value: "24",
+                      },
+                    }
+                  : {
+                      count: 1,
+                    },
+            },
+            price: itm.price ? itm.price : undefined,
+            tags:
+              context.domain === SERVICES_DOMAINS.WAREHOUSE
+                ? [
+                    {
+                      descriptor: {
+                        code: "SELECTION",
+                      },
+                      list: [
+                        {
+                          descriptor: {
+                            code: "QC_REPORT",
+                          },
+                          value: "https://example.com/report.pdf",
+                        },
+                        {
+                          descriptor: {
+                            code: "WAREHOUSE_STORAGE_TYPE",
+                          },
+                          value: "NORMAL",
+                        },
+                      ],
+                    },
+                  ]
+                : undefined,
+          })),
+          fulfillments: [
+            {
+              type: fulfillments[0].type,
+              stops: [
+                {
+                  type: "end",
+                  location:
+                    context.domain === SERVICES_DOMAINS.WEIGHMENT ||
+                    context.domain === SERVICES_DOMAINS.WAREHOUSE
+                      ? undefined
+                      : {
+                          gps: "12.974002,77.613458",
+                          area_code: "560001",
+                        },
+                  time: {
+                    label: "selected",
+                    //   days: fulfillments[0].stops[0].days,
+                    range: {
+                      // should be dynamic on the basis of scehdule
+                      start:
+                        providers?.[0]?.time?.schedule?.times?.[0] ??
+                        new Date(),
+                      end:
+                        providers?.[0]?.time?.schedule?.times?.[1] ??
+                        new Date(),
+                    },
+                  },
+                  days:
+                    scenario === "customization" ||
+                    context.domain === SERVICES_DOMAINS.WEIGHMENT
+                      ? "4"
+                      : undefined,
+                },
+              ],
+            },
+          ],
+          payments:(context.domain !== SERVICES_DOMAINS.WAREHOUSE)?[{ type: payments?.[0].type }]:undefined,
+        },
+      },
+    };
 
 		if (eq(scenario, "customization")) {
 			set(
@@ -351,7 +404,6 @@ const intializeRequest = async (
 			]
 		}
 
-		console.log("responseMessage", JSON.stringify(select))
 
 		await send_response(res, next, select, transaction_id, "select");
 	} catch (error) {

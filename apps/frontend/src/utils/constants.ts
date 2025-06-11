@@ -73,6 +73,7 @@ export const SERVICE_DOMAINS = [
 	"ONDC:SRV11",
 	"ONDC:SRV13",
 	"ONDC:SRV14",
+	"ONDC:SRV15",
 	"ONDC:SRV16",
 	"ONDC:SRV17",
 	"ONDC:SRV18",
@@ -94,13 +95,15 @@ export const SERVICE_DOMAINS_OBJECT = [
 ];
 
 export const SERVICES_DOMAINS = {
-	SERVICE: "ONDC:SRV11",
-	HEALTHCARE_SERVICES: "ONDC:SRV13",
-	AGRI_SERVICES: "ONDC:SRV14",
-	EQUIPMENT_HIRING_SERVICES: "ONDC:SRV17",
-	BID_AUCTION_SERVICE: "ONDC:SRV18",
-	PRINT_MEDIA: "ONDC:MEC10",
-	ASTRO_SERVICE:"ONDC:SRV16"
+  SERVICE: "ONDC:SRV11",
+  HEALTHCARE_SERVICES: "ONDC:SRV13",
+  AGRI_SERVICES: "ONDC:SRV14",
+  EQUIPMENT_HIRING_SERVICES: "ONDC:SRV17",
+  BID_AUCTION_SERVICE: "ONDC:SRV18",
+  PRINT_MEDIA: "ONDC:MEC10",
+	ASTRO_SERVICE: "ONDC:SRV16",
+	WAREHOUSE_SERVICE: "ONDC:SRV15",
+  WEIGHMENT_SERVICE:"ONDC:SRV19"
 };
 
 export const ALL_DOMAINS = {
@@ -442,7 +445,8 @@ export const INITIATE_FIELDS = {
 			options: {
 				agri: AGRI_SCENARIOS["search"].map((each) => each.scenario),
 				agrioutput: AGRI_OUTPUT_SCENARIOS["search"].map((each) => each.scenario),
-				subscription:["city","category","item"]
+				subscription: ["city", "category", "item"],
+				services:["default","P2P"]
 			},
 		},
 	],

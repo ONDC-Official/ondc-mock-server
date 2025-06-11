@@ -13,6 +13,9 @@ export const SERVICES_EXAMPLES_PATH =
 export const ASTRO_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-astro/api/components/Examples/Astro_services_yaml";
 
+export const WAREHOUSE_SERVICES_EXAMPLES_PATH =
+    "./domain-repos/@services/draft-warehouse/api/components/Examples/Warehouse_services_yaml";
+
 export const WEIGHMENT_SERVICES_EXAMPLES_PATH =
 	"./domain-repos/@services/draft-weighment/api/components/Examples/Weighment_services_yaml";
 

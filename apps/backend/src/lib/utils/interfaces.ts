@@ -97,6 +97,7 @@ export interface Item {
   tags?: Tag[]; // Optional because not all items have tags
   descriptor?: ItemDescriptor;
   time?: TimeObject;
+  price?:Price
 }
 
 export interface Category {

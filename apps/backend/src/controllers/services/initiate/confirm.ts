@@ -74,14 +74,13 @@ const intializeRequest = async (
 					status:(context.domain===SERVICES_DOMAINS.SERVICES) ?ORDER_STATUS.CREATED.toUpperCase() :ORDER_STATUS.CREATED,
 					provider: {
 						...provider,
-						locations:[{
-							id:"L1"
-						}],
+						// locations:[{
+						// 	id:"L1"
+						// }],
 					},
 					fulfillments: [
 						{
 							...remainingfulfillments,
-							type:"Seller-Fulfilled",
 							stops: stops.map((stop: any) => {
 								return {
 									...stop,
@@ -113,7 +112,7 @@ const intializeRequest = async (
 							...payments[0],
 							params: {
 								...payments[0]?.params,
-								transaction_id: uuidv4(),
+								// transaction_id: uuidv4(),
 							},
 							status: PAYMENT_STATUS.PAID,
 						},
@@ -128,7 +127,7 @@ const intializeRequest = async (
 					],
 					created_at: timestamp,
 					updated_at: timestamp,
-					xinput: {
+					xinput:(context.domain === SERVICES_DOMAINS.WAREHOUSE)? undefined: {
 						...xinput,
 						form: {
 							...xinput?.form,
@@ -150,7 +149,6 @@ const intializeRequest = async (
 			}
 		}
 
-		console.log("confirm Response",JSON.stringify(confirm))
 		await send_response(
 			res,
 			next,
