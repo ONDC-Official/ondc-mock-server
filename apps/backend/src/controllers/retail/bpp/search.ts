@@ -26,7 +26,7 @@ export const searchController = async (
 		//TODO need to check std code for b2b exports
 
 		const buyerIdTag = message.intent.tags.find(
-			(tag: any) => tag.descriptor.code === "buyer_id"
+			(tag: any) => tag?.descriptor?.code === "buyer_id"
 		);
 
 

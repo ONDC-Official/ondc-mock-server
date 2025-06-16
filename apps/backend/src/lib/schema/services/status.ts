@@ -76,7 +76,7 @@ export const statusSchema = {
         },
         ttl: {
           type: "string",
-          const: "PT30S"
+          enum: ["PT30S","PT5S"]
         },
       },
       required: [

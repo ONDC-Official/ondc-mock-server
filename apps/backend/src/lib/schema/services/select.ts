@@ -77,7 +77,7 @@ export const selectSchema = {
         },
         ttl: {
           type: "string",
-          const: "PT30S"
+          enum: ["PT30S","PT5S"]
         },
       },
       required: [
@@ -286,7 +286,7 @@ export const selectSchema = {
               },
             },
           },
-          required: ["provider", "items", "fulfillments", "payments"],
+          required: ["provider", "items", "fulfillments"],
         },
       },
       required: ["order"],

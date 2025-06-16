@@ -9,7 +9,7 @@ export const initSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -144,9 +144,9 @@ export const initSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV17"]
-                            }
-                          }
+                              enum: ["SRV17"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -157,19 +157,19 @@ export const initSchema = {
                                   type: "object",
                                   properties: {
                                     unit: {
-                                      type: "string"
+                                      type: "string",
                                     },
                                     value: {
-                                      type: "number"
-                                    }
+                                      type: "number",
+                                    },
                                   },
-                                  required: ["unit", "value"]
-                                }
+                                  required: ["unit", "value"],
+                                },
                               },
-                              required: ["measure"]
-                            }
-                          }
-                        }
+                              required: ["measure"],
+                            },
+                          },
+                        },
                       },
                       {
                         else: {
@@ -178,15 +178,15 @@ export const initSchema = {
                               type: "object",
                               properties: {
                                 count: {
-                                  type: "number"
-                                }
+                                  type: "number",
+                                },
                               },
-                              required: ["count"]
-                            }
-                          }
-                        }
-                      }
-                    ]
+                              required: ["count"],
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                 },
                 required: [
@@ -253,97 +253,141 @@ export const initSchema = {
                   type: {
                     type: "string",
                   },
-                  stops: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        type: {
-                          type: "string",
-                        },
-                        location: {
-                          type: "object",
-                          properties: {
-                            gps: {
-                              type: "string",
-                            },
-                            address: {
-                              type: "string",
-                            },
-                            city: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                            country: {
-                              type: "object",
-                              properties: {
-                                code: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["code"],
-                            },
-                            area_code: {
-                              type: "string",
-                            },
-                            state: {
-                              type: "object",
-                              properties: {
-                                name: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["name"],
-                            },
-                          },
-                          required: [
-                            "gps",
-                            // "address",
-                            // "city",
-                            // "country",
-                            "area_code",
-                            // "state",
-                          ],
-                        },
-                        contact: {
-                          type: "object",
-                          properties: {
-                            phone: {
-                              type: "string",
-                            },
-                          },
-                          required: ["phone"],
-                        },
-                        time: {
-                          type: "object",
-                          properties: {
-                            label: {
-                              type: "string",
-                              enum: ["confirmed"]
-                            },
-                            range: {
-                              type: "object",
-                              properties: {
-                                start: {
-                                  type: "string",
-                                },
-                                end: {
-                                  type: "string",
-                                },
-                              },
-                              required: ["start", "end"],
-                            },
-
-                          },
-                          required: ["label", "range"],
-                        },
+                  if: {
+                    properties: {
+                      domain: {
+                        enum: ["SRV15"],
                       },
-                      required: ["type", "location","time"],
+                    },
+                  },
+                  then: {
+                    stops: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
+                          },
+                          time: {
+                            type: "object",
+                            properties: {
+                              label: {
+                                type: "string",
+                                enum: ["confirmed"],
+                              },
+                              range: {
+                                type: "object",
+                                properties: {
+                                  start: {
+                                    type: "string",
+                                  },
+                                  end: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["start", "end"],
+                              },
+                            },
+                            required: ["label", "range"],
+                          },
+                        },
+                        required: ["type", , "time"],
+                      },
+                    },
+                  },
+                  else: {
+                    stops: {
+                      type: "array",
+                      items: {
+                        type: "object",
+                        properties: {
+                          type: {
+                            type: "string",
+                          },
+                          location: {
+                            type: "object",
+                            properties: {
+                              gps: {
+                                type: "string",
+                              },
+                              address: {
+                                type: "string",
+                              },
+                              city: {
+                                type: "object",
+                                properties: {
+                                  name: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["name"],
+                              },
+                              country: {
+                                type: "object",
+                                properties: {
+                                  code: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["code"],
+                              },
+                              area_code: {
+                                type: "string",
+                              },
+                              state: {
+                                type: "object",
+                                properties: {
+                                  name: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["name"],
+                              },
+                            },
+                            required: [
+                              "gps",
+                              // "address",
+                              // "city",
+                              // "country",
+                              "area_code",
+                              // "state",
+                            ],
+                          },
+                          contact: {
+                            type: "object",
+                            properties: {
+                              phone: {
+                                type: "string",
+                              },
+                            },
+                            required: ["phone"],
+                          },
+                          time: {
+                            type: "object",
+                            properties: {
+                              label: {
+                                type: "string",
+                                enum: ["confirmed"],
+                              },
+                              range: {
+                                type: "object",
+                                properties: {
+                                  start: {
+                                    type: "string",
+                                  },
+                                  end: {
+                                    type: "string",
+                                  },
+                                },
+                                required: ["start", "end"],
+                              },
+                            },
+                            required: ["label", "range"],
+                          },
+                        },
+                        required: ["type", "location", "time"],
+                      },
                     },
                   },
                 },
