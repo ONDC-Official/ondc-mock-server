@@ -16,6 +16,7 @@ git submodule add -b draft-healthcare https://github.com/ONDC-Official/ONDC-SRV-
 git submodule add -b draft-agri_equipment https://github.com/ONDC-Official/ONDC-SRV-Specifications domain-repos/@services/draft-agri_equipment
 git submodule add -b draft-agri_bids_and_auction https://github.com/ONDC-Official/ONDC-SRV-Specifications domain-repos/@services/draft-agri_bids_and_auction
 git submodule add -b draft-astro https://github.com/ONDC-Official/ONDC-SRV-Specifications domain-repos/@services/draft-astro
+git submodule add -b draft-warehouse https://github.com/ONDC-Official/ONDC-SRV-Specifications domain-repos/@services/draft-warehouse
 
 
 # Logisitcs
