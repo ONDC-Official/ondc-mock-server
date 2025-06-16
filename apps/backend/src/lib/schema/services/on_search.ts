@@ -77,7 +77,7 @@ export const onSearchSchema = {
         },
         ttl: {
           type: "string",
-          const: "PT30S",
+          enum: ["PT30S","PT5S"],
         },
       },
       required: [
@@ -1212,7 +1212,7 @@ export const onSearchSchema = {
                   // "ttl",
                   // "time",
                   "locations",
-                  "tags",
+                  // "tags",
                   "items",
                   // "fulfillments",
                 ],

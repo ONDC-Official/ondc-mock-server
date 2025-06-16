@@ -9,7 +9,7 @@ export const onConfirmSchema = {
       properties: {
         domain: {
           type: "string",
-          enum: DOMAIN
+          enum: DOMAIN,
         },
         location: {
           type: "object",
@@ -153,9 +153,9 @@ export const onConfirmSchema = {
                         if: {
                           properties: {
                             domain: {
-                              enum: ["SRV17"]
-                            }
-                          }
+                              enum: ["SRV17"],
+                            },
+                          },
                         },
                         then: {
                           properties: {
@@ -166,19 +166,19 @@ export const onConfirmSchema = {
                                   type: "object",
                                   properties: {
                                     unit: {
-                                      type: "string"
+                                      type: "string",
                                     },
                                     value: {
-                                      type: "number"
-                                    }
+                                      type: "number",
+                                    },
                                   },
-                                  required: ["unit", "value"]
-                                }
+                                  required: ["unit", "value"],
+                                },
                               },
-                              required: ["measure"]
-                            }
-                          }
-                        }
+                              required: ["measure"],
+                            },
+                          },
+                        },
                       },
                       {
                         else: {
@@ -187,15 +187,15 @@ export const onConfirmSchema = {
                               type: "object",
                               properties: {
                                 count: {
-                                  type: "number"
-                                }
+                                  type: "number",
+                                },
                               },
-                              required: ["count"]
-                            }
-                          }
-                        }
-                      }
-                    ]
+                              required: ["count"],
+                            },
+                          },
+                        },
+                      },
+                    ],
                   },
                 },
                 required: [
@@ -382,7 +382,7 @@ export const onConfirmSchema = {
                       },
                       if: { properties: { type: { const: "end" } } },
                       then: {
-                        required: ["type", "location", "contact", "time"]
+                        required: ["type", "location", "contact", "time"],
                       },
                       else: {
                         required: ["type"],
@@ -393,13 +393,7 @@ export const onConfirmSchema = {
                     type: "boolean",
                   },
                 },
-                required: [
-                  "id",
-                  "state",
-                  "type",
-                  "stops",
-                  "rateable",
-                ],
+                required: ["id", "state", "type", "stops"],
               },
             },
             quote: {
@@ -443,17 +437,50 @@ export const onConfirmSchema = {
                           id: {
                             type: "string",
                           },
-                          quantity: {
-                            type: "object",
+                          if: {
                             properties: {
-                              selected: {
-                                type: "object",
-                                properties: {
-                                  count: {
-                                    type: "integer",
+                              domain: {
+                                enum: ["SRV15"],
+                              },
+                            },
+                          },
+                          then: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string", enum: ["hours"] },
                                   },
                                 },
-                                required: ["count"],
+                                unitized: {
+                                  type: "object",
+                                  count: { type: "integer" },
+                                  measure: {
+                                    type: "object",
+                                    unit: { type: "string" },
+                                    value: { type: "integer" },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                          else: {
+                            quantity: {
+                              type: "object",
+                              properties: {
+                                selected: {
+                                  type: "object",
+                                  properties: {
+                                    count: {
+                                      type: "integer",
+                                    },
+                                  },
+                                  required: ["count"],
+                                },
                               },
                             },
                           },
@@ -471,7 +498,7 @@ export const onConfirmSchema = {
                           },
                         },
                         // required: ["id", "quantity", "price"],
-                        required:["id"]
+                        required: ["id"],
                       },
                       tags: {
                         type: "array",
@@ -547,25 +574,23 @@ export const onConfirmSchema = {
                       currency: {
                         type: "string",
                       },
-                      if:{
-                        properties:{
-                          domain:{
-                            enum:["SRV16"]
-                          }
-                        }
+                      if: {
+                        properties: {
+                          domain: {
+                            enum: ["SRV16"],
+                          },
+                        },
                       },
-                      then:{
-                        properties:{
-
-                        }
+                      then: {
+                        properties: {},
                       },
-                      else:{
-                        properties:{
+                      else: {
+                        properties: {
                           transaction_id: {
                             type: "string",
                           },
                         },
-                        required:["transaction_id"]
+                        required: ["transaction_id"],
                       },
                       bank_account_number: {
                         type: "string",
@@ -681,7 +706,7 @@ export const onConfirmSchema = {
             "quote",
             "payments",
             "created_at",
-            "updated_at"
+            "updated_at",
           ],
         },
       },

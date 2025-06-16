@@ -111,3 +111,7 @@
 	path = apps/backend/domain-repos/@services/draft-services
 	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
 	branch = draft-services
+[submodule "apps/backend/domain-repos/@services/draft-warehouse"]
+	path = apps/backend/domain-repos/@services/draft-warehouse
+	url = https://github.com/ONDC-Official/ONDC-SRV-Specifications
+	branch = draft-warehouse
