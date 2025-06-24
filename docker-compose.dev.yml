@@ -12,8 +12,9 @@ services:
       - ondc
 
   api:
-    container_name: b2b-ondc-mock-api
-    image: ghcr.io/abhijeetondc/b2b-ondc-mock-server-dev-backend:${IMAGE_TAG}
+    build: 
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.backend
     ports:
       - "3000:3000"
     env_file:
@@ -25,8 +26,9 @@ services:
       - ondc
 
   web:
-    container_name: b2b-ondc-mock-web
-    image: ghcr.io/abhijeetondc/b2b-ondc-mock-server-dev-frontend:${IMAGE_TAG}
+    build:
+      context: .
+      dockerfile: ./apps/frontend/Dockerfile.frontend
     env_file:
       - ./.env
     ports:

@@ -250,7 +250,12 @@ const intializeRequest = async (
       message: {
         order: {
           provider: {
-            id,
+						id,
+						locations: [
+							{
+								id: locations[0].id,
+							},
+						],
           },
           items: items.map((itm: Item) => ({
             ...itm,

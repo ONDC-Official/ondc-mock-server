@@ -443,7 +443,7 @@ export const onStatusSchema = {
                                     type: "integer",
                                   },
                                 },
-                                required: ["count"],
+                                // required: ["count"],
                               },
                             },
                           },
@@ -658,7 +658,6 @@ export const onStatusSchema = {
               type: "string",
               format: "date-time",
             },
-
             updated_at: {
               type: "string",
               format: "date-time",

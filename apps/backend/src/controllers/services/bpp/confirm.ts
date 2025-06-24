@@ -65,7 +65,7 @@ export const confirmConsultationController = async (
       );
     }
     else {
-      updateFulfillments(
+      updatedFulfillments= updateFulfillments(
         fulfillments,
         ON_ACTION_KEY?.ON_CONFIRM,
       );

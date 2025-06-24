@@ -72,7 +72,7 @@ const intializeRequest = async (
 				order: {
 					provider: {
 						...provider,
-						// locations: [{ id: uuidv4() }],
+						locations: [{ id: uuidv4() }],
 					},
 					items,
 					billing: BILLING_DETAILS,
