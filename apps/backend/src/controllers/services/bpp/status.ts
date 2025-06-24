@@ -549,7 +549,99 @@ const statusRequest = async (
 	}
 };
 
+export const warehouseService = (
+	responseMessage: any,
+	req: Request,
+	res: Response,
+	message: any
+) => {
+	try {
+		const createdate = new Date(message.order.created_at);
+		createdate.setSeconds(createdate.getSeconds() + 10);
 
+		const updatedate = new Date(message.order.updated_at);
+		updatedate.setSeconds(updatedate.getSeconds() + 10);
+
+		createdate.setSeconds(createdate.getSeconds() + 20);
+		updatedate.setSeconds(updatedate.getSeconds() + 20);
+
+		const onStatusAtlocation = {
+			...responseMessage, // spread the entire response
+			order: {
+				...responseMessage.order, // spread message to retain its content
+				fulfillments: responseMessage.order.fulfillments.map(
+					(fulfillment: any) => ({
+						...fulfillment, // spread the fulfillment object
+						state: {
+							...fulfillment.state, // spread state to retain other state details
+							descriptor: {
+								...fulfillment.state.descriptor, // spread descriptor to modify only the code
+								code:"AT_LOCATION", // modify the code to "created"
+							},
+						},
+					})
+				),
+				created_at: createdate.toISOString(),
+				updated_at: updatedate.toISOString(),
+			},
+		};
+
+		createdate.setSeconds(createdate.getSeconds() + 20);
+		updatedate.setSeconds(updatedate.getSeconds() + 20);
+
+		const onStatusCompleted = {
+			...responseMessage, // spread the entire response
+			order: {
+				...responseMessage.order,
+				status:"COMPLETE",// spread message to retain its content
+				fulfillments: responseMessage.order.fulfillments.map(
+					(fulfillment: any) => ({
+						...fulfillment, // spread the fulfillment object
+						state: {
+							...fulfillment.state, // spread state to retain other state details
+							descriptor: {
+								...fulfillment.state.descriptor, // spread descriptor to modify only the code
+								code: "COMPLETED", // modify the code to "created"
+							},
+						},
+					})
+				),
+				created_at: createdate.toISOString(),
+				updated_at: updatedate.toISOString(),
+			},
+		};
+
+		async function callFunctionsSequentially() {
+			await new Promise((resolve) => setTimeout(resolve, 10000));
+			await childOrderResponseBuilder(
+				0,
+				res,
+				req.body.context,
+				onStatusAtlocation,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				}`,
+				"on_status"
+			);
+			await new Promise((resolve) => setTimeout(resolve, 10000));
+
+			await childOrderResponseBuilder(
+				0,
+				res,
+				req.body.context,
+				onStatusCompleted,
+				`${req.body.context.bap_uri}${
+					req.body.context.bap_uri.endsWith("/") ? "on_status" : "/on_status"
+				}`,
+				"on_status"
+			);
+		}
+
+		callFunctionsSequentially();
+	} catch (err) {
+		next(err);
+	}
+};
 
 export const astroservice = (responseMessage: any, req: Request, res: Response, message: any) => {
 
