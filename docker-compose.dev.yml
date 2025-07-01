@@ -1,5 +1,6 @@
+version: '3.8'
+
 services:
-  
   redis:
     env_file:
       - ./.env
@@ -12,9 +13,7 @@ services:
       - ondc
 
   api:
-    build: 
-      context: .
-      dockerfile: ./apps/backend/Dockerfile.backend
+    image: 577638354424.dkr.ecr.ap-south-1.amazonaws.com/dev/b2b-ondc-mock-server-backend:latest
     ports:
       - "3000:3000"
     env_file:
@@ -26,9 +25,7 @@ services:
       - ondc
 
   web:
-    build:
-      context: .
-      dockerfile: ./apps/frontend/Dockerfile.frontend
+    image: 577638354424.dkr.ecr.ap-south-1.amazonaws.com/dev/b2b-ondc-mock-server-frontend:latest
     env_file:
       - ./.env
     ports:
@@ -36,5 +33,6 @@ services:
     restart: always
     networks:
       - ondc
+
 networks:
   ondc:
