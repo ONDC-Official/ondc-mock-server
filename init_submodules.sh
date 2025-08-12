@@ -8,6 +8,9 @@ git submodule update
 git submodule add -b release-2.0.2 https://github.com/ONDC-Official/ONDC-RET-Specifications domain-repos/@retail-b2b/release-2.0.2
 git submodule add -b b2c_exports_2.0 https://github.com/ONDC-Official/ONDC-RET-Specifications domain-repos/@retail-b2b/b2c_exports_2.0
 
+# Agri
+git submodule add -b draft-agri_input https://github.com/ONDC-Official/ONDC-AGR-Specifications domain-repos/@agri/draft-agri_input
+git submodule add -b draft-agri_output https://github.com/ONDC-Official/ONDC-AGR-Specifications domain-repos/@agri/draft-agri_output
 
 # Services
 git submodule add -b draft-services https://github.com/ONDC-Official/ONDC-SRV-Specifications domain-repos/@services/draft-services
