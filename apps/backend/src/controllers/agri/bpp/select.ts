@@ -15,6 +15,7 @@ import {
 	quoteCreatorAgriOutput,
 	quoteCreatorNegotiationAgriOutput,
 	logger,
+	redisFetchToServer,
 } from "../../../lib/utils";
 import { v4 as uuidv4 } from "uuid";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -28,10 +29,16 @@ export const selectController = async (
 	next: NextFunction
 ) => {
 	try {
+
 		const on_search = await redisFetchFromServer(
 			ON_ACTION_KEY.ON_SEARCH,
 			req.body.context.transaction_id
-		);
+		) || await redisFetchToServer(
+			ON_ACTION_KEY.ON_SEARCH,
+			req.body.context.transaction_id
+	);
+
+		
 
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);

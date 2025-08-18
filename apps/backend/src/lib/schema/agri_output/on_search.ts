@@ -509,7 +509,7 @@ export const onSearchSchema = {
                                                                         required: ["currency", "value"]
                                                                     }
                                                                 },
-                                                                required: ["percentage", "amount"]
+                                                                required: ["amount"]
                                                             }
                                                         },
                                                         required: ["fulfillment_state", "reason_required", "cancellation_fee"]
@@ -553,7 +553,7 @@ export const onSearchSchema = {
                                                                             required: ["code"]
                                                                         },
                                                                         value: {
-                                                                            type: "string"
+                                                                            type: ["string", "boolean"]
                                                                         }
                                                                     },
                                                                     required: ["descriptor"]
@@ -564,7 +564,7 @@ export const onSearchSchema = {
                                                     }
                                                 }
                                             },
-                                            required: ["id", "descriptor", "creator", "price", "quantity", "category_ids", "fulfillment_ids", "location_ids", "payment_ids", "cancellation_terms", "matched", "recommended", "tags"]
+                                            required: ["id", "descriptor", "creator", "price", "quantity", "category_ids", "fulfillment_ids", "location_ids", "cancellation_terms", "matched", "recommended", "tags"]
                                         }
                                     },
                                     offers: {
@@ -679,7 +679,7 @@ export const onSearchSchema = {
                             }
                         }
                     },
-                    required:["fulfillments","payments","descriptor","providers"]
+                    required:["fulfillments","descriptor","providers"]
                 }
             },
         }

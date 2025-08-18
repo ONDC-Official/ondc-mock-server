@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import {
 	checkIfCustomized,
 	redisFetchFromServer,
+	redisFetchToServer,
 	responseBuilder,
 	send_nack,
 	Stop,
@@ -43,6 +44,9 @@ export const confirmConsultationController = async (
 		} = req.body;
 
 		const on_init = await redisFetchFromServer(
+			ON_ACTION_KEY.ON_INIT,
+			context?.transaction_id
+		) || await redisFetchToServer(
 			ON_ACTION_KEY.ON_INIT,
 			context?.transaction_id
 		);
@@ -228,10 +232,15 @@ export const confirmAgriOutputController=async (
 			message: { order },
 		} = req.body;
 
-		const on_init = await redisFetchFromServer(
-			ON_ACTION_KEY.ON_INIT,
-			context?.transaction_id
-		);
+		const on_init =
+			(await redisFetchFromServer(
+				ON_ACTION_KEY.ON_INIT,
+				context?.transaction_id
+			)) ||
+			(await redisFetchToServer(
+				ON_ACTION_KEY.ON_INIT,
+				context?.transaction_id
+			));
 
 		if (on_init && on_init?.error) {
 			return send_nack(

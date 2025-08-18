@@ -169,7 +169,7 @@ export const selectSchema={
                     }
                   }
                 },
-                required: ["provider", "items", "fulfillments", "payments", "tags"]
+                required: ["provider", "items", "fulfillments", "tags"]
               }
             },
             required: ["order"]
