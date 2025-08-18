@@ -226,7 +226,7 @@ export const initSchema = {
                             }
                         }
                     },
-                    required: ["provider", "items", "billing", "fulfillments", "payments"]
+                    required: ["provider", "items", "billing", "fulfillments"]
                 }
             },
             required: ["order"]

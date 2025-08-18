@@ -342,7 +342,7 @@ export const onInitSchema={
                           required: ["currency", "value"]
                         }
                       },
-                      required: ["percentage", "amount"]
+                      required: ["amount"]
                     }
                   },
                   required: ["fulfillment_state", "reason_required", "cancellation_fee"]
@@ -350,7 +350,7 @@ export const onInitSchema={
               }
             },
             required: [
-              "provider", "locations", "items", "billing", "fulfillments", "quote",
+              "provider", "items", "billing", "fulfillments", "quote",
               "payments"
             ]
           }

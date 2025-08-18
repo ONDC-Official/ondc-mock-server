@@ -143,7 +143,7 @@ export const searchSchema = {
                             }
                         }
                     },
-                    required: ["payment", "tags"]
+                    required: ["tags"]
                 }
             },
             required: ["intent"]
