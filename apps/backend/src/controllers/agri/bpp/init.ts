@@ -18,6 +18,7 @@ import {
 	AGRI_BPP_MOCKSERVER_URL,
 	MOCKSERVER_ID,
 	logger,
+	redisFetchToServer,
 } from "../../../lib/utils";
 import { ON_ACTION_KEY } from "../../../lib/utils/actionOnActionKeys";
 import { ERROR_MESSAGES } from "../../../lib/utils/responseMessages";
@@ -35,10 +36,9 @@ export const initController = async (
 	try {
 		const { transaction_id } = req.body.context;
 		const { scenario } = req.query;
-		const on_search = await redisFetchFromServer(
-			ON_ACTION_KEY.ON_SEARCH,
-			transaction_id
-		);
+		const on_search =
+			await redisFetchFromServer(ON_ACTION_KEY.ON_SEARCH, transaction_id) ||
+			await redisFetchToServer(ON_ACTION_KEY.ON_SEARCH, transaction_id);
 		if (!on_search) {
 			return send_nack(res, ERROR_MESSAGES.ON_SEARCH_DOES_NOT_EXISTED);
 		}
@@ -53,6 +53,9 @@ export const initController = async (
 		}
 
 		const on_select = await redisFetchFromServer(
+			ON_ACTION_KEY.ON_SELECT,
+			transaction_id
+		)||await redisFetchToServer(
 			ON_ACTION_KEY.ON_SELECT,
 			transaction_id
 		);

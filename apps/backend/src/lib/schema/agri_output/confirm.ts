@@ -362,7 +362,7 @@ export const confirmSchema={
               created_at: { type: "string" },
               updated_at: { type: "string" }
             },
-            required: ["id", "status", "provider", "items", "billing", "fulfillments", "quote", "payments", "created_at", "updated_at"]
+            required: ["id", "provider", "items", "billing", "fulfillments", "quote", "payments", "created_at", "updated_at"]
           }
         },
         required: ["order"]

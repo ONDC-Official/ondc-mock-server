@@ -128,7 +128,7 @@ export const onSelectSchema={
                 }
               }
             },
-            required: ["provider", "items", "fulfillments", "payments"]
+            required: ["provider", "items", "fulfillments"]
           }
         },
         required: ["order"]
