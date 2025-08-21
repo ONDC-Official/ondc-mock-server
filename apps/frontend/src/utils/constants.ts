@@ -119,7 +119,7 @@ export const ALL_Environment = {
 	STAGING: "Staging"
 }
 
-export const CITY_CODE = ["std:080", "std:011", "std:999","std:040"];
+export const CITY_CODE = ["std:080", "std:011", "std:999", "std:040"];
 export const AGRI_SCENARIOS = {
   search: [
     {
