@@ -375,7 +375,7 @@ export const onSearchSchema = {
                                                                             format: "email"
                                                                         }
                                                                     },
-                                                                    required: ["name", "address", "phone", "email"]
+                                                                    required: ["name", "address", "phone"]
                                                                 }
                                                             },
                                                             required: ["name", "contact"]
@@ -668,7 +668,7 @@ export const onSearchSchema = {
                                                         phone: { type: "string" },
                                                         email: { type: "string" }
                                                     },
-                                                    required: ["phone", "email"]
+                                                    required: ["phone"]
                                                 }
                                             },
                                             required: ["contact"]

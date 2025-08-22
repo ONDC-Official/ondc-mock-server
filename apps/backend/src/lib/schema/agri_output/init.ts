@@ -107,7 +107,7 @@ export const initSchema = {
                                 email: { type: "string" },
                                 phone: { type: "string" }
                             },
-                            required: ["name", "address", "state", "city", "tax_id", "email", "phone"]
+                            required: ["name", "address", "state", "city", "tax_id", "phone"]
                         },
                         fulfillments: {
                             type: "array",
