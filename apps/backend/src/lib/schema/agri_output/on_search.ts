@@ -120,7 +120,7 @@ export const onSearchSchema = {
                                     }
                                 }
                             },
-                            required: ["name", "short_desc", "long_desc", "images"]
+                            required: ["name", "short_desc", "long_desc"]
                         },
                         providers: {
                             type: "array",
@@ -171,7 +171,7 @@ export const onSearchSchema = {
                                                 }
                                             }
                                         },
-                                        required: ["name", "code", "short_desc", "long_desc", "additional_desc", "images"]
+                                        required: ["name", "code", "short_desc", "long_desc", "additional_desc"]
                                     },
                                     rating: {
                                         type: "string"
@@ -341,7 +341,7 @@ export const onSearchSchema = {
                                                             }
                                                         }
                                                     },
-                                                    required: ["name", "short_desc", "long_desc", "images"]
+                                                    required: ["name", "short_desc", "long_desc"]
                                                 },
                                                 creator: {
                                                     type: "object",
@@ -564,7 +564,7 @@ export const onSearchSchema = {
                                                     }
                                                 }
                                             },
-                                            required: ["id", "descriptor", "creator", "price", "quantity", "category_ids", "fulfillment_ids", "location_ids", "cancellation_terms", "matched", "recommended", "tags"]
+                                            required: ["id", "descriptor", "creator", "price", "quantity", "category_ids", "fulfillment_ids", "location_ids", "matched", "recommended", "tags"]
                                         }
                                     },
                                     offers: {
@@ -591,7 +591,7 @@ export const onSearchSchema = {
                                                             }
                                                         }
                                                     },
-                                                    required: ["code", "short_desc", "long_desc", "images"]
+                                                    required: ["code", "short_desc", "long_desc"]
                                                 },
                                                 location_ids: {
                                                     type: "array",
@@ -675,7 +675,7 @@ export const onSearchSchema = {
                                         }
                                     }
                                 },
-                                required: ["id", "descriptor", "rating", "ttl", "locations", "creds", "tags", "items", "offers", "fulfillments"]
+                                required: ["id", "descriptor", "rating", "ttl", "locations","items", "fulfillments"]
                             }
                         }
                     },
