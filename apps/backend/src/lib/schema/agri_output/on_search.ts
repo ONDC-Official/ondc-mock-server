@@ -171,7 +171,7 @@ export const onSearchSchema = {
                                                 }
                                             }
                                         },
-                                        required: ["name", "code", "short_desc", "long_desc", "additional_desc"]
+                                        required: ["name", "code", "short_desc", "long_desc"]
                                     },
                                     rating: {
                                         type: "string"
