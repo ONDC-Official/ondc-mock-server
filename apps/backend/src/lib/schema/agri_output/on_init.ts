@@ -269,7 +269,7 @@ export const onInitSchema={
                         bank_account_number: { type: "string" },
                         virtual_payment_address: { type: "string" }
                       },
-                      required: ["amount", "currency", "bank_account_number", "virtual_payment_address"]
+                      required: ["amount", "currency", "bank_account_number"]
                     },
                     status: { type: "string" },
                     type: { type: "string" },
