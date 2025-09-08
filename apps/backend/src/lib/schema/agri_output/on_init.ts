@@ -269,7 +269,7 @@ export const onInitSchema={
                         bank_account_number: { type: "string" },
                         virtual_payment_address: { type: "string" }
                       },
-                      required: ["amount", "currency", "bank_account_number"]
+                      required: ["amount", "currency"]
                     },
                     status: { type: "string" },
                     type: { type: "string" },
@@ -305,7 +305,58 @@ export const onInitSchema={
                         },
                         required: ["descriptor", "list"]
                       }
-                    }
+                    },
+                    allOf: [
+                      {
+                        if: {
+                          properties: {
+                            tags: {
+                              type: "array",
+                              contains: {
+                                type: "object",
+                                properties: {
+                                  descriptor: {
+                                    type: "object",
+                                    properties: { code: { const: "Collection_Details" } },
+                                    required: ["code"]
+                                  },
+                                  list: {
+                                    type: "array",
+                                    contains: {
+                                      type: "object",
+                                      properties: {
+                                        descriptor: {
+                                          type: "object",
+                                          properties: { code: { const: "Mode" } },
+                                          required: ["code"]
+                                        },
+                                        value: { const: "Offline" }
+                                      },
+                                      required: ["descriptor", "value"]
+                                    }
+                                  }
+                                },
+                                required: ["descriptor", "list"]
+                              }
+                            }
+                          }
+                        },
+                        then: {
+                          properties: {
+                            params: {
+                              required: ["amount", "currency"]
+                            }
+                          }
+                        },
+                        else: {
+                          properties: {
+                            params: {
+                              required: ["amount", "currency", "bank_account_number"]
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   required: ["id", "collected_by", "params", "status", "type", "tags"]
                 }
