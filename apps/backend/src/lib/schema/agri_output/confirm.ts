@@ -318,7 +318,7 @@ export const confirmSchema={
                         bank_account_number: { type: "string" },
                         virtual_payment_address: { type: "string" }
                       },
-                      required: ["amount", "currency", "bank_account_number", "virtual_payment_address"]
+                      required: ["amount", "currency", "virtual_payment_address"]
                     },
                     status: { type: "string" },
                     type: { type: "string" },
@@ -354,7 +354,58 @@ export const confirmSchema={
                         },
                         required: ["descriptor", "list"]
                       }
-                    }
+                    },
+                    allOf: [
+                      {
+                        if: {
+                          properties: {
+                            tags: {
+                              type: "array",
+                              contains: {
+                                type: "object",
+                                properties: {
+                                  descriptor: {
+                                    type: "object",
+                                    properties: { code: { const: "Collection_Details" } },
+                                    required: ["code"]
+                                  },
+                                  list: {
+                                    type: "array",
+                                    contains: {
+                                      type: "object",
+                                      properties: {
+                                        descriptor: {
+                                          type: "object",
+                                          properties: { code: { const: "Mode" } },
+                                          required: ["code"]
+                                        },
+                                        value: { const: "Offline" }
+                                      },
+                                      required: ["descriptor", "value"]
+                                    }
+                                  }
+                                },
+                                required: ["descriptor", "list"]
+                              }
+                            }
+                          }
+                        },
+                        then: {
+                          properties: {
+                            params: {
+                              required: ["amount", "currency", "virtual_payment_address"]
+                            }
+                          }
+                        },
+                        else: {
+                          properties: {
+                            params: {
+                              required: ["amount", "currency", "bank_account_number", "virtual_payment_address"]
+                            }
+                          }
+                        }
+                      }
+                    ]
                   },
                   required: ["id", "collected_by", "params", "status", "type", "tags"]
                 }
