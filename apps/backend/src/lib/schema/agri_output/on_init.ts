@@ -306,57 +306,6 @@ export const onInitSchema={
                         required: ["descriptor", "list"]
                       }
                     },
-                    allOf: [
-                      {
-                        if: {
-                          properties: {
-                            tags: {
-                              type: "array",
-                              contains: {
-                                type: "object",
-                                properties: {
-                                  descriptor: {
-                                    type: "object",
-                                    properties: { code: { const: "Collection_Details" } },
-                                    required: ["code"]
-                                  },
-                                  list: {
-                                    type: "array",
-                                    contains: {
-                                      type: "object",
-                                      properties: {
-                                        descriptor: {
-                                          type: "object",
-                                          properties: { code: { const: "Mode" } },
-                                          required: ["code"]
-                                        },
-                                        value: { const: "Offline" }
-                                      },
-                                      required: ["descriptor", "value"]
-                                    }
-                                  }
-                                },
-                                required: ["descriptor", "list"]
-                              }
-                            }
-                          }
-                        },
-                        then: {
-                          properties: {
-                            params: {
-                              required: ["amount", "currency"]
-                            }
-                          }
-                        },
-                        else: {
-                          properties: {
-                            params: {
-                              required: ["amount", "currency", "bank_account_number"]
-                            }
-                          }
-                        }
-                      }
-                    ]
                   },
                   required: ["id", "collected_by", "params", "status", "type", "tags"]
                 }
