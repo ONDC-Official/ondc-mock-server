@@ -209,7 +209,7 @@ export const confirmSchema={
                             required: ["name", "short_desc"]
                           }
                         },
-                        required: ["type", "location", "contact", "time", "customer", "instructions"]
+                        required: ["type", "location", "contact", "time", "instructions"]
                       }
                     }
                   },
@@ -318,7 +318,7 @@ export const confirmSchema={
                         bank_account_number: { type: "string" },
                         virtual_payment_address: { type: "string" }
                       },
-                      required: ["amount", "currency", "virtual_payment_address"]
+                      required: ["amount", "currency"]
                     },
                     status: { type: "string" },
                     type: { type: "string" },
