@@ -94,7 +94,7 @@ export const onStatusSchema={
                         maximum_value: { type: "string" },
                         offered_value: { type: "string" }
                       },
-                      required: ["currency", "maximum_value", "offered_value"]
+                      required: ["currency", "offered_value"]
                     },
                     quantity: {
                       type: "object",
@@ -136,7 +136,7 @@ export const onStatusSchema={
                   email: { type: "string" },
                   phone: { type: "string" }
                 },
-                required: ["name", "address", "state", "city", "tax_id", "email", "phone"]
+                required: ["name", "address", "state", "city", "email", "phone"]
               },
               fulfillments: {
                 type: "array",

@@ -106,7 +106,7 @@ export const onInitSchema={
                   email: { type: "string" },
                   phone: { type: "string" }
                 },
-                required: ["name", "address", "state", "city", "tax_id", "phone"]
+                required: ["name", "address", "state", "city", "phone"]
               },
               fulfillments: {
                 type: "array",

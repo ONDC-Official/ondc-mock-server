@@ -104,7 +104,7 @@ export const onUpdateSchema={
                       }
                     }
                   },
-                  required: ["id", "price", "quantity", "payment_ids", "tags"]
+                  required: ["id", "price", "quantity","tags"]
                 }
               },
               fulfillments: {

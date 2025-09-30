@@ -66,7 +66,7 @@ export const onConfirmSchema={
                   },
                   rateable: { type: "boolean" }
                 },
-                required: ["id", "locations", "rateable"]
+                required: ["id", "locations"]
               },
               items: {
                 type: "array",
@@ -122,7 +122,7 @@ export const onConfirmSchema={
                   email: { type: "string" },
                   phone: { type: "string" }
                 },
-                required: ["name", "address", "state", "city", "tax_id", "email", "phone"]
+                required: ["name", "address", "state", "city","email", "phone"]
               },
               fulfillments: {
                 type: "array",

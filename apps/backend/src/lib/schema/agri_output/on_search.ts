@@ -376,10 +376,37 @@ export const onSearchSchema = {
                                                                         }
                                                                     },
                                                                     required: ["name", "address", "phone"]
+                                                                },
+                                                                short_desc:{
+                                                                    type:"string"
+                                                                },
+                                                                long_desc:{
+                                                                    type:"string"
                                                                 }
                                                             },
-                                                            required: ["name", "contact"]
+                                                            required: ["name"]
+                                                        },
+                                                        city: {
+                                                              type: "object",
+                                                            properties: {
+                                                             code: {
+                                                             type: "string"
+                                                                 },
+                                                              name: {
+                                                                  type: "string"
+                                                              }
+                                                    },
+                                                    required: ["code", "name"]
+                                                },
+                                                    state: {
+                                                    type: "object",
+                                                    properties: {
+                                                        code: {
+                                                            type: "string"
                                                         }
+                                                    },
+                                                    required: ["code"]
+                                                }
                                                     },
                                                     required: ["descriptor"]
                                                 },
@@ -509,7 +536,7 @@ export const onSearchSchema = {
                                                                         required: ["currency", "value"]
                                                                     }
                                                                 },
-                                                                required: ["amount"]
+                                                                // required: ["amount"]
                                                             }
                                                         },
                                                         required: ["fulfillment_state", "reason_required", "cancellation_fee"]
