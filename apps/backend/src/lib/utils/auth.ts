@@ -2,6 +2,7 @@ import _sodium from "libsodium-wrappers";
 import { getSubscriberDetails } from "./lookup";
 import { createSigningString, verifyMessage } from "./crypto";
 import { logger } from "./logger";
+import { isHeaderValid } from "ondc-crypto-sdk-nodejs";
 
 const remove_quotes = (value: string) => {
 	if (
@@ -30,7 +31,7 @@ export const split_auth_header = (auth_header: string) => {
 export async function verifyHeader(
 	header: string,
 	rawBody: string,
-	env:string
+	env: string
 ): Promise<boolean> {
 	try {
 		const parts = split_auth_header(header);
@@ -39,27 +40,26 @@ export async function verifyHeader(
 		}
 		const subscriber_id = parts["keyId"].split("|")[0];
 		const unique_key_id = parts["keyId"].split("|")[1];
-		
+
 		const subscribers_details = await getSubscriberDetails(
 			subscriber_id,
 			unique_key_id,
 			env
 		);
-		
+		var public_key = "";
+
 		for (const each of subscribers_details) {
-			const public_key = each.signing_public_key;
-			const { signing_string } = await createSigningString(
-				rawBody,
-				parts["created"],
-				parts["expires"]
-			);
-			const verified = await verifyMessage(
-				parts["signature"],
-				signing_string,
-				public_key
-			);
-			if (verified) return true;
+			public_key = each.signing_public_key;
+			break;
 		}
+
+		const isValid = await isHeaderValid({
+			header: header, // The Authorisation header sent by other network participants
+			body: JSON.stringify(rawBody), // The raw body of the request as a string
+			publicKey: public_key,
+		});
+		logger.info(`is header valid ${isValid}`)
+		if (isValid) return true;
 		return false;
 	} catch (error) {
 		return false;

@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"dotenv": "^16.4.7",
-		"iso8601-duration": "^2.1.2"
+		"iso8601-duration": "^2.1.2",
+		"ondc-crypto-sdk-nodejs": "^2.1.1"
 	}
 }
