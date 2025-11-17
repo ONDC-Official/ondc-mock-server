@@ -2,8 +2,10 @@ import axios from "axios";
 import { SubscriberDetail } from "../../interfaces";
 import { STAGING_REGISTRY_URL, PREPOD_REGISTRY_URL } from "./constants";
 import { redis } from "./redis";
-import { createAuthHeader } from "./responseAuth";
+// import { createAuthHeader } from "./responseAuth";
 import { logger } from "./logger";
+import { createAuthorizationHeader } from "ondc-crypto-sdk-nodejs"
+
 
 export async function getSubscriberDetails(
   subscriber_id: string,
@@ -25,21 +27,27 @@ export async function getSubscriberDetails(
         subscriber_id,
         ukId: unique_key_id,
       }
-      const headers = await createAuthHeader(body);
+      console.log("Request Body:", body);
+      // const headers = await createAuthHeader(body);
+      const header = await createAuthorizationHeader({
+      body: JSON.stringify(body),
+      privateKey: process.env.PRIVATE_KEY || "",
+      subscriberId: process.env.SUBSCRIBER_ID || "", // Subscriber ID that you get after registering to ONDC Network
+      subscriberUniqueKeyId: process.env.UNIQUE_KEY||"", // Unique Key Id or uKid that you get after registering to ONDC Network
+    });
       // Fetch data from both endpoints
-
-      logger.info(`header is ${headers}`)
+      logger.info(`header is ${header}`)
       const [stagingResponse, prepodResponse] = await Promise.all([
         axios.post(STAGING_REGISTRY_URL, body,{
           headers: {
             "Content-Type": "application/json",
-            Authorization: headers
+            Authorization: header
           },
         }),
         axios.post(PREPOD_REGISTRY_URL, body,{
           headers: {
             "Content-Type": "application/json",
-            Authorization: headers
+            Authorization: header
     }}),
       ]);
       // Process and concatenate data from both responses

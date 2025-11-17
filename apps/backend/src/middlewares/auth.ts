@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { verifyHeader } from "../lib/utils/auth";
 import { Locals } from "../interfaces";
 import { B2B_BAP_MOCKSERVER_URL, logger } from "../lib/utils";
+import { isHeaderValid } from "ondc-crypto-sdk-nodejs"
+
 
 export const authValidatorMiddleware = async (
 	req: Request,
@@ -30,9 +32,8 @@ export const authValidatorMiddleware = async (
 		const includesLOGorRET = part.some((part:any) => part.includes("LOG") || part.includes("RET"));
 			if(includesLOGorRET){
 				env=req.headers["environment"] ||""
-				// console.log("============>",req.headers)
 			}
-			let verified = await verifyHeader(auth_header, (req as any).rawBody.toString(),env as string);
+			let verified = await verifyHeader(auth_header, req.body,env as string);
 
 			if (!verified) {
 				return res.status(401).json({
